@@ -16,7 +16,6 @@ export interface AgentUsage {
 
 export interface RunResult {
   projectId: string;
-  report: string;
   ceo: {
     mandate: {
       title: string;
@@ -114,6 +113,10 @@ export interface RunResult {
     summary: string;
     tensions: TensionSeed[];
   };
+  report?: {
+    internal: string;
+    client: string;
+  };
   total_duration_ms: number;
 }
 
@@ -124,4 +127,16 @@ export const COMPLEXITY_COLOR: Record<string, string> = {
   very_high: "#ff4444",
 };
 
-export const EXAMPLE = `We need an app for our HR team. Right now everything is on paper and Excel. When a new employee joins, the HR manager has to send emails manually, print documents, chase signatures, and track everything in a spreadsheet. It takes about 2 weeks and everyone hates it.\n\nWe have around 50 employees and hire maybe 10 people per year. Budget is flexible but we're a small company so nothing crazy. We use Google Workspace for everything.`;
+export interface DynamicFormField {
+  id: string;
+  label: string;
+  type: "text" | "textarea" | "choice" | "multiple";
+  options?: string[];
+  placeholder?: string;
+  required: boolean;
+}
+
+export interface DynamicFormData {
+  theme: string;
+  fields: Array<{ id: string; label: string; value: string | string[] }>;
+}

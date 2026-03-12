@@ -39,7 +39,7 @@ The `core/field-store.ts` that currently exists is a simplified stub. It does no
 ## Stack
 
 - Next.js 15, App Router
-- **Vercel AI SDK v4** — `tool()` takes `parameters` (not `inputSchema`). `generateObject` does not support tool calls — use `generateText` + `experimental_output: Output.object({ schema })` instead. `usage` exposes `promptTokens` / `completionTokens`.
+- **Vercel AI SDK v4** — `tool()` takes `inputSchema` (not `parameters` — `parameters` does not exist in this version). `generateObject` does not support tool calls — use `generateText` + `experimental_output: Output.object({ schema })` instead. `streamText` uses `stopWhen: stepCountIs(N)` (not `maxSteps`). Stream responses: use `toUIMessageStreamResponse()` for tool-call-aware streaming (useChat), `toTextStreamResponse()` for plain text only. `usage` exposes `promptTokens` / `completionTokens`.
 - Zod v3, nanoid v5, MongoDB v6
 - TypeScript strict
 

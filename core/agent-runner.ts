@@ -14,7 +14,7 @@ import { AnthropicMessagesLanguageModel } from "@ai-sdk/anthropic/internal";
 // CONFIG
 // ═══════════════════════════════════════════════════════════════
 
-export type AgentMethod = "generateText" | "generateObject";
+export type AgentMethod = "generateText" | "generateObject" | "streamText";
 
 export interface AgentConfig {
   role: AgentRole;

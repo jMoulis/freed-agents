@@ -1,5 +1,6 @@
-@import "tailwindcss";
 @import url("https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap");
+
+@import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
@@ -163,6 +164,182 @@ textarea::placeholder {
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+/* ─── Report Markdown ──────────────────────────────────────── */
+.report-md {
+  color: #e0e0f0;
+  font-family: "DM Sans", sans-serif;
+  font-size: 14px;
+  line-height: 1.7;
+}
+.report-md h1 {
+  font-family: "Space Mono", monospace;
+  font-size: 22px;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 8px;
+  letter-spacing: -0.02em;
+}
+.report-md h2 {
+  font-family: "Space Mono", monospace;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: #7c7c9a;
+  text-transform: uppercase;
+  margin-top: 32px;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #1e1e2e;
+}
+.report-md h3 {
+  font-size: 12px;
+  font-weight: 600;
+  color: #a0a0c0;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-top: 20px;
+  margin-bottom: 8px;
+}
+.report-md h4 {
+  font-size: 13px;
+  font-weight: 600;
+  color: #c0c0e0;
+  margin-top: 16px;
+  margin-bottom: 6px;
+}
+.report-md p {
+  margin-bottom: 12px;
+  color: #c0c0d8;
+}
+.report-md blockquote {
+  border-left: 2px solid #6c63ff;
+  padding-left: 14px;
+  margin: 8px 0 16px;
+  color: #9090b8;
+  font-style: italic;
+}
+.report-md blockquote p {
+  margin-bottom: 0;
+  color: #9090b8;
+}
+.report-md ul,
+.report-md ol {
+  padding-left: 20px;
+  margin-bottom: 12px;
+}
+.report-md li {
+  margin-bottom: 4px;
+  color: #c0c0d8;
+}
+.report-md li::marker {
+  color: #6c63ff;
+}
+.report-md strong {
+  color: #e0e0f0;
+  font-weight: 600;
+}
+.report-md em {
+  color: #9090b8;
+}
+.report-md code {
+  font-family: "Space Mono", monospace;
+  font-size: 11px;
+  background: #12122a;
+  border: 1px solid #1e1e2e;
+  border-radius: 4px;
+  padding: 1px 5px;
+  color: #a78bfa;
+}
+.report-md pre {
+  background: #0d0d1a;
+  border: 1px solid #1e1e2e;
+  border-radius: 8px;
+  padding: 14px 16px;
+  overflow-x: auto;
+  margin-bottom: 16px;
+}
+.report-md pre code {
+  background: none;
+  border: none;
+  padding: 0;
+  color: #c0c0d8;
+  font-size: 12px;
+}
+.report-md hr {
+  border: none;
+  border-top: 1px solid #1e1e2e;
+  margin: 28px 0;
+}
+.report-md a {
+  color: #6c63ff;
+  text-decoration: none;
+}
+.report-md a:hover {
+  text-decoration: underline;
+}
+/* Tables */
+.report-md table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 16px;
+  font-size: 13px;
+}
+.report-md thead tr {
+  border-bottom: 1px solid #2a2a3a;
+}
+.report-md th {
+  font-family: "Space Mono", monospace;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: #7c7c9a;
+  text-transform: uppercase;
+  padding: 8px 12px;
+  text-align: left;
+  font-weight: 400;
+}
+.report-md td {
+  padding: 8px 12px;
+  color: #c0c0d8;
+  border-bottom: 1px solid #14141f;
+}
+.report-md tbody tr:hover td {
+  background: #0d0d1a;
+}
+/* details / summary */
+.report-md details {
+  background: #0d0d1a;
+  border: 1px solid #1e1e2e;
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin-bottom: 12px;
+}
+.report-md details[open] {
+  padding-bottom: 14px;
+}
+.report-md summary {
+  font-family: "Space Mono", monospace;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: #7c7c9a;
+  cursor: pointer;
+  user-select: none;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.report-md summary::before {
+  content: "▶";
+  font-size: 8px;
+  transition: transform 0.15s;
+}
+.report-md details[open] summary::before {
+  transform: rotate(90deg);
+}
+.report-md details > *:not(summary) {
+  margin-top: 10px;
 }
 
 @layer base {

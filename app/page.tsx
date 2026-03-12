@@ -1,41 +1,42 @@
 "use client";
 
 import { useState } from "react";
-import { RunResult, EXAMPLE } from "./components/types";
+import { RunResult } from "./components/types";
 import { MandatePanel } from "./components/MandatePanel";
 import { FieldPanel } from "./components/FieldPanel";
 import { BlueprintPanel } from "./components/BlueprintPanel";
 import { AuditPanel } from "./components/AuditPanel";
+import { ReportPanel } from "./components/ReportPanel";
+import { DiscoveryChat } from "./components/DiscoveryChat";
 import { page as S, tokenBreakdown as T } from "./components/styles";
-import debugTest from "./debug-with-qa.json";
-import { generateReport } from "@/lib/reporter";
+
+type Phase = "discovery" | "running" | "results";
+
+const PIPELINE_ROLES = ["CEO", "CTO", "ARCHITECT", "QA LEAD"] as const;
 
 export default function Home() {
-  const [brief, setBrief] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [phase, setPhase] = useState<Phase>("discovery");
   const [result, setResult] = useState<RunResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [showTokens, setShowTokens] = useState(false);
 
-  console.log(result);
-  async function run() {
-    if (!brief.trim()) return;
-    setLoading(true);
+  async function handleDiscoveryComplete(projectId: string, brief: string) {
+    setPhase("running");
     setError(null);
     setResult(null);
     try {
       const res = await fetch("/api/run", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ brief }),
+        body: JSON.stringify({ brief, projectId }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "Request failed");
       setResult(data);
+      setPhase("results");
     } catch (e: any) {
       setError(e.message);
-    } finally {
-      setLoading(false);
+      setPhase("discovery");
     }
   }
 
@@ -72,53 +73,37 @@ export default function Home() {
 
         {/* Pipeline */}
         <div style={S.pipeline}>
-          {["CEO", "CTO", "ARCHITECT", "QA LEAD"].map((role, i) => (
-            <div key={role} style={S.pipelineStep}>
-              <div style={S.pipelineRole(loading && role === "CEO")}>
-                {loading && role === "CEO" && <span style={S.pipelineDot} />}
-                {role}
+          {PIPELINE_ROLES.map((role, i) => {
+            const active = phase === "running";
+            return (
+              <div key={role} style={S.pipelineStep}>
+                <div style={S.pipelineRole(active)}>
+                  {active && <span style={S.pipelineDot} />}
+                  {role}
+                </div>
+                {i < 3 && <span style={S.pipelineArrow}>→</span>}
               </div>
-              {i < 3 && <span style={S.pipelineArrow}>→</span>}
-            </div>
-          ))}
-        </div>
-
-        {/* Brief input */}
-        <div style={S.briefBox(loading)}>
-          <div style={S.briefLabel}>CLIENT BRIEF</div>
-          <textarea
-            value={brief}
-            onChange={(e) => setBrief(e.target.value)}
-            placeholder="Describe the project in plain language..."
-            disabled={loading}
-            rows={5}
-            style={S.textarea}
-          />
-        </div>
-
-        <div style={S.actions}>
-          <button
-            onClick={run}
-            disabled={loading || !brief.trim()}
-            style={S.runButton(loading, loading || !brief.trim())}
-          >
-            {loading && <span style={S.spinner} />}
-            {loading ? "Running pipeline..." : "→ Run Agent Pipeline"}
-          </button>
-          <button
-            onClick={() => setBrief(EXAMPLE)}
-            disabled={loading}
-            style={S.exampleButton}
-          >
-            Load example
-          </button>
+            );
+          })}
         </div>
 
         {/* Error */}
         {error && <div style={S.errorBox}>✕ {error}</div>}
 
+        {/* Discovery phase */}
+        {phase === "discovery" && (
+          <DiscoveryChat onComplete={handleDiscoveryComplete} />
+        )}
+
+        {/* Running phase */}
+        {phase === "running" && (
+          <div style={S.awaiting}>
+            Analyse en cours...
+          </div>
+        )}
+
         {/* Results */}
-        {result && (
+        {phase === "results" && result && (
           <div style={S.results}>
             <div style={S.metaBar}>
               <span>
@@ -176,8 +161,9 @@ export default function Home() {
           </div>
         )}
 
-        <pre>{result?.report}</pre>
-        {!result && !loading && <div style={S.awaiting}>AWAITING BRIEF</div>}
+        {phase === "results" && result?.report && (
+          <ReportPanel report={result.report} />
+        )}
       </div>
     </div>
   );

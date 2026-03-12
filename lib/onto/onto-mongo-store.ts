@@ -8,7 +8,7 @@
  * ╚══════════════════════════════════════════════════════════════════╝
  *
  * Setup:
- *   MONGODB_URI=mongodb+srv://user:pass@cluster.mongodb.net/onto
+ *
  *   ONTO_STORE=mongo
  */
 
