@@ -140,3 +140,5 @@ export interface DynamicFormData {
   theme: string;
   fields: Array<{ id: string; label: string; value: string | string[] }>;
 }
+
+export const EXAMPLE = `We need an app for our HR team. Right now everything is on paper and Excel. When a new employee joins, the HR manager has to send emails manually, print documents, chase signatures, and track everything in a spreadsheet. It takes about 2 weeks and everyone hates it.\n\nWe have around 50 employees and hire maybe 10 people per year. Budget is flexible but we're a small company so nothing crazy. We use Google Workspace for everything.`;

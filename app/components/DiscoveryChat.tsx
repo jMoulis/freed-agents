@@ -2,8 +2,8 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useChat } from "@ai-sdk/react";
-import { DefaultChatTransport } from "ai";
-import type { DynamicToolUIPart } from "ai";
+import { DefaultChatTransport, isToolUIPart } from "ai";
+import type { DynamicToolUIPart, ToolUIPart } from "ai";
 import {
   Conversation,
   ConversationContent,
@@ -20,7 +20,8 @@ import {
   PromptInputSubmit,
 } from "@/components/ai-elements/prompt-input";
 import { DynamicForm } from "./DynamicForm";
-import type { DynamicFormData, DynamicFormField } from "./types";
+import { EXAMPLE, type DynamicFormData, type DynamicFormField } from "./types";
+import { Button } from "@/components/ui/button";
 
 interface RenderFormInput {
   theme: string;
@@ -46,14 +47,15 @@ export function DiscoveryChat({ onComplete }: Props) {
     () =>
       new DefaultChatTransport({
         api: "/api/discovery",
-        prepareSendMessagesRequest: ({ body }) => ({
-          body: {
-            ...body,
-            ...(projectIdRef.current
-              ? { projectId: projectIdRef.current }
-              : {}),
-          },
-        }),
+        // prepareSendMessagesRequest: ({ body }) => ({
+        //   body: {
+        //     ...body,
+        //     messages: [],
+        //     ...(projectIdRef.current
+        //       ? { projectId: projectIdRef.current }
+        //       : {}),
+        //   },
+        // }),
         fetch: async (input, init) => {
           const response = await globalThis.fetch(
             input as RequestInfo,
@@ -103,137 +105,152 @@ export function DiscoveryChat({ onComplete }: Props) {
     }
   }, [status, messages, projectId, onComplete]);
 
+  console.log(messages);
+
   function handleFormSubmit(toolCallId: string, data: DynamicFormData) {
     setSubmittedFormIds((prev) => new Set([...prev, toolCallId]));
     const lines = data.fields.map((f) => {
       const val = Array.isArray(f.value) ? f.value.join(", ") : f.value;
       return `${f.label}: ${val}`;
     });
-    sendMessage({ text: `[${data.theme}]\n${lines.join("\n")}` });
+    sendMessage(
+      { text: `[${data.theme}]\n${lines.join("\n")}` },
+      {
+        body: {
+          ...(projectIdRef.current ? { projectId: projectIdRef.current } : {}),
+        },
+      },
+    );
   }
 
+  function loadExample() {
+    sendMessage({
+      text: EXAMPLE,
+    });
+  }
   const isStreaming = status === "submitted" || status === "streaming";
   const hasStarted = messages.length > 0;
 
   return (
     <div className="mb-7 flex flex-col gap-0 rounded-xl border border-[#1e1e2e] bg-[#0d0d1a]">
       {/* Conversation area */}
-      {hasStarted && (
-        <Conversation className="max-h-125 min-h-30">
-          <ConversationContent className="gap-4 p-5">
-            {messages.map((msg) => (
-              <Message key={msg.id} from={msg.role}>
-                <MessageContent>
-                  {msg.role === "user" &&
-                    msg.parts
-                      .filter((p) => p.type === "text" && "text" in p)
-                      .map((p, i) => (
-                        <span key={i} className="text-sm text-[#c0c0d8]">
-                          {(p as any).text}
-                        </span>
-                      ))}
+      {/* {hasStarted && ( */}
+      <Conversation className="max-h-125 min-h-30 overflow-auto">
+        <ConversationContent className="gap-4 p-5">
+          {messages.map((msg) => (
+            <Message key={msg.id} from={msg.role}>
+              <MessageContent>
+                {msg.role === "user" &&
+                  msg.parts
+                    .filter((p) => p.type === "text" && "text" in p)
+                    .map((p, i) => (
+                      <span key={i} className="text-sm text-[#c0c0d8]">
+                        {(p as any).text}
+                      </span>
+                    ))}
 
-                  {msg.role === "assistant" &&
-                    msg.parts.map((part, i) => {
-                      // Text
-                      if (part.type === "text" && "text" in part) {
-                        const text = (part as any).text as string;
-                        if (!text.trim()) return null;
+                {msg.role === "assistant" &&
+                  msg.parts.map((part, i) => {
+                    if (isToolUIPart(part)) {
+                      console.log(part);
+                      const dp = part as ToolUIPart;
+                      if (dp.type !== "tool-render_form") return null;
+                      if (dp.state === "input-streaming") {
                         return (
-                          <MessageResponse key={i}>{text}</MessageResponse>
-                        );
-                      }
-
-                      // render_form tool
-                      if (part.type === "dynamic-tool") {
-                        const dp = part as DynamicToolUIPart;
-                        if (dp.toolName !== "render_form") return null;
-
-                        if (dp.state === "input-streaming") {
-                          return (
-                            <div
-                              key={i}
-                              className="h-20 animate-pulse rounded-lg bg-[#1e1e2e]"
-                            />
-                          );
-                        }
-
-                        const form = dp.input as RenderFormInput;
-                        if (!form?.fields) return null;
-
-                        if (submittedFormIds.has(dp.toolCallId)) {
-                          return (
-                            <p
-                              key={i}
-                              className="font-mono text-[10px] tracking-widest text-[#4ade80]"
-                            >
-                              ✓ {form.theme}
-                            </p>
-                          );
-                        }
-
-                        return (
-                          <DynamicForm
+                          <div
                             key={i}
-                            form={form}
-                            onSubmit={(data) =>
-                              handleFormSubmit(dp.toolCallId, data)
-                            }
-                            disabled={isStreaming}
+                            className="h-20 animate-pulse rounded-lg bg-[#1e1e2e]"
                           />
                         );
                       }
 
-                      return null;
-                    })}
-                </MessageContent>
-              </Message>
-            ))}
+                      const form = dp.input as RenderFormInput;
+                      console.log();
+                      if (!form?.fields) return null;
 
-            {isStreaming && (
-              <Message from="assistant">
-                <MessageContent>
-                  <span className="flex gap-1">
-                    {[0, 1, 2].map((i) => (
-                      <span
-                        key={i}
-                        className="inline-block h-1 w-1 animate-pulse rounded-full bg-[#6c63ff]"
-                        style={{ animationDelay: `${i * 0.2}s` }}
-                      />
-                    ))}
-                  </span>
-                </MessageContent>
-              </Message>
-            )}
-          </ConversationContent>
-        </Conversation>
-      )}
+                      if (submittedFormIds.has(dp.toolCallId)) {
+                        return (
+                          <p
+                            key={i}
+                            className="font-mono text-[10px] tracking-widest text-[#4ade80]"
+                          >
+                            ✓ {form.theme}
+                          </p>
+                        );
+                      }
+
+                      return (
+                        <DynamicForm
+                          key={i}
+                          form={form}
+                          onSubmit={(data) =>
+                            handleFormSubmit(dp.toolCallId, data)
+                          }
+                          disabled={isStreaming}
+                        />
+                      );
+                    }
+                    // Text
+                    if (part.type === "text" && "text" in part) {
+                      const text = (part as any).text as string;
+                      if (!text.trim()) return null;
+                      return <MessageResponse key={i}>{text}</MessageResponse>;
+                    }
+
+                    // render_form tool
+
+                    return null;
+                  })}
+              </MessageContent>
+            </Message>
+          ))}
+
+          {isStreaming && (
+            <Message from="assistant">
+              <MessageContent>
+                <span className="flex gap-1">
+                  {[0, 1, 2].map((i) => (
+                    <span
+                      key={i}
+                      className="inline-block h-1 w-1 animate-pulse rounded-full bg-[#6c63ff]"
+                      style={{ animationDelay: `${i * 0.2}s` }}
+                    />
+                  ))}
+                </span>
+              </MessageContent>
+            </Message>
+          )}
+        </ConversationContent>
+      </Conversation>
+      {/* )} */}
 
       {/* Initial prompt input — shown before the conversation starts */}
-      {!hasStarted && (
-        <PromptInput
-          className="border-0 bg-transparent shadow-none"
-          onSubmit={({ text }) => {
-            if (text.trim()) sendMessage({ text });
-          }}
-        >
-          <PromptInputTextarea
-            placeholder="Décrivez votre projet en quelques mots..."
-            className="bg-transparent placeholder:text-white"
-            disabled={isStreaming}
+
+      <PromptInput
+        className="border-0 bg-transparent shadow-none"
+        onSubmit={({ text }) => {
+          if (text.trim()) sendMessage({ text });
+        }}
+      >
+        <PromptInputTextarea
+          placeholder="Décrivez votre projet en quelques mots..."
+          className="bg-transparent placeholder:text-white"
+          disabled={isStreaming}
+        />
+        <PromptInputFooter>
+          <div className="font-mono text-[10px] tracking-widest text-[#3a3a5a]">
+            DISCOVERY
+          </div>
+          <Button type="button" onClick={loadExample}>
+            LOAD EXAMPLE
+          </Button>
+          <PromptInputSubmit
+            status={status}
+            onStop={() => {}}
+            className="bg-[#6c63ff] text-white hover:bg-[#5a54e0]"
           />
-          <PromptInputFooter>
-            <div className="font-mono text-[10px] tracking-widest text-[#3a3a5a]">
-              DISCOVERY
-            </div>
-            <PromptInputSubmit
-              status={status}
-              onStop={() => {}}
-              className="bg-[#6c63ff] text-white hover:bg-[#5a54e0]"
-            />
-          </PromptInputFooter>
-        </PromptInput>
-      )}
+        </PromptInputFooter>
+      </PromptInput>
     </div>
   );
 }

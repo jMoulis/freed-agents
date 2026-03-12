@@ -91,15 +91,13 @@ export default function Home() {
         {error && <div style={S.errorBox}>✕ {error}</div>}
 
         {/* Discovery phase */}
-        {phase === "discovery" && (
-          <DiscoveryChat onComplete={handleDiscoveryComplete} />
-        )}
+        {/* {phase === "discovery" && ( */}
+        <DiscoveryChat onComplete={handleDiscoveryComplete} />
+        {/* )} */}
 
         {/* Running phase */}
         {phase === "running" && (
-          <div style={S.awaiting}>
-            Analyse en cours...
-          </div>
+          <div style={S.awaiting}>Analyse en cours...</div>
         )}
 
         {/* Results */}

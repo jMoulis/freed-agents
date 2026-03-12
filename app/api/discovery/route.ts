@@ -9,16 +9,19 @@
  * Header: x-project-id — pass back on subsequent requests
  */
 
-import { streamText, tool, stepCountIs } from "ai";
+import {
+  streamText,
+  tool,
+  stepCountIs,
+  UIMessage,
+  convertToModelMessages,
+} from "ai";
 import { createAnthropic } from "@ai-sdk/anthropic";
 import { z } from "zod";
 import { nanoid } from "nanoid";
 import { NextRequest } from "next/server";
-import { createContext } from "@/lib/context";
-import {
-  discoveryAgentConfig,
-  renderFormTool,
-} from "@/agents/discovery";
+import { discoveryStore } from "@/lib/discovery-store";
+import { discoveryAgentConfig, renderFormTool } from "@/agents/discovery";
 
 // ─── TensionInput schema (mirrors core/types.ts TensionInput) ─────────────────
 
@@ -41,19 +44,21 @@ const TensionInputSchema = z.object({
 // ─── Route ────────────────────────────────────────────────────────────────────
 
 export async function POST(req: NextRequest) {
-  const { messages, projectId: existingId } = await req.json();
+  const { messages, projectId: existingId } = (await req.json()) as {
+    messages: UIMessage[];
+    projectId: string;
+  };
 
   const projectId = existingId ?? `proj-${nanoid(8)}`;
 
-  const ctx = createContext({
-    anthropicApiKey: process.env.ANTHROPIC_API_KEY!,
-    storeMode: "memory",
-  });
-
   // Init store on first message
   if (!existingId) {
-    const firstMessage = messages[messages.length - 1]?.content ?? "";
-    await ctx.store.create(projectId, String(firstMessage));
+    const firstMessage = messages[messages.length - 1];
+    const text = firstMessage?.parts
+      ?.filter((p): p is { type: "text"; text: string } => p.type === "text")
+      .map((p) => p.text)
+      .join("") ?? "";
+    await discoveryStore.create(projectId, text);
   }
 
   // ── Field tools ────────────────────────────────────────────────
@@ -61,7 +66,7 @@ export async function POST(req: NextRequest) {
     description:
       "Read the current epistemic field. Call this to check what has already been inferred about this client.",
     inputSchema: z.object({}),
-    execute: async () => ctx.store.snapshot(projectId),
+    execute: async () => discoveryStore.snapshot(projectId),
   });
 
   const updateFieldTool = tool({
@@ -69,7 +74,7 @@ export async function POST(req: NextRequest) {
       "Write a tension to the epistemic field. Call this after each form submission to record what you learned.",
     inputSchema: TensionInputSchema,
     execute: async (input) =>
-      ctx.store.upsertTensions(projectId, [input], "dynamic"),
+      discoveryStore.upsertTensions(projectId, [input], "dynamic"),
   });
 
   // ── Stream ─────────────────────────────────────────────────────
@@ -80,7 +85,7 @@ export async function POST(req: NextRequest) {
   const result = streamText({
     model: anthropic(discoveryAgentConfig.model.modelId),
     system: discoveryAgentConfig.system,
-    messages,
+    messages: await convertToModelMessages(messages),
     tools: {
       read_field: readFieldTool,
       update_field: updateFieldTool,
