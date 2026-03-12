@@ -23,7 +23,11 @@
 import { createAnthropic } from "@ai-sdk/anthropic";
 import { createXai } from "@ai-sdk/xai";
 import { LanguageModel } from "ai";
-import { InMemoryOntoStore, IOntoStore } from "@/core/onto-store";
+import {
+  InMemoryOntoStore,
+  MongoOntoStore,
+  IOntoStore,
+} from "@/core/onto-store";
 
 // ═══════════════════════════════════════════════════════════════
 // CONFIG — ce que la route API fournit
@@ -93,15 +97,20 @@ export interface RunContext {
 // FACTORY — appelée uniquement depuis les routes API
 // ═══════════════════════════════════════════════════════════════
 
+declare global {
+  var __mongoOntoStore: MongoOntoStore | undefined;
+}
+if (!global.__mongoOntoStore) {
+  global.__mongoOntoStore = new MongoOntoStore();
+}
+
 export function createContext(config: ContextConfig): RunContext {
   const models = new ModelRegistry(config);
 
   const store: IOntoStore =
     config.store ??
     (config.storeMode === "mongo"
-      ? (() => {
-          throw new Error("MongoOntoStore not yet wired");
-        })()
+      ? global.__mongoOntoStore!
       : new InMemoryOntoStore());
 
   return { models, store };

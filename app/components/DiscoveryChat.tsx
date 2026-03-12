@@ -100,7 +100,6 @@ export function DiscoveryChat({ onComplete }: Props) {
         .filter(Boolean)
         .join("\n\n");
 
-      console.log(brief);
       const timer = setTimeout(() => onComplete(projectId, brief), 1500);
       return () => {
         console.log(messages);
@@ -109,6 +108,7 @@ export function DiscoveryChat({ onComplete }: Props) {
     }
   }, [status, messages, projectId, onComplete]);
 
+  // console.log(messages);
   function handleFormSubmit(toolCallId: string, data: DynamicFormData) {
     setSubmittedFormIds((prev) => new Set([...prev, toolCallId]));
     const lines = data.fields.map((f) => {

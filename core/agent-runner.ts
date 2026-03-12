@@ -67,7 +67,6 @@ function buildFieldTools(
         "Read the current epistemic field. Call this first to understand what previous agents have decided and what tensions remain open.",
       inputSchema: z.object({}),
       execute: async () => {
-        console.log(projectId);
         return store.snapshot(projectId);
       },
     }),
@@ -79,12 +78,6 @@ function buildFieldTools(
         tensions: z.array(TensionInputSchema),
       }),
       execute: async ({ tensions }: { tensions: TensionInput[] }) => {
-        console.log("UPDATEFIELD");
-        console.log(
-          inspect(tensions, {
-            depth: null,
-          }),
-        );
         tensionsWritten.push(...tensions);
         const snapshot = await store.upsertTensions(projectId, tensions, role);
         return snapshot;
@@ -140,6 +133,7 @@ export async function runAgent<T = unknown>(
   let output: T;
   let reasoning_raw: string | null = null;
   let usage = { inputTokens: 0, outputTokens: 0 };
+  let finish_reason = "unknown";
 
   if (config.method === "generateObject") {
     if (!config.outputSchema) {
@@ -167,6 +161,7 @@ export async function runAgent<T = unknown>(
     });
     output = result.output as T;
     reasoning_raw = extractReasoning(result.steps ?? []);
+    finish_reason = result.finishReason ?? "unknown";
     usage = {
       inputTokens: result.totalUsage?.inputTokens ?? 0,
       outputTokens: result.totalUsage?.outputTokens ?? 0,
@@ -186,6 +181,7 @@ export async function runAgent<T = unknown>(
     });
     output = result.text as T;
     reasoning_raw = extractReasoning(result.steps ?? []);
+    finish_reason = result.finishReason ?? "unknown";
     usage = {
       inputTokens: result.totalUsage?.inputTokens ?? 0,
       outputTokens: result.totalUsage?.outputTokens ?? 0,
@@ -200,5 +196,6 @@ export async function runAgent<T = unknown>(
     tensions_written: tensionsWritten,
     usage,
     duration_ms: Date.now() - startedAt,
+    finish_reason,
   };
 }

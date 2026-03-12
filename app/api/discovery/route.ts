@@ -20,7 +20,7 @@ import { createAnthropic } from "@ai-sdk/anthropic";
 import { z } from "zod";
 import { nanoid } from "nanoid";
 import { NextRequest } from "next/server";
-import { discoveryStore } from "@/lib/discovery-store";
+import { createContext } from "@/lib/context";
 import { discoveryAgentConfig, renderFormTool } from "@/agents/discovery";
 
 // ─── TensionInput schema (mirrors core/types.ts TensionInput) ─────────────────
@@ -51,7 +51,12 @@ export async function POST(req: NextRequest) {
 
   const projectId = existingId ?? `proj-${nanoid(8)}`;
 
-  console.log("ExistingProjectId", existingId);
+  const ctx = createContext({
+    anthropicApiKey: process.env.ANTHROPIC_API_KEY!,
+    mongoUri: process.env.MONGODB_URI,
+    storeMode: (process.env.FIELD_STORE as "memory" | "mongo") ?? "memory",
+  });
+
   // Init store on first message
   if (!existingId) {
     const firstMessage = messages[messages.length - 1];
@@ -60,7 +65,7 @@ export async function POST(req: NextRequest) {
         ?.filter((p): p is { type: "text"; text: string } => p.type === "text")
         .map((p) => p.text)
         .join("") ?? "";
-    await discoveryStore.create(projectId, text);
+    await ctx.store.create(projectId, text);
   }
 
   // ── Field tools ────────────────────────────────────────────────
@@ -68,7 +73,9 @@ export async function POST(req: NextRequest) {
     description:
       "Read the current epistemic field. Call this to check what has already been inferred about this client.",
     inputSchema: z.object({}),
-    execute: async () => discoveryStore.snapshot(projectId),
+    execute: async () => {
+      return ctx.store.snapshot(projectId);
+    },
   });
 
   const updateFieldTool = tool({
@@ -76,7 +83,7 @@ export async function POST(req: NextRequest) {
       "Write a tension to the epistemic field. Call this after each form submission to record what you learned.",
     inputSchema: TensionInputSchema,
     execute: async (input) =>
-      discoveryStore.upsertTensions(projectId, [input], "dynamic"),
+      ctx.store.upsertTensions(projectId, [input], "dynamic"),
   });
 
   // ── Stream ─────────────────────────────────────────────────────

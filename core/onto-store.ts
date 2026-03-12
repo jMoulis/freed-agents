@@ -19,11 +19,12 @@ import {
   SituatedKnowledge,
   Confidence,
   Equilibrium,
-  OntoBuilder,
   OntoEngine,
   Doubt,
   ResolutionPath,
+  PerspectiveView,
 } from "@/lib/onto/onto-engine";
+import { getDb } from "@/lib/mongodb";
 
 import { AgentRole, TensionInput } from "@/core/types";
 
@@ -142,7 +143,12 @@ function fieldToSnapshot(
   eq: Equilibrium,
 ): FieldSnapshot {
   const tensions = [...field.tensions.values()].map((t) => {
-    const resolution = eq.resolved.get(t.id);
+    const isPreEquilibrated = t.state.phase === "equilibrated";
+
+    const preResolution =
+      t.state.phase === "equilibrated" ? t.state.result : undefined;
+    const resolution = eq.resolved.get(t.id) ?? preResolution;
+
     const state = resolution
       ? "resolved"
       : eq.partial.has(t.id)
@@ -174,7 +180,9 @@ function fieldToSnapshot(
     };
   });
 
-  const resolvedCount = eq.resolved.size;
+  const resolvedCount = [...field.tensions.values()].filter(
+    (t) => eq.resolved.has(t.id) || t.state.phase === "equilibrated",
+  ).length;
   const partialCount = eq.partial.size;
   const blockedCount = eq.blocked.size;
   const resistingCount = eq.resisting.size;
@@ -222,12 +230,12 @@ export class InMemoryOntoStore implements IOntoStore {
 
   private getField(projectId: string): Field {
     const field = this.fields.get(projectId);
-    console.log("GetField", projectId, field);
     if (!field) throw new Error(`No field for project: ${projectId}`);
     return field;
   }
 
   async snapshot(projectId: string): Promise<FieldSnapshot> {
+    console.log("MEMORY?");
     const field = this.getField(projectId);
     const eq = this.engine.equilibrate(field);
     return fieldToSnapshot(projectId, field, eq);
@@ -258,13 +266,25 @@ export class InMemoryOntoStore implements IOntoStore {
       const tension = inputToTension(input, by);
       field.tensions.set(tension.id, tension);
     }
-
+    // DEBUG
+    console.log("=== EQUILIBRATION TRACE ===");
     const eq = this.engine.equilibrate(field);
+    for (const step of eq.trace) {
+      console.log(`[pass ${step.pass}] ${step.action} — ${step.note ?? ""}`);
+    }
+    console.log("=== RESOLVED ===", [...eq.resolved.keys()]);
+    console.log("=== RESISTING ===", [...eq.resisting.entries()]);
+    console.log("=== PARTIAL ===", [...eq.partial.keys()]);
+    console.log("=== CONFLICTS ===", eq.conflicts);
+
+    // console.log(renderEquilibrium(eq));
     return fieldToSnapshot(projectId, field, eq);
   }
 
   async equilibrate(projectId: string): Promise<Equilibrium> {
     const field = this.getField(projectId);
+    const equilibrium = this.engine.equilibrate(field);
+
     return this.engine.equilibrate(field);
   }
 
@@ -274,38 +294,171 @@ export class InMemoryOntoStore implements IOntoStore {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// MONGO IMPLEMENTATION — Phase 2 (stub)
+// MONGO SERIALIZATION HELPERS
 // ═══════════════════════════════════════════════════════════════
 
+type SerializedTension = Omit<Tension, "knows"> & {
+  knows: [string, SituatedKnowledge][];
+};
+
+type SerializedPerspective = Omit<PerspectiveView, "knows"> & {
+  knows: [string, SituatedKnowledge][];
+};
+
+interface SerializedField {
+  tensions: [string, SerializedTension][];
+  sharedKnowledge: [string, SituatedKnowledge][];
+  perspectives: [string, SerializedPerspective][];
+}
+
+interface ProjectDoc {
+  projectId: string;
+  field: SerializedField;
+  ownership: Record<string, string>; // tensionId → AgentRole
+  updatedAt: Date;
+}
+
+function serializeTension(t: Tension): SerializedTension {
+  return { ...t, knows: [...t.knows.entries()] };
+}
+
+function deserializeTension(s: SerializedTension): Tension {
+  return {
+    ...s,
+    knows: new Map(s.knows) as Map<KnowledgeId, SituatedKnowledge>,
+  };
+}
+
+function serializeField(f: Field): SerializedField {
+  return {
+    tensions: [...f.tensions.entries()].map(([k, v]) => [
+      k,
+      serializeTension(v),
+    ]),
+    sharedKnowledge: [...f.sharedKnowledge.entries()],
+    perspectives: [...f.perspectives.entries()].map(([k, v]) => [
+      k,
+      { ...v, knows: [...v.knows.entries()] },
+    ]),
+  };
+}
+
+function deserializeField(s: SerializedField): Field {
+  return {
+    tensions: new Map(
+      s.tensions.map(([k, v]) => [k as TensionId, deserializeTension(v)]),
+    ),
+    sharedKnowledge: new Map(s.sharedKnowledge) as Map<
+      KnowledgeId,
+      SituatedKnowledge
+    >,
+    perspectives: new Map(
+      s.perspectives.map(([k, v]) => [
+        k,
+        {
+          ...v,
+          knows: new Map(v.knows) as Map<KnowledgeId, SituatedKnowledge>,
+        },
+      ]),
+    ),
+  };
+}
+
+// ═══════════════════════════════════════════════════════════════
+// MONGO IMPLEMENTATION
+// ═══════════════════════════════════════════════════════════════
+
+const DB_NAME = "freed-agents";
+const COLLECTION = "freed_agents_projects";
+
 export class MongoOntoStore implements IOntoStore {
-  constructor(_mongoDb: unknown) {
-    // TODO Phase 2: wire onto-persistence.ts + onto-mongo-store.ts
-    console.warn(
-      "[MongoOntoStore] not yet wired — falling back should be handled by createStore()",
+  private engine = new OntoEngine();
+  private ownershipCache = new Map<string, AgentRole>();
+
+  private async col() {
+    const db = await getDb(DB_NAME);
+    return db.collection<ProjectDoc>(COLLECTION);
+  }
+
+  private async loadProject(
+    projectId: string,
+  ): Promise<{ field: Field; ownership: Record<string, string> }> {
+    const col = await this.col();
+    const doc = await col.findOne({ projectId });
+    if (!doc) throw new Error(`No field for project: ${projectId}`);
+    for (const [tensionId, role] of Object.entries(doc.ownership)) {
+      this.ownershipCache.set(`${projectId}:${tensionId}`, role as AgentRole);
+    }
+    return { field: deserializeField(doc.field), ownership: doc.ownership };
+  }
+
+  async create(projectId: string, _brief: string): Promise<void> {
+    const col = await this.col();
+    const emptyField: SerializedField = {
+      tensions: [],
+      sharedKnowledge: [],
+      perspectives: [],
+    };
+    await col.replaceOne(
+      { projectId },
+      { projectId, field: emptyField, ownership: {}, updatedAt: new Date() },
+      { upsert: true },
     );
+    for (const key of this.ownershipCache.keys()) {
+      if (key.startsWith(`${projectId}:`)) this.ownershipCache.delete(key);
+    }
   }
 
-  async create(_projectId: string, _brief: string): Promise<void> {
-    throw new Error("MongoOntoStore not yet implemented");
-  }
-
-  async snapshot(_projectId: string): Promise<FieldSnapshot> {
-    throw new Error("MongoOntoStore not yet implemented");
+  async snapshot(projectId: string): Promise<FieldSnapshot> {
+    const { field } = await this.loadProject(projectId);
+    const eq = this.engine.equilibrate(field);
+    return fieldToSnapshot(projectId, field, eq);
   }
 
   async upsertTensions(
-    _projectId: string,
-    _inputs: TensionInput[],
-    _by: AgentRole,
+    projectId: string,
+    inputs: TensionInput[],
+    by: AgentRole,
   ): Promise<FieldSnapshot> {
-    throw new Error("MongoOntoStore not yet implemented");
+    const col = await this.col();
+    const { field, ownership } = await this.loadProject(projectId);
+
+    for (const input of inputs) {
+      const existingOwner = ownership[input.id];
+      if (existingOwner && existingOwner !== by) {
+        throw new Error(
+          `Agent '${by}' cannot overwrite tension '${input.id}' owned by '${existingOwner}'. ` +
+            `Use a namespaced id like '${by}_challenge_${input.id}' instead.`,
+        );
+      }
+      if (!existingOwner) {
+        ownership[input.id] = by;
+        this.ownershipCache.set(`${projectId}:${input.id}`, by);
+      }
+      const tension = inputToTension(input, by);
+      field.tensions.set(tension.id, tension);
+    }
+
+    const eq = this.engine.equilibrate(field);
+    await col.replaceOne(
+      { projectId },
+      {
+        projectId,
+        field: serializeField(field),
+        ownership,
+        updatedAt: new Date(),
+      },
+      { upsert: true },
+    );
+    return fieldToSnapshot(projectId, field, eq);
   }
 
-  async equilibrate(_projectId: string): Promise<Equilibrium> {
-    throw new Error("MongoOntoStore not yet implemented");
+  async equilibrate(projectId: string): Promise<Equilibrium> {
+    const { field } = await this.loadProject(projectId);
+    return this.engine.equilibrate(field);
   }
 
-  getOwner(_projectId: string, _tensionId: string): AgentRole | undefined {
-    throw new Error("MongoOntoStore not yet implemented");
+  getOwner(projectId: string, tensionId: string): AgentRole | undefined {
+    return this.ownershipCache.get(`${projectId}:${tensionId}`);
   }
 }

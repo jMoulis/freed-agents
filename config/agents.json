@@ -1,0 +1,54 @@
+{
+  "agents": [
+    {
+      "id": "discovery",
+      "model": "claude-sonnet-4-5",
+      "taskType": "discovery",
+      "behavioral_history": {
+        "sessions": 0,
+        "avg_efficiency": null,
+        "tension_resolution_rate": null
+      }
+    },
+    {
+      "id": "ceo",
+      "model": "claude-sonnet-4-5",
+      "taskType": "mandate",
+      "behavioral_history": {
+        "sessions": 0,
+        "avg_efficiency": null,
+        "tension_resolution_rate": null
+      }
+    },
+    {
+      "id": "cto",
+      "model": "claude-sonnet-4-5",
+      "taskType": "stack",
+      "behavioral_history": {
+        "sessions": 0,
+        "avg_efficiency": null,
+        "tension_resolution_rate": null
+      }
+    },
+    {
+      "id": "architect",
+      "model": "claude-sonnet-4-5",
+      "taskType": "blueprint",
+      "behavioral_history": {
+        "sessions": 0,
+        "avg_efficiency": null,
+        "tension_resolution_rate": null
+      }
+    },
+    {
+      "id": "qa_lead",
+      "model": "claude-sonnet-4-5",
+      "taskType": "audit",
+      "behavioral_history": {
+        "sessions": 0,
+        "avg_efficiency": null,
+        "tension_resolution_rate": null
+      }
+    }
+  ]
+}

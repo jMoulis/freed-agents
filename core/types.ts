@@ -54,6 +54,7 @@ export interface AgentRunResult<T = unknown> {
   tensions_written: TensionInput[];
   usage: { inputTokens: number; outputTokens: number };
   duration_ms: number;
+  finish_reason: string;
 }
 
 // ═══════════════════════════════════════════════════════════════

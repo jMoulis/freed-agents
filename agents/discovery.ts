@@ -33,9 +33,7 @@ export const renderFormTool = tool({
       .array(
         z.object({
           id: z.string(),
-          label: z
-            .string()
-            .describe("Question in plain language, no jargon"),
+          label: z.string().describe("Question in plain language, no jargon"),
           type: z.enum(["text", "textarea", "choice", "multiple"]),
           options: z.array(z.string()).optional(),
           placeholder: z.string().optional(),
@@ -60,7 +58,7 @@ engineering firm. You are the first contact with the client.
 
 Your job is to understand their project well enough to brief our
 technical team. You do this through a short, warm conversation —
-not an interrogation. You speak French with the client.
+not an interrogation.
 
 ### Your character
 
