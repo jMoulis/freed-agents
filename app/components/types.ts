@@ -16,8 +16,8 @@ export interface AgentUsage {
 
 export interface RunResult {
   projectId: string;
-  ceo: {
-    mandate: {
+  ceo?: {
+    mandate?: {
       title: string;
       description: string;
       target_users: string[];
@@ -28,68 +28,68 @@ export interface RunResult {
       estimated_complexity: string;
     };
     tensions_written: number;
-    usage: AgentUsage;
+    usage?: AgentUsage;
     duration_ms: number;
   };
-  cto: {
+  cto?: {
     proposal: unknown;
     tensions_written: number;
-    usage: AgentUsage;
+    usage?: AgentUsage;
     duration_ms: number;
   };
-  architect: {
-    blueprint: {
+  architect?: {
+    blueprint?: {
       summary: string;
-      components: Array<{
+      components?: Array<{
         name: string;
         type: "frontend" | "backend" | "database" | "integration" | "infra";
         responsibility: string;
         depends_on: string[];
         confidence: number;
       }>;
-      data_model: Array<{
+      data_model?: Array<{
         entity: string;
         fields: string[];
         relations: string[];
         notes: string;
         confidence: number;
       }>;
-      api_contracts: Array<{
+      api_contracts?: Array<{
         endpoint: string;
         method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
         purpose: string;
         auth: string;
         confidence: number;
       }>;
-      risks: Array<{
+      risks?: Array<{
         area: string;
         description: string;
         mitigation: string;
         severity: "low" | "medium" | "high" | "blocking";
       }>;
-      blockers: Array<{
+      blockers?: Array<{
         decision: string;
         blocked_by: string;
       }>;
     };
     tensions_written: number;
-    usage: AgentUsage;
+    usage?: AgentUsage;
     duration_ms: number;
   };
-  qa: {
-    audit: {
+  qa?: {
+    audit?: {
       verdict: "green" | "yellow" | "red";
       verdict_rationale: string;
-      inconsistencies: Array<{
+      inconsistencies?: Array<{
         between: string[];
         description: string;
         severity: "low" | "medium" | "blocking";
       }>;
-      false_blockers: Array<{
+      false_blockers?: Array<{
         tension_id: string;
         reason: string;
       }>;
-      scope_reality_check: {
+      scope_reality_check?: {
         assessment: string;
         budget_vs_scope:
           | "aligned"
@@ -98,17 +98,17 @@ export interface RunResult {
           | "unknown";
         confidence: number;
       };
-      discovery_questions: Array<{
+      discovery_questions?: Array<{
         question: string;
         unblocks: string[];
         priority: "critical" | "high" | "medium";
       }>;
     };
     tensions_written: number;
-    usage: AgentUsage;
+    usage?: AgentUsage;
     duration_ms: number;
   };
-  field: {
+  field?: {
     globalConfidence: number;
     summary: string;
     tensions: TensionSeed[];

@@ -48,14 +48,14 @@ export default function Home() {
     : [];
 
   const totalTokens = result
-    ? (result.ceo.usage.inputTokens ?? 0) +
-      (result.ceo.usage.outputTokens ?? 0) +
-      (result.cto.usage.inputTokens ?? 0) +
-      (result.cto.usage.outputTokens ?? 0) +
-      (result.architect.usage.inputTokens ?? 0) +
-      (result.architect.usage.outputTokens ?? 0) +
-      (result.qa.usage.inputTokens ?? 0) +
-      (result.qa.usage.outputTokens ?? 0)
+    ? (result.ceo?.usage?.inputTokens ?? 0) +
+      (result.ceo?.usage?.outputTokens ?? 0) +
+      (result.cto?.usage?.inputTokens ?? 0) +
+      (result.cto?.usage?.outputTokens ?? 0) +
+      (result.architect?.usage?.inputTokens ?? 0) +
+      (result.architect?.usage?.outputTokens ?? 0) +
+      (result.qa?.usage?.inputTokens ?? 0) +
+      (result.qa?.usage?.outputTokens ?? 0)
     : 0;
 
   return (
@@ -118,7 +118,7 @@ export default function Home() {
                 {totalTokens.toLocaleString()} tokens {showTokens ? "▲" : "▼"}
               </button>
               <span>·</span>
-              <span>{result.field.tensions.length} tensions written</span>
+              <span>{result.field?.tensions.length} tensions written</span>
               <span style={S.metaSpacer} />
               <span style={S.metaSuccess}>
                 ✓ {completedAgents.join(" + ")} complete
@@ -151,12 +151,12 @@ export default function Home() {
             )}
 
             <div style={S.grid}>
-              <MandatePanel mandate={result.ceo.mandate} />
+              <MandatePanel mandate={result.ceo?.mandate} />
               <FieldPanel field={result.field} />
             </div>
 
-            <BlueprintPanel blueprint={result.architect.blueprint} />
-            <AuditPanel audit={result.qa.audit} />
+            <BlueprintPanel blueprint={result.architect?.blueprint} />
+            <AuditPanel audit={result.qa?.audit} />
           </div>
         )}
 

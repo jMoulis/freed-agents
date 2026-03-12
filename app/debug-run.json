@@ -1,0 +1,449 @@
+{
+    "projectId": "proj-G_FhPJsj",
+    "ceo": {
+        "mandate": {
+            "title": "HR Onboarding Automation Platform",
+            "description": "A digital onboarding solution for a 50-employee French company to replace manual paper-and-Excel processes. The platform will automate document generation, e-signature workflows, task tracking, and notification systems, reducing onboarding time from 2 weeks to under 3 days while ensuring GDPR compliance.",
+            "target_users": [
+                "HR manager (daily admin: workflow configuration, progress monitoring, document management)",
+                "New employees (document completion, e-signature, task completion)",
+                "Directeur RH (approval and oversight)"
+            ],
+            "core_features": [
+                "Employee onboarding workflow engine with task assignment and progress tracking",
+                "Digital document generation and upload management",
+                "E-signature integration (DocuSign/HelloSign or equivalent)",
+                "Google Workspace integration (SSO, email notifications, calendar)",
+                "Real-time dashboard for HR manager showing onboarding status",
+                "GDPR-compliant employee data capture forms",
+                "Automated email notifications and reminders",
+                "Audit trail for document changes and signatures"
+            ],
+            "success_criteria": [
+                "Onboarding completion time reduced from 14 days to <3 days",
+                "100% elimination of manual email sending and paper documents",
+                "E-signature capture within 24 hours of document send",
+                "HR manager can view real-time status without manual follow-up",
+                "New employee self-service task completion rate >90%",
+                "GDPR-compliant data storage with encryption and access controls",
+                "System handles 10 onboardings/year with zero manual spreadsheet tracking"
+            ],
+            "constraints": [
+                "Budget: €10,000 - €25,000 (development + initial setup)",
+                "Timeline: 3-4 months to operational",
+                "Must integrate with existing Google Workspace infrastructure",
+                "GDPR compliance required (France-based, employee personal data)",
+                "Small team capacity: assumes single full-stack developer + designer",
+                "E-signature SaaS costs: €1k-€3k/year not included in dev budget",
+                "EU-hosted infrastructure required: €50-€200/month ongoing"
+            ],
+            "team_needs": [
+                "Full-stack developer (React/Vue frontend + Node.js/Python backend)",
+                "Google Workspace API integration expertise",
+                "E-signature API integration experience (DocuSign, HelloSign, or similar)",
+                "GDPR-compliant data architecture and security practices",
+                "Document/PDF generation capabilities",
+                "UI/UX designer (part-time for admin dashboards and employee forms)",
+                "French language localization (content and interface)",
+                "Email notification system development"
+            ],
+            "estimated_complexity": "medium",
+            "tensions": [
+                {
+                    "id": "project_scope",
+                    "wants": "Clear engineering definition of what is IN and OUT of scope",
+                    "value": "IN SCOPE: Digital onboarding workflow (task assignment, document generation/upload, e-signature integration, progress tracking dashboard), Google Workspace integration (auth, email notifications), employee data capture form, HR admin interface. OUT OF SCOPE: Full HRIS/payroll system, time tracking, performance management, benefits administration, applicant tracking/recruiting.",
+                    "confidence": 0.85,
+                    "doubts": [
+                        {
+                            "about": "Document template complexity - unclear if documents are simple forms or complex contracts requiring legal review integration",
+                            "severity": "medium",
+                            "blocksPath": [
+                                "architecture",
+                                "integration_selection"
+                            ]
+                        },
+                        {
+                            "about": "E-signature provider not specified - integration complexity varies widely (DocuSign vs simple click-to-sign)",
+                            "severity": "medium",
+                            "blocksPath": [
+                                "architecture",
+                                "cost_estimation"
+                            ]
+                        }
+                    ],
+                    "linkedTo": [
+                        "current_problem",
+                        "objective",
+                        "constraints"
+                    ]
+                },
+                {
+                    "id": "success_criteria",
+                    "wants": "Measurable technical outcomes that define success",
+                    "value": "Onboarding time reduced from 2 weeks to <3 days, 100% digital workflow (zero paper/manual emails), e-signature capture <24h, all employee data stored GDPR-compliant, HR manager can track status real-time, new hires complete onboarding tasks without HR chase-up.",
+                    "confidence": 0.8,
+                    "doubts": [
+                        {
+                            "about": "Baseline metrics not quantified - 'everyone hates it' is subjective. No current NPS or satisfaction data mentioned.",
+                            "severity": "low"
+                        },
+                        {
+                            "about": "Turnover reduction attribution - difficult to measure causality between onboarding tool and turnover within 6 months",
+                            "severity": "medium"
+                        }
+                    ],
+                    "linkedTo": [
+                        "objective",
+                        "current_problem"
+                    ]
+                },
+                {
+                    "id": "team_needs",
+                    "wants": "Technical skills required to build this",
+                    "value": "Full-stack developer (React/Vue + Node.js/Python), Google Workspace API integration experience, document/PDF generation, e-signature API integration (DocuSign/HelloSign/etc), GDPR-compliant data storage, basic UI/UX for admin dashboards, email notification system.",
+                    "confidence": 0.85,
+                    "doubts": [
+                        {
+                            "about": "French language requirement implied but not stated - may need localization expertise",
+                            "severity": "low"
+                        }
+                    ],
+                    "linkedTo": [
+                        "project_scope",
+                        "compliance_data",
+                        "client_context"
+                    ]
+                },
+                {
+                    "id": "estimated_timeline",
+                    "wants": "Rough timeline estimate with rationale",
+                    "value": "10-14 weeks total: 2 weeks discovery/design, 6-8 weeks core development, 2 weeks testing/refinement, 1-2 weeks deployment/training. Assumes single full-stack dev + part-time designer. Fits within 3-4 month constraint.",
+                    "confidence": 0.7,
+                    "doubts": [
+                        {
+                            "about": "Google Workspace integration complexity unknown - could add 1-2 weeks if admin approval/OAuth scopes are restricted",
+                            "severity": "medium",
+                            "blocksPath": [
+                                "architecture",
+                                "timeline_planning"
+                            ]
+                        },
+                        {
+                            "about": "E-signature integration - pre-built library vs custom implementation could swing timeline by 2-3 weeks",
+                            "severity": "medium",
+                            "blocksPath": [
+                                "architecture",
+                                "vendor_selection"
+                            ]
+                        },
+                        {
+                            "about": "Client availability for feedback cycles not discussed - assumes timely review within 48h per iteration",
+                            "severity": "low"
+                        }
+                    ],
+                    "linkedTo": [
+                        "constraints",
+                        "project_scope",
+                        "team_needs"
+                    ]
+                },
+                {
+                    "id": "hidden_scope_risks",
+                    "wants": "Identify implied requirements not explicitly stated",
+                    "value": "GDPR data processing agreement required, data retention/deletion policy, user role management (HR admin vs manager vs employee views), audit trail for document changes, mobile responsiveness likely expected, existing employee data migration from spreadsheets.",
+                    "confidence": 0.65,
+                    "doubts": [
+                        {
+                            "about": "No discussion of existing data migration - 50 employees may have historical records needing import",
+                            "severity": "medium",
+                            "blocksPath": [
+                                "architecture",
+                                "timeline_planning"
+                            ]
+                        },
+                        {
+                            "about": "Multi-tenant needs unclear - single HR manager vs multiple office locations or subsidiaries",
+                            "severity": "low"
+                        },
+                        {
+                            "about": "Document version control/history not mentioned but likely needed for compliance",
+                            "severity": "medium",
+                            "blocksPath": [
+                                "architecture",
+                                "compliance"
+                            ]
+                        }
+                    ],
+                    "linkedTo": [
+                        "project_scope",
+                        "compliance_data",
+                        "current_problem"
+                    ]
+                },
+                {
+                    "id": "budget_feasibility",
+                    "wants": "Engineering assessment of budget adequacy",
+                    "value": "€10k-€25k is feasible for MVP with 1 full-stack dev (8-12 weeks) + designer + e-signature SaaS costs. Upper range allows polish and 1-2 integrations. Lower range requires prioritization and possibly template-based UI.",
+                    "confidence": 0.75,
+                    "doubts": [
+                        {
+                            "about": "E-signature SaaS annual costs not accounted - could consume €1k-€3k/year depending on volume",
+                            "severity": "low"
+                        },
+                        {
+                            "about": "Hosting/infrastructure costs - GDPR-compliant EU hosting adds €50-€200/month",
+                            "severity": "low"
+                        },
+                        {
+                            "about": "Budget includes development only or also maintenance/support? 10 hires/year suggests low ongoing support needs.",
+                            "severity": "medium"
+                        }
+                    ],
+                    "linkedTo": [
+                        "constraints",
+                        "estimated_timeline",
+                        "compliance_data"
+                    ]
+                }
+            ]
+        },
+        "tensions_written": 7,
+        "usage": {
+            "inputTokens": 12597,
+            "outputTokens": 3552
+        },
+        "duration_ms": 60018,
+        "reasoning_raw": null
+    },
+    "field": {
+        "globalConfidence": 0.47692307692307695,
+        "summary": "7 resolved · 1 partial",
+        "tensions": [
+            {
+                "id": "client_context",
+                "wants": "Understanding of the client's sector, team size, and current tools",
+                "state": "resolved",
+                "confidence": 0.9,
+                "value": "Small company (~50 employees), uses Google Workspace, HR-focused, hires ~10 people/year",
+                "doubts": [],
+                "pendingOn": [],
+                "linkedTo": []
+            },
+            {
+                "id": "current_problem",
+                "wants": "Concrete description of what doesn't work and its measurable cost",
+                "state": "resolved",
+                "confidence": 0.9,
+                "value": "Manual onboarding process: emails sent manually, printing documents, chasing signatures, tracking in spreadsheets. Takes ~2 weeks per hire. Process is hated by everyone involved.",
+                "doubts": [],
+                "pendingOn": [],
+                "linkedTo": []
+            },
+            {
+                "id": "constraints",
+                "wants": "Budget range, timeline, existing infrastructure",
+                "state": "resolved",
+                "confidence": 0.9,
+                "value": "Budget: 10 000 € - 25 000 €, Timeline: 3-4 months, Google Workspace infrastructure in place",
+                "doubts": [],
+                "pendingOn": [],
+                "linkedTo": []
+            },
+            {
+                "id": "users",
+                "wants": "Who uses daily and who decides",
+                "state": "resolved",
+                "confidence": 0.9,
+                "value": "HR manager uses daily (sends emails, tracks process), new employees receive documents. Decision maker: directeur RH",
+                "doubts": [],
+                "pendingOn": [],
+                "linkedTo": []
+            },
+            {
+                "id": "compliance_data",
+                "wants": "Sensitive data handling, location, regulations",
+                "state": "resolved",
+                "confidence": 0.9,
+                "value": "France-based, HR documents with employee personal data, GDPR applies",
+                "doubts": [],
+                "pendingOn": [],
+                "linkedTo": []
+            },
+            {
+                "id": "objective",
+                "wants": "What success looks like in 6 months",
+                "state": "resolved",
+                "confidence": 0.9,
+                "value": "Gain de temps, amélioration de qualité de travail des salariés, satisfaction des nouveaux employés et baisse du turn over",
+                "doubts": [],
+                "pendingOn": [],
+                "linkedTo": []
+            },
+            {
+                "id": "project_scope",
+                "wants": "Clear engineering definition of what is IN and OUT of scope",
+                "state": "active",
+                "confidence": 0.1,
+                "value": null,
+                "doubts": [
+                    {
+                        "about": "Document template complexity - unclear if documents are simple forms or complex contracts requiring legal review integration",
+                        "severity": "medium"
+                    },
+                    {
+                        "about": "E-signature provider not specified - integration complexity varies widely (DocuSign vs simple click-to-sign)",
+                        "severity": "medium"
+                    }
+                ],
+                "pendingOn": [],
+                "linkedTo": [
+                    "current_problem",
+                    "objective",
+                    "constraints"
+                ]
+            },
+            {
+                "id": "success_criteria",
+                "wants": "Measurable technical outcomes that define success",
+                "state": "active",
+                "confidence": 0.1,
+                "value": null,
+                "doubts": [
+                    {
+                        "about": "Baseline metrics not quantified - 'everyone hates it' is subjective. No current NPS or satisfaction data mentioned.",
+                        "severity": "low"
+                    },
+                    {
+                        "about": "Turnover reduction attribution - difficult to measure causality between onboarding tool and turnover within 6 months",
+                        "severity": "medium"
+                    }
+                ],
+                "pendingOn": [],
+                "linkedTo": [
+                    "objective",
+                    "current_problem"
+                ]
+            },
+            {
+                "id": "team_needs",
+                "wants": "Technical skills required to build this",
+                "state": "active",
+                "confidence": 0.1,
+                "value": null,
+                "doubts": [
+                    {
+                        "about": "French language requirement implied but not stated - may need localization expertise",
+                        "severity": "low"
+                    }
+                ],
+                "pendingOn": [],
+                "linkedTo": [
+                    "project_scope",
+                    "compliance_data",
+                    "client_context"
+                ]
+            },
+            {
+                "id": "estimated_timeline",
+                "wants": "Rough timeline estimate with rationale",
+                "state": "partial",
+                "confidence": 0.7,
+                "value": "10-14 weeks total: 2 weeks discovery/design, 6-8 weeks core development, 2 weeks testing/refinement, 1-2 weeks deployment/training. Assumes single full-stack dev + part-time designer. Fits within 3-4 month constraint.",
+                "doubts": [
+                    {
+                        "about": "Google Workspace integration complexity unknown - could add 1-2 weeks if admin approval/OAuth scopes are restricted",
+                        "severity": "medium"
+                    },
+                    {
+                        "about": "E-signature integration - pre-built library vs custom implementation could swing timeline by 2-3 weeks",
+                        "severity": "medium"
+                    },
+                    {
+                        "about": "Client availability for feedback cycles not discussed - assumes timely review within 48h per iteration",
+                        "severity": "low"
+                    }
+                ],
+                "pendingOn": [],
+                "linkedTo": [
+                    "constraints",
+                    "project_scope",
+                    "team_needs"
+                ]
+            },
+            {
+                "id": "estimated_complexity",
+                "wants": "Overall complexity assessment with justification",
+                "state": "resolved",
+                "confidence": 0.8,
+                "value": "medium",
+                "doubts": [
+                    {
+                        "about": "Complexity could escalate to 'high' if document workflows require conditional logic or multi-stage approvals",
+                        "severity": "medium"
+                    }
+                ],
+                "pendingOn": [],
+                "linkedTo": [
+                    "project_scope",
+                    "team_needs",
+                    "compliance_data"
+                ]
+            },
+            {
+                "id": "hidden_scope_risks",
+                "wants": "Identify implied requirements not explicitly stated",
+                "state": "active",
+                "confidence": 0.1,
+                "value": null,
+                "doubts": [
+                    {
+                        "about": "No discussion of existing data migration - 50 employees may have historical records needing import",
+                        "severity": "medium"
+                    },
+                    {
+                        "about": "Multi-tenant needs unclear - single HR manager vs multiple office locations or subsidiaries",
+                        "severity": "low"
+                    },
+                    {
+                        "about": "Document version control/history not mentioned but likely needed for compliance",
+                        "severity": "medium"
+                    }
+                ],
+                "pendingOn": [],
+                "linkedTo": [
+                    "project_scope",
+                    "compliance_data",
+                    "current_problem"
+                ]
+            },
+            {
+                "id": "budget_feasibility",
+                "wants": "Engineering assessment of budget adequacy",
+                "state": "active",
+                "confidence": 0.1,
+                "value": null,
+                "doubts": [
+                    {
+                        "about": "E-signature SaaS annual costs not accounted - could consume €1k-€3k/year depending on volume",
+                        "severity": "low"
+                    },
+                    {
+                        "about": "Hosting/infrastructure costs - GDPR-compliant EU hosting adds €50-€200/month",
+                        "severity": "low"
+                    },
+                    {
+                        "about": "Budget includes development only or also maintenance/support? 10 hires/year suggests low ongoing support needs.",
+                        "severity": "medium"
+                    }
+                ],
+                "pendingOn": [],
+                "linkedTo": [
+                    "constraints",
+                    "estimated_timeline",
+                    "compliance_data"
+                ]
+            }
+        ]
+    }
+}

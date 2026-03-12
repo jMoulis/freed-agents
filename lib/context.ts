@@ -20,60 +20,62 @@
  *   }
  */
 
-import { createAnthropic } from '@ai-sdk/anthropic'
-import { createXai } from '@ai-sdk/xai'
-import { LanguageModel } from 'ai'
-import { InMemoryOntoStore, IOntoStore } from '@/core/onto-store'
+import { createAnthropic } from "@ai-sdk/anthropic";
+import { createXai } from "@ai-sdk/xai";
+import { LanguageModel } from "ai";
+import { InMemoryOntoStore, IOntoStore } from "@/core/onto-store";
 
 // ═══════════════════════════════════════════════════════════════
 // CONFIG — ce que la route API fournit
 // ═══════════════════════════════════════════════════════════════
 
-export type StoreMode = 'memory' | 'mongo'
+export type StoreMode = "memory" | "mongo";
 
 export interface ContextConfig {
-  anthropicApiKey: string
-  xaiApiKey?: string
-  mongoUri?: string
-  storeMode?: StoreMode
+  anthropicApiKey: string;
+  xaiApiKey?: string;
+  mongoUri?: string;
+  storeMode?: StoreMode;
+  store?: IOntoStore; // ← ajouter
 }
 
 // ═══════════════════════════════════════════════════════════════
 // MODEL REGISTRY — résout un modèle sans accéder à process.env
 // ═══════════════════════════════════════════════════════════════
 
-export type ModelProvider = 'anthropic' | 'xai'
+export type ModelProvider = "anthropic" | "xai";
 
 export interface ModelRef {
-  provider: ModelProvider
-  modelId: string
+  provider: ModelProvider;
+  modelId: string;
 }
 
 export class ModelRegistry {
-  private anthropic: ReturnType<typeof createAnthropic> | null = null
-  private xai: ReturnType<typeof createXai> | null = null
+  private anthropic: ReturnType<typeof createAnthropic> | null = null;
+  private xai: ReturnType<typeof createXai> | null = null;
 
   constructor(private config: ContextConfig) {
     if (config.anthropicApiKey) {
-      this.anthropic = createAnthropic({ apiKey: config.anthropicApiKey })
+      this.anthropic = createAnthropic({ apiKey: config.anthropicApiKey });
     }
     if (config.xaiApiKey) {
-      this.xai = createXai({ apiKey: config.xaiApiKey })
+      this.xai = createXai({ apiKey: config.xaiApiKey });
     }
   }
 
   resolve(ref: ModelRef): LanguageModel {
     switch (ref.provider) {
-      case 'anthropic': {
-        if (!this.anthropic) throw new Error('Anthropic API key not configured')
-        return this.anthropic(ref.modelId)
+      case "anthropic": {
+        if (!this.anthropic)
+          throw new Error("Anthropic API key not configured");
+        return this.anthropic(ref.modelId);
       }
-      case 'xai': {
-        if (!this.xai) throw new Error('xAI API key not configured')
-        return this.xai.chat(ref.modelId)
+      case "xai": {
+        if (!this.xai) throw new Error("xAI API key not configured");
+        return this.xai.chat(ref.modelId);
       }
       default:
-        throw new Error(`Unknown provider: ${(ref as any).provider}`)
+        throw new Error(`Unknown provider: ${(ref as any).provider}`);
     }
   }
 }
@@ -83,8 +85,8 @@ export class ModelRegistry {
 // ═══════════════════════════════════════════════════════════════
 
 export interface RunContext {
-  models: ModelRegistry
-  store: IOntoStore
+  models: ModelRegistry;
+  store: IOntoStore;
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -92,19 +94,15 @@ export interface RunContext {
 // ═══════════════════════════════════════════════════════════════
 
 export function createContext(config: ContextConfig): RunContext {
-  const models = new ModelRegistry(config)
+  const models = new ModelRegistry(config);
 
-  let store: IOntoStore
+  const store: IOntoStore =
+    config.store ??
+    (config.storeMode === "mongo"
+      ? (() => {
+          throw new Error("MongoOntoStore not yet wired");
+        })()
+      : new InMemoryOntoStore());
 
-  if (config.storeMode === 'mongo') {
-    if (!config.mongoUri) {
-      throw new Error('MONGODB_URI required when storeMode is "mongo"')
-    }
-    console.warn('[RunContext] MongoOntoStore not yet wired — falling back to InMemory')
-    store = new InMemoryOntoStore()
-  } else {
-    store = new InMemoryOntoStore()
-  }
-
-  return { models, store }
+  return { models, store };
 }

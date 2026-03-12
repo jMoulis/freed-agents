@@ -116,7 +116,7 @@ function inputToTension(input: TensionInput, by: AgentRole): Tension {
 
   const knowledge = new Map<KnowledgeId, SituatedKnowledge>();
   if (input.value !== undefined && input.value !== null) {
-    knowledge.set("value" as KnowledgeId, {
+    knowledge.set(input.id as KnowledgeId, {
       value: input.value,
       origin: { source: by, timestamp: Date.now(), method: "asserted" },
       confidence,
@@ -229,7 +229,6 @@ export class InMemoryOntoStore implements IOntoStore {
 
   async snapshot(projectId: string): Promise<FieldSnapshot> {
     const field = this.getField(projectId);
-    console.log("GetField", projectId, field);
     const eq = this.engine.equilibrate(field);
     return fieldToSnapshot(projectId, field, eq);
   }

@@ -46,22 +46,16 @@ export async function POST(req: NextRequest) {
       xaiApiKey: process.env.XAI_API_KEY,
       mongoUri: process.env.MONGODB_URI,
       storeMode: (process.env.FIELD_STORE as "memory" | "mongo") ?? "memory",
+      store: existingId ? discoveryStore : undefined, // ← inject ici
     });
 
     // ── Initialise le projet ───────────────────────────────────
     const projectId = existingId ?? `proj-${nanoid(8)}`;
     console.log(projectId);
-    let isNewStore = false;
-    if (existingId) {
-      // Discovery already populated this Field — reuse the singleton store
-      ctx.store = discoveryStore;
-    } else {
-      isNewStore = true;
+    if (!existingId) {
       await ctx.store.create(projectId, brief.trim());
     }
 
-    console.log(isNewStore);
-    console.log(ctx.store.snapshot(projectId));
     // ── Lance le CEO ───────────────────────────────────────────
     console.info("Start CEO");
     const ceoResult = await runAgent<ProjectMandate>(

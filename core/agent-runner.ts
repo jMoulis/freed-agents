@@ -7,8 +7,8 @@ import { generateText, tool, Output, stepCountIs, StepResult } from "ai";
 import { z } from "zod";
 import { RunContext, ModelRef } from "@/lib/context";
 import { AgentRole, TensionInput, AgentRunResult } from "@/core/types";
-import { anthropic, AnthropicLanguageModelOptions } from "@ai-sdk/anthropic";
-import { AnthropicMessagesLanguageModel } from "@ai-sdk/anthropic/internal";
+import { AnthropicLanguageModelOptions } from "@ai-sdk/anthropic";
+import { inspect } from "node:util";
 
 // ═══════════════════════════════════════════════════════════════
 // CONFIG
@@ -79,6 +79,12 @@ function buildFieldTools(
         tensions: z.array(TensionInputSchema),
       }),
       execute: async ({ tensions }: { tensions: TensionInput[] }) => {
+        console.log("UPDATEFIELD");
+        console.log(
+          inspect(tensions, {
+            depth: null,
+          }),
+        );
         tensionsWritten.push(...tensions);
         const snapshot = await store.upsertTensions(projectId, tensions, role);
         return snapshot;

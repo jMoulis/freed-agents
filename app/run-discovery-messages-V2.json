@@ -6,11 +6,11 @@
                 "text": "We need an app for our HR team. Right now everything is on paper and Excel. When a new employee joins, the HR manager has to send emails manually, print documents, chase signatures, and track everything in a spreadsheet. It takes about 2 weeks and everyone hates it.\n\nWe have around 50 employees and hire maybe 10 people per year. Budget is flexible but we're a small company so nothing crazy. We use Google Workspace for everything."
             }
         ],
-        "id": "la1YGoE4nMffWhxb",
+        "id": "ceI5S5vDucgU4zJg",
         "role": "user"
     },
     {
-        "id": "q9eqnTwwmgmlvsQL",
+        "id": "aBytUJroNhVksmVw",
         "role": "assistant",
         "parts": [
             {
@@ -18,11 +18,11 @@
             },
             {
                 "type": "tool-read_field",
-                "toolCallId": "toolu_011s2PCRQscNifDm4MuPHj5x",
+                "toolCallId": "toolu_0192mS7T3U8NWxxEwSNdERR6",
                 "state": "output-available",
                 "input": {},
                 "output": {
-                    "projectId": "proj-Fi5bPsCI",
+                    "projectId": "proj-G_FhPJsj",
                     "globalConfidence": 0,
                     "summary": "Field empty",
                     "tensions": []
@@ -36,304 +36,128 @@
                 }
             },
             {
+                "type": "step-start"
+            },
+            {
                 "type": "tool-update_field",
-                "toolCallId": "toolu_01PTSsnFoDsfPEvqcsYSq1cm",
+                "toolCallId": "toolu_01RqpLprqvC569JQZkPQuucu",
                 "state": "output-available",
                 "input": {
                     "id": "client_context",
-                    "wants": "Understanding of client sector, size, and current tools",
-                    "value": "50 employees, ~10 hires/year, HR team, Google Workspace, small company",
+                    "wants": "Understanding of the client's sector, team size, and current tools",
+                    "value": "Small company (~50 employees), uses Google Workspace, HR-focused, hires ~10 people/year",
                     "confidence": 0.85,
-                    "doubts": [
-                        {
-                            "about": "Exact sector/industry not mentioned",
-                            "severity": "low"
-                        }
-                    ]
+                    "doubts": []
                 },
                 "output": {
-                    "projectId": "proj-Fi5bPsCI",
+                    "projectId": "proj-G_FhPJsj",
                     "globalConfidence": 0.9,
                     "summary": "1 resolved",
                     "tensions": [
                         {
                             "id": "client_context",
-                            "wants": "Understanding of client sector, size, and current tools",
+                            "wants": "Understanding of the client's sector, team size, and current tools",
                             "state": "resolved",
                             "confidence": 0.9,
-                            "value": "50 employees, ~10 hires/year, HR team, Google Workspace, small company",
-                            "doubts": [
-                                {
-                                    "about": "Exact sector/industry not mentioned",
-                                    "severity": "low"
-                                }
-                            ],
+                            "value": "Small company (~50 employees), uses Google Workspace, HR-focused, hires ~10 people/year",
+                            "doubts": [],
                             "pendingOn": [],
                             "linkedTo": []
                         }
                     ]
+                },
+                "callProviderMetadata": {
+                    "anthropic": {
+                        "caller": {
+                            "type": "direct"
+                        }
+                    }
                 }
             },
             {
                 "type": "tool-update_field",
-                "toolCallId": "toolu_01U6pSQRsy3eD1nR3TpUmntG",
+                "toolCallId": "toolu_018SK6qp6BbTLZhxysdRHDgh",
                 "state": "output-available",
                 "input": {
                     "id": "current_problem",
-                    "wants": "Concrete pain points and measurable cost",
-                    "value": "Manual onboarding process: paper, Excel tracking, manual emails, printing, chasing signatures. Takes 2 weeks per employee. Everyone frustrated.",
+                    "wants": "Concrete description of what doesn't work and its measurable cost",
+                    "value": "Manual onboarding process: emails sent manually, printing documents, chasing signatures, tracking in spreadsheets. Takes ~2 weeks per hire. Process is hated by everyone involved.",
                     "confidence": 0.85,
                     "doubts": []
                 },
                 "output": {
-                    "projectId": "proj-Fi5bPsCI",
+                    "projectId": "proj-G_FhPJsj",
                     "globalConfidence": 0.9,
                     "summary": "2 resolved",
                     "tensions": [
                         {
                             "id": "client_context",
-                            "wants": "Understanding of client sector, size, and current tools",
+                            "wants": "Understanding of the client's sector, team size, and current tools",
                             "state": "resolved",
                             "confidence": 0.9,
-                            "value": "50 employees, ~10 hires/year, HR team, Google Workspace, small company",
-                            "doubts": [
-                                {
-                                    "about": "Exact sector/industry not mentioned",
-                                    "severity": "low"
-                                }
-                            ],
+                            "value": "Small company (~50 employees), uses Google Workspace, HR-focused, hires ~10 people/year",
+                            "doubts": [],
                             "pendingOn": [],
                             "linkedTo": []
                         },
                         {
                             "id": "current_problem",
-                            "wants": "Concrete pain points and measurable cost",
+                            "wants": "Concrete description of what doesn't work and its measurable cost",
                             "state": "resolved",
                             "confidence": 0.9,
-                            "value": "Manual onboarding process: paper, Excel tracking, manual emails, printing, chasing signatures. Takes 2 weeks per employee. Everyone frustrated.",
+                            "value": "Manual onboarding process: emails sent manually, printing documents, chasing signatures, tracking in spreadsheets. Takes ~2 weeks per hire. Process is hated by everyone involved.",
                             "doubts": [],
                             "pendingOn": [],
                             "linkedTo": []
-                        }
-                    ]
-                }
-            },
-            {
-                "type": "tool-update_field",
-                "toolCallId": "toolu_019B66z8CpkSbPP3L4tCyF4r",
-                "state": "output-available",
-                "input": {
-                    "id": "objective",
-                    "wants": "What success looks like in 6 months",
-                    "value": "Automate onboarding workflow to eliminate manual emails, paper, and spreadsheet tracking",
-                    "confidence": 0.75,
-                    "doubts": [
-                        {
-                            "about": "Target timeline or specific success metrics not explicit",
-                            "severity": "low"
                         }
                     ]
                 },
-                "output": {
-                    "projectId": "proj-Fi5bPsCI",
-                    "globalConfidence": 0.8666666666666667,
-                    "summary": "3 resolved",
-                    "tensions": [
-                        {
-                            "id": "client_context",
-                            "wants": "Understanding of client sector, size, and current tools",
-                            "state": "resolved",
-                            "confidence": 0.9,
-                            "value": "50 employees, ~10 hires/year, HR team, Google Workspace, small company",
-                            "doubts": [
-                                {
-                                    "about": "Exact sector/industry not mentioned",
-                                    "severity": "low"
-                                }
-                            ],
-                            "pendingOn": [],
-                            "linkedTo": []
-                        },
-                        {
-                            "id": "current_problem",
-                            "wants": "Concrete pain points and measurable cost",
-                            "state": "resolved",
-                            "confidence": 0.9,
-                            "value": "Manual onboarding process: paper, Excel tracking, manual emails, printing, chasing signatures. Takes 2 weeks per employee. Everyone frustrated.",
-                            "doubts": [],
-                            "pendingOn": [],
-                            "linkedTo": []
-                        },
-                        {
-                            "id": "objective",
-                            "wants": "What success looks like in 6 months",
-                            "state": "resolved",
-                            "confidence": 0.8,
-                            "value": "Automate onboarding workflow to eliminate manual emails, paper, and spreadsheet tracking",
-                            "doubts": [
-                                {
-                                    "about": "Target timeline or specific success metrics not explicit",
-                                    "severity": "low"
-                                }
-                            ],
-                            "pendingOn": [],
-                            "linkedTo": []
+                "callProviderMetadata": {
+                    "anthropic": {
+                        "caller": {
+                            "type": "direct"
                         }
-                    ]
+                    }
                 }
             },
             {
                 "type": "tool-update_field",
-                "toolCallId": "toolu_019WKW5tqMtDs39WECFCswT8",
-                "state": "output-available",
-                "input": {
-                    "id": "users",
-                    "wants": "Who uses daily and who decides",
-                    "value": "HR manager is primary user, new employees receive documents/signatures",
-                    "confidence": 0.7,
-                    "doubts": [
-                        {
-                            "about": "Decision-maker not explicitly mentioned",
-                            "severity": "medium"
-                        }
-                    ]
-                },
-                "output": {
-                    "projectId": "proj-Fi5bPsCI",
-                    "globalConfidence": 0.65,
-                    "summary": "3 resolved · 1 partial",
-                    "tensions": [
-                        {
-                            "id": "client_context",
-                            "wants": "Understanding of client sector, size, and current tools",
-                            "state": "resolved",
-                            "confidence": 0.9,
-                            "value": "50 employees, ~10 hires/year, HR team, Google Workspace, small company",
-                            "doubts": [
-                                {
-                                    "about": "Exact sector/industry not mentioned",
-                                    "severity": "low"
-                                }
-                            ],
-                            "pendingOn": [],
-                            "linkedTo": []
-                        },
-                        {
-                            "id": "current_problem",
-                            "wants": "Concrete pain points and measurable cost",
-                            "state": "resolved",
-                            "confidence": 0.9,
-                            "value": "Manual onboarding process: paper, Excel tracking, manual emails, printing, chasing signatures. Takes 2 weeks per employee. Everyone frustrated.",
-                            "doubts": [],
-                            "pendingOn": [],
-                            "linkedTo": []
-                        },
-                        {
-                            "id": "objective",
-                            "wants": "What success looks like in 6 months",
-                            "state": "resolved",
-                            "confidence": 0.8,
-                            "value": "Automate onboarding workflow to eliminate manual emails, paper, and spreadsheet tracking",
-                            "doubts": [
-                                {
-                                    "about": "Target timeline or specific success metrics not explicit",
-                                    "severity": "low"
-                                }
-                            ],
-                            "pendingOn": [],
-                            "linkedTo": []
-                        },
-                        {
-                            "id": "users",
-                            "wants": "Who uses daily and who decides",
-                            "state": "partial",
-                            "confidence": 0.7,
-                            "value": "HR manager is primary user, new employees receive documents/signatures",
-                            "doubts": [
-                                {
-                                    "about": "Decision-maker not explicitly mentioned",
-                                    "severity": "medium"
-                                }
-                            ],
-                            "pendingOn": [],
-                            "linkedTo": []
-                        }
-                    ]
-                }
-            },
-            {
-                "type": "tool-update_field",
-                "toolCallId": "toolu_013KmhNiakNq61wfeNn9VHL1",
+                "toolCallId": "toolu_016CPhd56x6feZHDfdudhsKs",
                 "state": "output-available",
                 "input": {
                     "id": "constraints",
                     "wants": "Budget range, timeline, existing infrastructure",
-                    "value": "Flexible budget for small company, Google Workspace infrastructure",
-                    "confidence": 0.65,
+                    "value": "Budget flexible but small company constraints, Google Workspace infrastructure in place",
+                    "confidence": 0.7,
                     "doubts": [
                         {
-                            "about": "No specific budget range or timeline provided",
+                            "about": "Specific budget range and timeline expectations",
                             "severity": "medium"
                         }
                     ]
                 },
                 "output": {
-                    "projectId": "proj-Fi5bPsCI",
-                    "globalConfidence": 0.52,
-                    "summary": "3 resolved · 2 partial",
+                    "projectId": "proj-G_FhPJsj",
+                    "globalConfidence": 0.6,
+                    "summary": "2 resolved · 1 partial",
                     "tensions": [
                         {
                             "id": "client_context",
-                            "wants": "Understanding of client sector, size, and current tools",
+                            "wants": "Understanding of the client's sector, team size, and current tools",
                             "state": "resolved",
                             "confidence": 0.9,
-                            "value": "50 employees, ~10 hires/year, HR team, Google Workspace, small company",
-                            "doubts": [
-                                {
-                                    "about": "Exact sector/industry not mentioned",
-                                    "severity": "low"
-                                }
-                            ],
-                            "pendingOn": [],
-                            "linkedTo": []
-                        },
-                        {
-                            "id": "current_problem",
-                            "wants": "Concrete pain points and measurable cost",
-                            "state": "resolved",
-                            "confidence": 0.9,
-                            "value": "Manual onboarding process: paper, Excel tracking, manual emails, printing, chasing signatures. Takes 2 weeks per employee. Everyone frustrated.",
+                            "value": "Small company (~50 employees), uses Google Workspace, HR-focused, hires ~10 people/year",
                             "doubts": [],
                             "pendingOn": [],
                             "linkedTo": []
                         },
                         {
-                            "id": "objective",
-                            "wants": "What success looks like in 6 months",
+                            "id": "current_problem",
+                            "wants": "Concrete description of what doesn't work and its measurable cost",
                             "state": "resolved",
-                            "confidence": 0.8,
-                            "value": "Automate onboarding workflow to eliminate manual emails, paper, and spreadsheet tracking",
-                            "doubts": [
-                                {
-                                    "about": "Target timeline or specific success metrics not explicit",
-                                    "severity": "low"
-                                }
-                            ],
-                            "pendingOn": [],
-                            "linkedTo": []
-                        },
-                        {
-                            "id": "users",
-                            "wants": "Who uses daily and who decides",
-                            "state": "partial",
-                            "confidence": 0.7,
-                            "value": "HR manager is primary user, new employees receive documents/signatures",
-                            "doubts": [
-                                {
-                                    "about": "Decision-maker not explicitly mentioned",
-                                    "severity": "medium"
-                                }
-                            ],
+                            "confidence": 0.9,
+                            "value": "Manual onboarding process: emails sent manually, printing documents, chasing signatures, tracking in spreadsheets. Takes ~2 weeks per hire. Process is hated by everyone involved.",
+                            "doubts": [],
                             "pendingOn": [],
                             "linkedTo": []
                         },
@@ -342,10 +166,10 @@
                             "wants": "Budget range, timeline, existing infrastructure",
                             "state": "partial",
                             "confidence": 0.7,
-                            "value": "Flexible budget for small company, Google Workspace infrastructure",
+                            "value": "Budget flexible but small company constraints, Google Workspace infrastructure in place",
                             "doubts": [
                                 {
-                                    "about": "No specific budget range or timeline provided",
+                                    "about": "Specific budget range and timeline expectations",
                                     "severity": "medium"
                                 }
                             ],
@@ -353,68 +177,66 @@
                             "linkedTo": []
                         }
                     ]
+                },
+                "callProviderMetadata": {
+                    "anthropic": {
+                        "caller": {
+                            "type": "direct"
+                        }
+                    }
                 }
             },
             {
                 "type": "tool-update_field",
-                "toolCallId": "toolu_017jgBXkFk9bKZS2V8kZdGch",
+                "toolCallId": "toolu_01KyCrov3Bg4zNxMRqZXhBnL",
                 "state": "output-available",
                 "input": {
-                    "id": "compliance_data",
-                    "wants": "Sensitive data handling, location, regulations",
-                    "value": "HR data (employee documents, signatures) - sensitive by nature",
-                    "confidence": 0.5,
+                    "id": "users",
+                    "wants": "Who uses daily and who decides",
+                    "value": "HR manager is primary user (sends emails, tracks), new employees receive documents",
+                    "confidence": 0.65,
                     "doubts": [
                         {
-                            "about": "Company location unknown, GDPR applicability unclear",
-                            "severity": "medium"
-                        },
-                        {
-                            "about": "Specific compliance requirements not discussed",
+                            "about": "Decision maker and other stakeholders involved in approval",
                             "severity": "medium"
                         }
                     ]
                 },
                 "output": {
-                    "projectId": "proj-Fi5bPsCI",
-                    "globalConfidence": 0.43333333333333335,
-                    "summary": "3 resolved · 3 partial",
+                    "projectId": "proj-G_FhPJsj",
+                    "globalConfidence": 0.45,
+                    "summary": "2 resolved · 2 partial",
                     "tensions": [
                         {
                             "id": "client_context",
-                            "wants": "Understanding of client sector, size, and current tools",
+                            "wants": "Understanding of the client's sector, team size, and current tools",
                             "state": "resolved",
                             "confidence": 0.9,
-                            "value": "50 employees, ~10 hires/year, HR team, Google Workspace, small company",
-                            "doubts": [
-                                {
-                                    "about": "Exact sector/industry not mentioned",
-                                    "severity": "low"
-                                }
-                            ],
-                            "pendingOn": [],
-                            "linkedTo": []
-                        },
-                        {
-                            "id": "current_problem",
-                            "wants": "Concrete pain points and measurable cost",
-                            "state": "resolved",
-                            "confidence": 0.9,
-                            "value": "Manual onboarding process: paper, Excel tracking, manual emails, printing, chasing signatures. Takes 2 weeks per employee. Everyone frustrated.",
+                            "value": "Small company (~50 employees), uses Google Workspace, HR-focused, hires ~10 people/year",
                             "doubts": [],
                             "pendingOn": [],
                             "linkedTo": []
                         },
                         {
-                            "id": "objective",
-                            "wants": "What success looks like in 6 months",
+                            "id": "current_problem",
+                            "wants": "Concrete description of what doesn't work and its measurable cost",
                             "state": "resolved",
-                            "confidence": 0.8,
-                            "value": "Automate onboarding workflow to eliminate manual emails, paper, and spreadsheet tracking",
+                            "confidence": 0.9,
+                            "value": "Manual onboarding process: emails sent manually, printing documents, chasing signatures, tracking in spreadsheets. Takes ~2 weeks per hire. Process is hated by everyone involved.",
+                            "doubts": [],
+                            "pendingOn": [],
+                            "linkedTo": []
+                        },
+                        {
+                            "id": "constraints",
+                            "wants": "Budget range, timeline, existing infrastructure",
+                            "state": "partial",
+                            "confidence": 0.7,
+                            "value": "Budget flexible but small company constraints, Google Workspace infrastructure in place",
                             "doubts": [
                                 {
-                                    "about": "Target timeline or specific success metrics not explicit",
-                                    "severity": "low"
+                                    "about": "Specific budget range and timeline expectations",
+                                    "severity": "medium"
                                 }
                             ],
                             "pendingOn": [],
@@ -425,13 +247,64 @@
                             "wants": "Who uses daily and who decides",
                             "state": "partial",
                             "confidence": 0.7,
-                            "value": "HR manager is primary user, new employees receive documents/signatures",
+                            "value": "HR manager is primary user (sends emails, tracks), new employees receive documents",
                             "doubts": [
                                 {
-                                    "about": "Decision-maker not explicitly mentioned",
+                                    "about": "Decision maker and other stakeholders involved in approval",
                                     "severity": "medium"
                                 }
                             ],
+                            "pendingOn": [],
+                            "linkedTo": []
+                        }
+                    ]
+                },
+                "callProviderMetadata": {
+                    "anthropic": {
+                        "caller": {
+                            "type": "direct"
+                        }
+                    }
+                }
+            },
+            {
+                "type": "tool-update_field",
+                "toolCallId": "toolu_01EjQYonePkUvzpH7aigEFsK",
+                "state": "output-available",
+                "input": {
+                    "id": "compliance_data",
+                    "wants": "Sensitive data handling, location, regulations",
+                    "value": "HR documents contain employee personal data, likely GDPR applicable",
+                    "confidence": 0.65,
+                    "doubts": [
+                        {
+                            "about": "Geographic location and specific compliance requirements",
+                            "severity": "medium"
+                        }
+                    ]
+                },
+                "output": {
+                    "projectId": "proj-G_FhPJsj",
+                    "globalConfidence": 0.36000000000000004,
+                    "summary": "2 resolved · 3 partial",
+                    "tensions": [
+                        {
+                            "id": "client_context",
+                            "wants": "Understanding of the client's sector, team size, and current tools",
+                            "state": "resolved",
+                            "confidence": 0.9,
+                            "value": "Small company (~50 employees), uses Google Workspace, HR-focused, hires ~10 people/year",
+                            "doubts": [],
+                            "pendingOn": [],
+                            "linkedTo": []
+                        },
+                        {
+                            "id": "current_problem",
+                            "wants": "Concrete description of what doesn't work and its measurable cost",
+                            "state": "resolved",
+                            "confidence": 0.9,
+                            "value": "Manual onboarding process: emails sent manually, printing documents, chasing signatures, tracking in spreadsheets. Takes ~2 weeks per hire. Process is hated by everyone involved.",
+                            "doubts": [],
                             "pendingOn": [],
                             "linkedTo": []
                         },
@@ -440,10 +313,25 @@
                             "wants": "Budget range, timeline, existing infrastructure",
                             "state": "partial",
                             "confidence": 0.7,
-                            "value": "Flexible budget for small company, Google Workspace infrastructure",
+                            "value": "Budget flexible but small company constraints, Google Workspace infrastructure in place",
                             "doubts": [
                                 {
-                                    "about": "No specific budget range or timeline provided",
+                                    "about": "Specific budget range and timeline expectations",
+                                    "severity": "medium"
+                                }
+                            ],
+                            "pendingOn": [],
+                            "linkedTo": []
+                        },
+                        {
+                            "id": "users",
+                            "wants": "Who uses daily and who decides",
+                            "state": "partial",
+                            "confidence": 0.7,
+                            "value": "HR manager is primary user (sends emails, tracks), new employees receive documents",
+                            "doubts": [
+                                {
+                                    "about": "Decision maker and other stakeholders involved in approval",
                                     "severity": "medium"
                                 }
                             ],
@@ -454,15 +342,11 @@
                             "id": "compliance_data",
                             "wants": "Sensitive data handling, location, regulations",
                             "state": "partial",
-                            "confidence": 0.5,
-                            "value": "HR data (employee documents, signatures) - sensitive by nature",
+                            "confidence": 0.7,
+                            "value": "HR documents contain employee personal data, likely GDPR applicable",
                             "doubts": [
                                 {
-                                    "about": "Company location unknown, GDPR applicability unclear",
-                                    "severity": "medium"
-                                },
-                                {
-                                    "about": "Specific compliance requirements not discussed",
+                                    "about": "Geographic location and specific compliance requirements",
                                     "severity": "medium"
                                 }
                             ],
@@ -470,46 +354,161 @@
                             "linkedTo": []
                         }
                     ]
+                },
+                "callProviderMetadata": {
+                    "anthropic": {
+                        "caller": {
+                            "type": "direct"
+                        }
+                    }
                 }
             },
             {
+                "type": "tool-update_field",
+                "toolCallId": "toolu_01FKqTpMhdkh8oo2C6BJRuqL",
+                "state": "output-available",
+                "input": {
+                    "id": "objective",
+                    "wants": "What success looks like in 6 months",
+                    "value": "Digitize onboarding, reduce 2-week process, eliminate manual tracking",
+                    "confidence": 0.65,
+                    "doubts": [
+                        {
+                            "about": "Specific success metrics and ideal timeline reduction",
+                            "severity": "low"
+                        }
+                    ]
+                },
+                "output": {
+                    "projectId": "proj-G_FhPJsj",
+                    "globalConfidence": 0.3,
+                    "summary": "2 resolved · 4 partial",
+                    "tensions": [
+                        {
+                            "id": "client_context",
+                            "wants": "Understanding of the client's sector, team size, and current tools",
+                            "state": "resolved",
+                            "confidence": 0.9,
+                            "value": "Small company (~50 employees), uses Google Workspace, HR-focused, hires ~10 people/year",
+                            "doubts": [],
+                            "pendingOn": [],
+                            "linkedTo": []
+                        },
+                        {
+                            "id": "current_problem",
+                            "wants": "Concrete description of what doesn't work and its measurable cost",
+                            "state": "resolved",
+                            "confidence": 0.9,
+                            "value": "Manual onboarding process: emails sent manually, printing documents, chasing signatures, tracking in spreadsheets. Takes ~2 weeks per hire. Process is hated by everyone involved.",
+                            "doubts": [],
+                            "pendingOn": [],
+                            "linkedTo": []
+                        },
+                        {
+                            "id": "constraints",
+                            "wants": "Budget range, timeline, existing infrastructure",
+                            "state": "partial",
+                            "confidence": 0.7,
+                            "value": "Budget flexible but small company constraints, Google Workspace infrastructure in place",
+                            "doubts": [
+                                {
+                                    "about": "Specific budget range and timeline expectations",
+                                    "severity": "medium"
+                                }
+                            ],
+                            "pendingOn": [],
+                            "linkedTo": []
+                        },
+                        {
+                            "id": "users",
+                            "wants": "Who uses daily and who decides",
+                            "state": "partial",
+                            "confidence": 0.7,
+                            "value": "HR manager is primary user (sends emails, tracks), new employees receive documents",
+                            "doubts": [
+                                {
+                                    "about": "Decision maker and other stakeholders involved in approval",
+                                    "severity": "medium"
+                                }
+                            ],
+                            "pendingOn": [],
+                            "linkedTo": []
+                        },
+                        {
+                            "id": "compliance_data",
+                            "wants": "Sensitive data handling, location, regulations",
+                            "state": "partial",
+                            "confidence": 0.7,
+                            "value": "HR documents contain employee personal data, likely GDPR applicable",
+                            "doubts": [
+                                {
+                                    "about": "Geographic location and specific compliance requirements",
+                                    "severity": "medium"
+                                }
+                            ],
+                            "pendingOn": [],
+                            "linkedTo": []
+                        },
+                        {
+                            "id": "objective",
+                            "wants": "What success looks like in 6 months",
+                            "state": "partial",
+                            "confidence": 0.7,
+                            "value": "Digitize onboarding, reduce 2-week process, eliminate manual tracking",
+                            "doubts": [
+                                {
+                                    "about": "Specific success metrics and ideal timeline reduction",
+                                    "severity": "low"
+                                }
+                            ],
+                            "pendingOn": [],
+                            "linkedTo": []
+                        }
+                    ]
+                },
+                "callProviderMetadata": {
+                    "anthropic": {
+                        "caller": {
+                            "type": "direct"
+                        }
+                    }
+                }
+            },
+            {
+                "type": "step-start"
+            },
+            {
                 "type": "text",
-                "text": "Merci pour ces détails ! Je vois bien le problème — deux semaines pour intégrer quelqu'un, c'est beaucoup de temps perdu pour tout le monde.\n\nJ'ai quelques questions pour mieux cibler la solution :",
+                "text": "Merci pour ces détails ! Je comprends bien le problème — l'onboarding manuel, c'est chronophage et frustrant pour tout le monde.\n\nJ'ai quelques questions complémentaires pour bien cadrer le projet :",
                 "state": "done"
             },
             {
                 "type": "tool-render_form",
-                "toolCallId": "toolu_01K3uWNBJfL4vd9KN43M6y6j",
+                "toolCallId": "toolu_01BuEbFdELxXJaYy59DztJpk",
                 "state": "output-available",
                 "input": {
-                    "theme": "Votre situation et vos besoins",
-                    "intro": "Pour bien dimensionner la solution, j'ai besoin de quelques précisions sur votre contexte et vos attentes.",
+                    "theme": "Objectifs et décisions",
+                    "intro": "Parlons maintenant de ce que vous espérez accomplir et de qui sera impliqué dans le projet.",
                     "fields": [
                         {
-                            "id": "location",
-                            "label": "Où est située votre entreprise ?",
+                            "id": "success_metric",
+                            "label": "Dans 6 mois, qu'est-ce qui vous ferait dire 'ça marche parfaitement' ?",
                             "type": "text",
-                            "placeholder": "Ex: France, Belgique, Suisse...",
+                            "placeholder": "Par exemple : un nouvel arrivant reçoit tous ses documents en 2 jours au lieu de 2 semaines",
                             "required": true
                         },
                         {
                             "id": "decision_maker",
-                            "label": "Qui prendra la décision finale sur ce projet ?",
+                            "label": "Qui valide ce type de projet chez vous ?",
                             "type": "text",
-                            "placeholder": "Ex: responsable RH, directeur général...",
+                            "placeholder": "Par exemple : directeur RH, directeur général, etc.",
                             "required": true
                         },
                         {
-                            "id": "budget_range",
-                            "label": "Quel budget envisagez-vous pour ce projet ?",
-                            "type": "choice",
-                            "options": [
-                                "Moins de 5 000€",
-                                "Entre 5 000€ et 15 000€",
-                                "Entre 15 000€ et 30 000€",
-                                "Plus de 30 000€",
-                                "Je ne sais pas encore"
-                            ],
+                            "id": "company_location",
+                            "label": "Où est basée votre entreprise ?",
+                            "type": "text",
+                            "placeholder": "Ville et pays",
                             "required": true
                         }
                     ]
@@ -517,37 +516,38 @@
                 "output": {
                     "rendered": true,
                     "form": {
-                        "theme": "Votre situation et vos besoins",
-                        "intro": "Pour bien dimensionner la solution, j'ai besoin de quelques précisions sur votre contexte et vos attentes.",
+                        "theme": "Objectifs et décisions",
+                        "intro": "Parlons maintenant de ce que vous espérez accomplir et de qui sera impliqué dans le projet.",
                         "fields": [
                             {
-                                "id": "location",
-                                "label": "Où est située votre entreprise ?",
+                                "id": "success_metric",
+                                "label": "Dans 6 mois, qu'est-ce qui vous ferait dire 'ça marche parfaitement' ?",
                                 "type": "text",
-                                "placeholder": "Ex: France, Belgique, Suisse...",
+                                "placeholder": "Par exemple : un nouvel arrivant reçoit tous ses documents en 2 jours au lieu de 2 semaines",
                                 "required": true
                             },
                             {
                                 "id": "decision_maker",
-                                "label": "Qui prendra la décision finale sur ce projet ?",
+                                "label": "Qui valide ce type de projet chez vous ?",
                                 "type": "text",
-                                "placeholder": "Ex: responsable RH, directeur général...",
+                                "placeholder": "Par exemple : directeur RH, directeur général, etc.",
                                 "required": true
                             },
                             {
-                                "id": "budget_range",
-                                "label": "Quel budget envisagez-vous pour ce projet ?",
-                                "type": "choice",
-                                "options": [
-                                    "Moins de 5 000€",
-                                    "Entre 5 000€ et 15 000€",
-                                    "Entre 15 000€ et 30 000€",
-                                    "Plus de 30 000€",
-                                    "Je ne sais pas encore"
-                                ],
+                                "id": "company_location",
+                                "label": "Où est basée votre entreprise ?",
+                                "type": "text",
+                                "placeholder": "Ville et pays",
                                 "required": true
                             }
                         ]
+                    }
+                },
+                "callProviderMetadata": {
+                    "anthropic": {
+                        "caller": {
+                            "type": "direct"
+                        }
                     }
                 }
             }
@@ -557,67 +557,65 @@
         "parts": [
             {
                 "type": "text",
-                "text": "[Votre situation et vos besoins]\nOù est située votre entreprise ?: France\nQui prendra la décision finale sur ce projet ?: Responsable RH\nQuel budget envisagez-vous pour ce projet ?: Entre 15 000€ et 30 000€"
+                "text": "[Objectifs et décisions]\nDans 6 mois, qu'est-ce qui vous ferait dire 'ça marche parfaitement' ?: Gain de temps, amélioration de qualité de travail des salariés, satisfaction des nouveaux employés et baisse du turn over\nQui valide ce type de projet chez vous ?: directeur RH\nOù est basée votre entreprise ?: france"
             }
         ],
-        "id": "tA5fULh6QbIblwDA",
+        "id": "4IWiBP4bPTJRrpxh",
         "role": "user"
     },
     {
-        "id": "oASUI96Upxpw2Sgx",
+        "id": "jHcqRJOCZ37OaKFE",
         "role": "assistant",
         "parts": [
             {
+                "type": "step-start"
+            },
+            {
                 "type": "tool-update_field",
-                "toolCallId": "toolu_01BhEgMJjXoTaiRsViia86RF",
+                "toolCallId": "toolu_01UaWU4JFnqBSq8wT1tR17Gj",
                 "state": "output-available",
                 "input": {
-                    "id": "compliance_data",
-                    "wants": "Sensitive data handling, location, regulations",
-                    "value": "France-based, HR employee data (documents, signatures), GDPR applies",
+                    "id": "objective",
+                    "wants": "What success looks like in 6 months",
+                    "value": "Gain de temps, amélioration de qualité de travail des salariés, satisfaction des nouveaux employés et baisse du turn over",
                     "confidence": 0.85,
                     "doubts": []
                 },
                 "output": {
-                    "projectId": "proj-Fi5bPsCI",
-                    "globalConfidence": 0.5833333333333333,
-                    "summary": "4 resolved · 2 partial",
+                    "projectId": "proj-G_FhPJsj",
+                    "globalConfidence": 0.45,
+                    "summary": "3 resolved · 3 partial",
                     "tensions": [
                         {
                             "id": "client_context",
-                            "wants": "Understanding of client sector, size, and current tools",
+                            "wants": "Understanding of the client's sector, team size, and current tools",
                             "state": "resolved",
                             "confidence": 0.9,
-                            "value": "50 employees, ~10 hires/year, HR team, Google Workspace, small company",
-                            "doubts": [
-                                {
-                                    "about": "Exact sector/industry not mentioned",
-                                    "severity": "low"
-                                }
-                            ],
-                            "pendingOn": [],
-                            "linkedTo": []
-                        },
-                        {
-                            "id": "current_problem",
-                            "wants": "Concrete pain points and measurable cost",
-                            "state": "resolved",
-                            "confidence": 0.9,
-                            "value": "Manual onboarding process: paper, Excel tracking, manual emails, printing, chasing signatures. Takes 2 weeks per employee. Everyone frustrated.",
+                            "value": "Small company (~50 employees), uses Google Workspace, HR-focused, hires ~10 people/year",
                             "doubts": [],
                             "pendingOn": [],
                             "linkedTo": []
                         },
                         {
-                            "id": "objective",
-                            "wants": "What success looks like in 6 months",
+                            "id": "current_problem",
+                            "wants": "Concrete description of what doesn't work and its measurable cost",
                             "state": "resolved",
-                            "confidence": 0.8,
-                            "value": "Automate onboarding workflow to eliminate manual emails, paper, and spreadsheet tracking",
+                            "confidence": 0.9,
+                            "value": "Manual onboarding process: emails sent manually, printing documents, chasing signatures, tracking in spreadsheets. Takes ~2 weeks per hire. Process is hated by everyone involved.",
+                            "doubts": [],
+                            "pendingOn": [],
+                            "linkedTo": []
+                        },
+                        {
+                            "id": "constraints",
+                            "wants": "Budget range, timeline, existing infrastructure",
+                            "state": "partial",
+                            "confidence": 0.7,
+                            "value": "Budget flexible but small company constraints, Google Workspace infrastructure in place",
                             "doubts": [
                                 {
-                                    "about": "Target timeline or specific success metrics not explicit",
-                                    "severity": "low"
+                                    "about": "Specific budget range and timeline expectations",
+                                    "severity": "medium"
                                 }
                             ],
                             "pendingOn": [],
@@ -628,25 +626,10 @@
                             "wants": "Who uses daily and who decides",
                             "state": "partial",
                             "confidence": 0.7,
-                            "value": "HR manager is primary user, new employees receive documents/signatures",
+                            "value": "HR manager is primary user (sends emails, tracks), new employees receive documents",
                             "doubts": [
                                 {
-                                    "about": "Decision-maker not explicitly mentioned",
-                                    "severity": "medium"
-                                }
-                            ],
-                            "pendingOn": [],
-                            "linkedTo": []
-                        },
-                        {
-                            "id": "constraints",
-                            "wants": "Budget range, timeline, existing infrastructure",
-                            "state": "partial",
-                            "confidence": 0.7,
-                            "value": "Flexible budget for small company, Google Workspace infrastructure",
-                            "doubts": [
-                                {
-                                    "about": "No specific budget range or timeline provided",
+                                    "about": "Decision maker and other stakeholders involved in approval",
                                     "severity": "medium"
                                 }
                             ],
@@ -656,78 +639,70 @@
                         {
                             "id": "compliance_data",
                             "wants": "Sensitive data handling, location, regulations",
+                            "state": "partial",
+                            "confidence": 0.7,
+                            "value": "HR documents contain employee personal data, likely GDPR applicable",
+                            "doubts": [
+                                {
+                                    "about": "Geographic location and specific compliance requirements",
+                                    "severity": "medium"
+                                }
+                            ],
+                            "pendingOn": [],
+                            "linkedTo": []
+                        },
+                        {
+                            "id": "objective",
+                            "wants": "What success looks like in 6 months",
                             "state": "resolved",
                             "confidence": 0.9,
-                            "value": "France-based, HR employee data (documents, signatures), GDPR applies",
+                            "value": "Gain de temps, amélioration de qualité de travail des salariés, satisfaction des nouveaux employés et baisse du turn over",
                             "doubts": [],
                             "pendingOn": [],
                             "linkedTo": []
                         }
                     ]
+                },
+                "callProviderMetadata": {
+                    "anthropic": {
+                        "caller": {
+                            "type": "direct"
+                        }
+                    }
                 }
             },
             {
                 "type": "tool-update_field",
-                "toolCallId": "toolu_01Szj8GAk6LXKhEWFkjhESZg",
+                "toolCallId": "toolu_01KuzpEU3gxvV2rDKEexTMmu",
                 "state": "output-available",
                 "input": {
                     "id": "users",
                     "wants": "Who uses daily and who decides",
-                    "value": "HR manager is primary daily user and decision-maker, new employees receive documents/signatures",
-                    "confidence": 0.9,
+                    "value": "HR manager uses daily (sends emails, tracks process), new employees receive documents. Decision maker: directeur RH",
+                    "confidence": 0.85,
                     "doubts": []
                 },
                 "output": {
-                    "projectId": "proj-Fi5bPsCI",
-                    "globalConfidence": 0.7333333333333335,
-                    "summary": "5 resolved · 1 partial",
+                    "projectId": "proj-G_FhPJsj",
+                    "globalConfidence": 0.6,
+                    "summary": "4 resolved · 2 partial",
                     "tensions": [
                         {
                             "id": "client_context",
-                            "wants": "Understanding of client sector, size, and current tools",
+                            "wants": "Understanding of the client's sector, team size, and current tools",
                             "state": "resolved",
                             "confidence": 0.9,
-                            "value": "50 employees, ~10 hires/year, HR team, Google Workspace, small company",
-                            "doubts": [
-                                {
-                                    "about": "Exact sector/industry not mentioned",
-                                    "severity": "low"
-                                }
-                            ],
-                            "pendingOn": [],
-                            "linkedTo": []
-                        },
-                        {
-                            "id": "current_problem",
-                            "wants": "Concrete pain points and measurable cost",
-                            "state": "resolved",
-                            "confidence": 0.9,
-                            "value": "Manual onboarding process: paper, Excel tracking, manual emails, printing, chasing signatures. Takes 2 weeks per employee. Everyone frustrated.",
+                            "value": "Small company (~50 employees), uses Google Workspace, HR-focused, hires ~10 people/year",
                             "doubts": [],
                             "pendingOn": [],
                             "linkedTo": []
                         },
                         {
-                            "id": "objective",
-                            "wants": "What success looks like in 6 months",
-                            "state": "resolved",
-                            "confidence": 0.8,
-                            "value": "Automate onboarding workflow to eliminate manual emails, paper, and spreadsheet tracking",
-                            "doubts": [
-                                {
-                                    "about": "Target timeline or specific success metrics not explicit",
-                                    "severity": "low"
-                                }
-                            ],
-                            "pendingOn": [],
-                            "linkedTo": []
-                        },
-                        {
-                            "id": "users",
-                            "wants": "Who uses daily and who decides",
+                            "id": "current_problem",
+                            "wants": "Concrete description of what doesn't work and its measurable cost",
                             "state": "resolved",
                             "confidence": 0.9,
-                            "value": "HR manager is primary daily user and decision-maker, new employees receive documents/signatures",
+                            "value": "Manual onboarding process: emails sent manually, printing documents, chasing signatures, tracking in spreadsheets. Takes ~2 weeks per hire. Process is hated by everyone involved.",
                             "doubts": [],
                             "pendingOn": [],
                             "linkedTo": []
@@ -737,85 +712,11 @@
                             "wants": "Budget range, timeline, existing infrastructure",
                             "state": "partial",
                             "confidence": 0.7,
-                            "value": "Flexible budget for small company, Google Workspace infrastructure",
+                            "value": "Budget flexible but small company constraints, Google Workspace infrastructure in place",
                             "doubts": [
                                 {
-                                    "about": "No specific budget range or timeline provided",
+                                    "about": "Specific budget range and timeline expectations",
                                     "severity": "medium"
-                                }
-                            ],
-                            "pendingOn": [],
-                            "linkedTo": []
-                        },
-                        {
-                            "id": "compliance_data",
-                            "wants": "Sensitive data handling, location, regulations",
-                            "state": "resolved",
-                            "confidence": 0.9,
-                            "value": "France-based, HR employee data (documents, signatures), GDPR applies",
-                            "doubts": [],
-                            "pendingOn": [],
-                            "linkedTo": []
-                        }
-                    ]
-                }
-            },
-            {
-                "type": "tool-update_field",
-                "toolCallId": "toolu_01MjhvgexJYE52QQrVPWynaC",
-                "state": "output-available",
-                "input": {
-                    "id": "constraints",
-                    "wants": "Budget range, timeline, existing infrastructure",
-                    "value": "Budget 15-30k€, Google Workspace infrastructure",
-                    "confidence": 0.85,
-                    "doubts": [
-                        {
-                            "about": "Timeline preference not specified",
-                            "severity": "low"
-                        }
-                    ]
-                },
-                "output": {
-                    "projectId": "proj-Fi5bPsCI",
-                    "globalConfidence": 0.8833333333333334,
-                    "summary": "6 resolved",
-                    "tensions": [
-                        {
-                            "id": "client_context",
-                            "wants": "Understanding of client sector, size, and current tools",
-                            "state": "resolved",
-                            "confidence": 0.9,
-                            "value": "50 employees, ~10 hires/year, HR team, Google Workspace, small company",
-                            "doubts": [
-                                {
-                                    "about": "Exact sector/industry not mentioned",
-                                    "severity": "low"
-                                }
-                            ],
-                            "pendingOn": [],
-                            "linkedTo": []
-                        },
-                        {
-                            "id": "current_problem",
-                            "wants": "Concrete pain points and measurable cost",
-                            "state": "resolved",
-                            "confidence": 0.9,
-                            "value": "Manual onboarding process: paper, Excel tracking, manual emails, printing, chasing signatures. Takes 2 weeks per employee. Everyone frustrated.",
-                            "doubts": [],
-                            "pendingOn": [],
-                            "linkedTo": []
-                        },
-                        {
-                            "id": "objective",
-                            "wants": "What success looks like in 6 months",
-                            "state": "resolved",
-                            "confidence": 0.8,
-                            "value": "Automate onboarding workflow to eliminate manual emails, paper, and spreadsheet tracking",
-                            "doubts": [
-                                {
-                                    "about": "Target timeline or specific success metrics not explicit",
-                                    "severity": "low"
                                 }
                             ],
                             "pendingOn": [],
@@ -826,7 +727,273 @@
                             "wants": "Who uses daily and who decides",
                             "state": "resolved",
                             "confidence": 0.9,
-                            "value": "HR manager is primary daily user and decision-maker, new employees receive documents/signatures",
+                            "value": "HR manager uses daily (sends emails, tracks process), new employees receive documents. Decision maker: directeur RH",
+                            "doubts": [],
+                            "pendingOn": [],
+                            "linkedTo": []
+                        },
+                        {
+                            "id": "compliance_data",
+                            "wants": "Sensitive data handling, location, regulations",
+                            "state": "partial",
+                            "confidence": 0.7,
+                            "value": "HR documents contain employee personal data, likely GDPR applicable",
+                            "doubts": [
+                                {
+                                    "about": "Geographic location and specific compliance requirements",
+                                    "severity": "medium"
+                                }
+                            ],
+                            "pendingOn": [],
+                            "linkedTo": []
+                        },
+                        {
+                            "id": "objective",
+                            "wants": "What success looks like in 6 months",
+                            "state": "resolved",
+                            "confidence": 0.9,
+                            "value": "Gain de temps, amélioration de qualité de travail des salariés, satisfaction des nouveaux employés et baisse du turn over",
+                            "doubts": [],
+                            "pendingOn": [],
+                            "linkedTo": []
+                        }
+                    ]
+                },
+                "callProviderMetadata": {
+                    "anthropic": {
+                        "caller": {
+                            "type": "direct"
+                        }
+                    }
+                }
+            },
+            {
+                "type": "tool-update_field",
+                "toolCallId": "toolu_01SAXPvvz2ytWRuGg2u5AADq",
+                "state": "output-available",
+                "input": {
+                    "id": "compliance_data",
+                    "wants": "Sensitive data handling, location, regulations",
+                    "value": "France-based, HR documents with employee personal data, GDPR applies",
+                    "confidence": 0.9,
+                    "doubts": []
+                },
+                "output": {
+                    "projectId": "proj-G_FhPJsj",
+                    "globalConfidence": 0.75,
+                    "summary": "5 resolved · 1 partial",
+                    "tensions": [
+                        {
+                            "id": "client_context",
+                            "wants": "Understanding of the client's sector, team size, and current tools",
+                            "state": "resolved",
+                            "confidence": 0.9,
+                            "value": "Small company (~50 employees), uses Google Workspace, HR-focused, hires ~10 people/year",
+                            "doubts": [],
+                            "pendingOn": [],
+                            "linkedTo": []
+                        },
+                        {
+                            "id": "current_problem",
+                            "wants": "Concrete description of what doesn't work and its measurable cost",
+                            "state": "resolved",
+                            "confidence": 0.9,
+                            "value": "Manual onboarding process: emails sent manually, printing documents, chasing signatures, tracking in spreadsheets. Takes ~2 weeks per hire. Process is hated by everyone involved.",
+                            "doubts": [],
+                            "pendingOn": [],
+                            "linkedTo": []
+                        },
+                        {
+                            "id": "constraints",
+                            "wants": "Budget range, timeline, existing infrastructure",
+                            "state": "partial",
+                            "confidence": 0.7,
+                            "value": "Budget flexible but small company constraints, Google Workspace infrastructure in place",
+                            "doubts": [
+                                {
+                                    "about": "Specific budget range and timeline expectations",
+                                    "severity": "medium"
+                                }
+                            ],
+                            "pendingOn": [],
+                            "linkedTo": []
+                        },
+                        {
+                            "id": "users",
+                            "wants": "Who uses daily and who decides",
+                            "state": "resolved",
+                            "confidence": 0.9,
+                            "value": "HR manager uses daily (sends emails, tracks process), new employees receive documents. Decision maker: directeur RH",
+                            "doubts": [],
+                            "pendingOn": [],
+                            "linkedTo": []
+                        },
+                        {
+                            "id": "compliance_data",
+                            "wants": "Sensitive data handling, location, regulations",
+                            "state": "resolved",
+                            "confidence": 0.9,
+                            "value": "France-based, HR documents with employee personal data, GDPR applies",
+                            "doubts": [],
+                            "pendingOn": [],
+                            "linkedTo": []
+                        },
+                        {
+                            "id": "objective",
+                            "wants": "What success looks like in 6 months",
+                            "state": "resolved",
+                            "confidence": 0.9,
+                            "value": "Gain de temps, amélioration de qualité de travail des salariés, satisfaction des nouveaux employés et baisse du turn over",
+                            "doubts": [],
+                            "pendingOn": [],
+                            "linkedTo": []
+                        }
+                    ]
+                },
+                "callProviderMetadata": {
+                    "anthropic": {
+                        "caller": {
+                            "type": "direct"
+                        }
+                    }
+                }
+            },
+            {
+                "type": "step-start"
+            },
+            {
+                "type": "text",
+                "text": "Parfait, merci ! Dernière question pour bien calibrer notre proposition :",
+                "state": "done"
+            },
+            {
+                "type": "tool-render_form",
+                "toolCallId": "toolu_01WHkwKaNZNmjnBUoGK6WxQk",
+                "state": "output-available",
+                "input": {
+                    "theme": "Budget et calendrier",
+                    "intro": "Pour vous proposer une solution adaptée à votre structure, j'ai besoin de comprendre vos contraintes financières et temporelles.",
+                    "fields": [
+                        {
+                            "id": "budget_range",
+                            "label": "Quel ordre de grandeur budgétaire avez-vous en tête pour ce projet ?",
+                            "type": "choice",
+                            "options": [
+                                "Moins de 10 000 €",
+                                "10 000 € - 25 000 €",
+                                "25 000 € - 50 000 €",
+                                "Plus de 50 000 €",
+                                "Je ne sais pas encore"
+                            ],
+                            "required": true
+                        },
+                        {
+                            "id": "timeline",
+                            "label": "Dans combien de temps aimeriez-vous que la solution soit opérationnelle ?",
+                            "type": "choice",
+                            "options": [
+                                "Le plus vite possible (1-2 mois)",
+                                "D'ici 3-4 mois",
+                                "Pas d'urgence (6 mois ou plus)",
+                                "À définir"
+                            ],
+                            "required": true
+                        }
+                    ]
+                },
+                "output": {
+                    "rendered": true,
+                    "form": {
+                        "theme": "Budget et calendrier",
+                        "intro": "Pour vous proposer une solution adaptée à votre structure, j'ai besoin de comprendre vos contraintes financières et temporelles.",
+                        "fields": [
+                            {
+                                "id": "budget_range",
+                                "label": "Quel ordre de grandeur budgétaire avez-vous en tête pour ce projet ?",
+                                "type": "choice",
+                                "options": [
+                                    "Moins de 10 000 €",
+                                    "10 000 € - 25 000 €",
+                                    "25 000 € - 50 000 €",
+                                    "Plus de 50 000 €",
+                                    "Je ne sais pas encore"
+                                ],
+                                "required": true
+                            },
+                            {
+                                "id": "timeline",
+                                "label": "Dans combien de temps aimeriez-vous que la solution soit opérationnelle ?",
+                                "type": "choice",
+                                "options": [
+                                    "Le plus vite possible (1-2 mois)",
+                                    "D'ici 3-4 mois",
+                                    "Pas d'urgence (6 mois ou plus)",
+                                    "À définir"
+                                ],
+                                "required": true
+                            }
+                        ]
+                    }
+                },
+                "callProviderMetadata": {
+                    "anthropic": {
+                        "caller": {
+                            "type": "direct"
+                        }
+                    }
+                }
+            }
+        ]
+    },
+    {
+        "parts": [
+            {
+                "type": "text",
+                "text": "[Budget et calendrier]\nQuel ordre de grandeur budgétaire avez-vous en tête pour ce projet ?: 10 000 € - 25 000 €\nDans combien de temps aimeriez-vous que la solution soit opérationnelle ?: D'ici 3-4 mois"
+            }
+        ],
+        "id": "dPcWbKzelXrnI8DB",
+        "role": "user"
+    },
+    {
+        "id": "R7q0z7Zpq8UG4COj",
+        "role": "assistant",
+        "parts": [
+            {
+                "type": "step-start"
+            },
+            {
+                "type": "tool-update_field",
+                "toolCallId": "toolu_01ScmePbPHwMYwRknBib5s8S",
+                "state": "output-available",
+                "input": {
+                    "id": "constraints",
+                    "wants": "Budget range, timeline, existing infrastructure",
+                    "value": "Budget: 10 000 € - 25 000 €, Timeline: 3-4 months, Google Workspace infrastructure in place",
+                    "confidence": 0.9,
+                    "doubts": []
+                },
+                "output": {
+                    "projectId": "proj-G_FhPJsj",
+                    "globalConfidence": 0.9,
+                    "summary": "6 resolved",
+                    "tensions": [
+                        {
+                            "id": "client_context",
+                            "wants": "Understanding of the client's sector, team size, and current tools",
+                            "state": "resolved",
+                            "confidence": 0.9,
+                            "value": "Small company (~50 employees), uses Google Workspace, HR-focused, hires ~10 people/year",
+                            "doubts": [],
+                            "pendingOn": [],
+                            "linkedTo": []
+                        },
+                        {
+                            "id": "current_problem",
+                            "wants": "Concrete description of what doesn't work and its measurable cost",
+                            "state": "resolved",
+                            "confidence": 0.9,
+                            "value": "Manual onboarding process: emails sent manually, printing documents, chasing signatures, tracking in spreadsheets. Takes ~2 weeks per hire. Process is hated by everyone involved.",
                             "doubts": [],
                             "pendingOn": [],
                             "linkedTo": []
@@ -836,13 +1003,18 @@
                             "wants": "Budget range, timeline, existing infrastructure",
                             "state": "resolved",
                             "confidence": 0.9,
-                            "value": "Budget 15-30k€, Google Workspace infrastructure",
-                            "doubts": [
-                                {
-                                    "about": "Timeline preference not specified",
-                                    "severity": "low"
-                                }
-                            ],
+                            "value": "Budget: 10 000 € - 25 000 €, Timeline: 3-4 months, Google Workspace infrastructure in place",
+                            "doubts": [],
+                            "pendingOn": [],
+                            "linkedTo": []
+                        },
+                        {
+                            "id": "users",
+                            "wants": "Who uses daily and who decides",
+                            "state": "resolved",
+                            "confidence": 0.9,
+                            "value": "HR manager uses daily (sends emails, tracks process), new employees receive documents. Decision maker: directeur RH",
+                            "doubts": [],
                             "pendingOn": [],
                             "linkedTo": []
                         },
@@ -851,17 +1023,37 @@
                             "wants": "Sensitive data handling, location, regulations",
                             "state": "resolved",
                             "confidence": 0.9,
-                            "value": "France-based, HR employee data (documents, signatures), GDPR applies",
+                            "value": "France-based, HR documents with employee personal data, GDPR applies",
+                            "doubts": [],
+                            "pendingOn": [],
+                            "linkedTo": []
+                        },
+                        {
+                            "id": "objective",
+                            "wants": "What success looks like in 6 months",
+                            "state": "resolved",
+                            "confidence": 0.9,
+                            "value": "Gain de temps, amélioration de qualité de travail des salariés, satisfaction des nouveaux employés et baisse du turn over",
                             "doubts": [],
                             "pendingOn": [],
                             "linkedTo": []
                         }
                     ]
+                },
+                "callProviderMetadata": {
+                    "anthropic": {
+                        "caller": {
+                            "type": "direct"
+                        }
+                    }
                 }
             },
             {
+                "type": "step-start"
+            },
+            {
                 "type": "text",
-                "text": "Parfait ! Merci, j'ai tout ce qu'il me faut pour briefer notre équipe. Votre projet va maintenant être analysé par nos experts. Vous recevrez une première analyse dans quelques minutes.",
+                "text": "Merci, j'ai tout ce qu'il me faut pour briefer notre équipe. Votre projet va maintenant être analysé par nos experts. Vous recevrez une première analyse dans quelques minutes.",
                 "state": "done"
             }
         ]
