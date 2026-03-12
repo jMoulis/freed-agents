@@ -51,13 +51,15 @@ export async function POST(req: NextRequest) {
 
   const projectId = existingId ?? `proj-${nanoid(8)}`;
 
+  console.log("ExistingProjectId", existingId);
   // Init store on first message
   if (!existingId) {
     const firstMessage = messages[messages.length - 1];
-    const text = firstMessage?.parts
-      ?.filter((p): p is { type: "text"; text: string } => p.type === "text")
-      .map((p) => p.text)
-      .join("") ?? "";
+    const text =
+      firstMessage?.parts
+        ?.filter((p): p is { type: "text"; text: string } => p.type === "text")
+        .map((p) => p.text)
+        .join("") ?? "";
     await discoveryStore.create(projectId, text);
   }
 

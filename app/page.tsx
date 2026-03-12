@@ -40,6 +40,7 @@ export default function Home() {
     }
   }
 
+  console.log(result);
   const completedAgents = result
     ? (["ceo", "cto", "architect", "qa"] as const)
         .filter((k) => result[k] != null)

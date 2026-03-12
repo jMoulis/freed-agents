@@ -38,7 +38,7 @@ export async function POST(req: NextRequest) {
     if (!brief?.trim()) {
       return NextResponse.json({ error: "brief is required" }, { status: 400 });
     }
-
+    // return NextResponse.json({ data: { brief, existingId } }, { status: 200 });
     // ── Seul endroit où process.env est lu ─────────────────────
     const ctx = createContext({
       anthropicApiKey: process.env.ANTHROPIC_API_KEY!,
@@ -110,13 +110,39 @@ export async function POST(req: NextRequest) {
     const snapshot = await ctx.store.snapshot(projectId);
 
     const reportPipeline = {
-      ceo: { mandate: ceoResult.output, duration_ms: ceoResult.duration_ms, usage: ceoResult.usage },
-      cto: { proposal: ctoResult.output, duration_ms: ctoResult.duration_ms, usage: ctoResult.usage },
-      architect: { blueprint: architectResult.output, duration_ms: architectResult.duration_ms, usage: architectResult.usage },
-      qa: { audit: qaResult.output, duration_ms: qaResult.duration_ms, usage: qaResult.usage },
+      ceo: {
+        mandate: ceoResult.output,
+        duration_ms: ceoResult.duration_ms,
+        usage: ceoResult.usage,
+      },
+      cto: {
+        proposal: ctoResult.output,
+        duration_ms: ctoResult.duration_ms,
+        usage: ctoResult.usage,
+      },
+      architect: {
+        blueprint: architectResult.output,
+        duration_ms: architectResult.duration_ms,
+        usage: architectResult.usage,
+      },
+      qa: {
+        audit: qaResult.output,
+        duration_ms: qaResult.duration_ms,
+        usage: qaResult.usage,
+      },
     };
-    const reportInternal = generateReport({ projectId, snapshot, pipeline: reportPipeline, mode: "internal" });
-    const reportClient = generateReport({ projectId, snapshot, pipeline: reportPipeline, mode: "client" });
+    const reportInternal = generateReport({
+      projectId,
+      snapshot,
+      pipeline: reportPipeline,
+      mode: "internal",
+    });
+    const reportClient = generateReport({
+      projectId,
+      snapshot,
+      pipeline: reportPipeline,
+      mode: "client",
+    });
 
     return NextResponse.json({
       projectId,

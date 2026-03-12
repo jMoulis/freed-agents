@@ -205,8 +205,13 @@ export class InMemoryOntoStore implements IOntoStore {
   private ownership = new Map<string, AgentRole>(); // `${projectId}:${tensionId}` → AgentRole
 
   async create(projectId: string, _brief: string): Promise<void> {
+    // Clear any existing data for this project (handles singleton reuse + cross-run pollution)
     if (this.fields.has(projectId)) {
-      throw new Error(`Field already exists: ${projectId}`);
+      for (const key of this.ownership.keys()) {
+        if (key.startsWith(`${projectId}:`)) {
+          this.ownership.delete(key);
+        }
+      }
     }
     this.fields.set(projectId, {
       tensions: new Map(),

@@ -100,12 +100,14 @@ export function DiscoveryChat({ onComplete }: Props) {
         .filter(Boolean)
         .join("\n\n");
 
+      console.log(brief);
       const timer = setTimeout(() => onComplete(projectId, brief), 1500);
-      return () => clearTimeout(timer);
+      return () => {
+        console.log(messages);
+        clearTimeout(timer);
+      };
     }
   }, [status, messages, projectId, onComplete]);
-
-  console.log(messages);
 
   function handleFormSubmit(toolCallId: string, data: DynamicFormData) {
     setSubmittedFormIds((prev) => new Set([...prev, toolCallId]));
@@ -123,10 +125,29 @@ export function DiscoveryChat({ onComplete }: Props) {
     );
   }
 
+  function handleSendMessage(message: string) {
+    sendMessage(
+      {
+        text: message,
+      },
+      {
+        body: {
+          ...(projectIdRef.current ? { projectId: projectIdRef.current } : {}),
+        },
+      },
+    );
+  }
   function loadExample() {
-    sendMessage({
-      text: EXAMPLE,
-    });
+    sendMessage(
+      {
+        text: EXAMPLE,
+      },
+      {
+        body: {
+          ...(projectIdRef.current ? { projectId: projectIdRef.current } : {}),
+        },
+      },
+    );
   }
   const isStreaming = status === "submitted" || status === "streaming";
   const hasStarted = messages.length > 0;
@@ -152,7 +173,6 @@ export function DiscoveryChat({ onComplete }: Props) {
                 {msg.role === "assistant" &&
                   msg.parts.map((part, i) => {
                     if (isToolUIPart(part)) {
-                      console.log(part);
                       const dp = part as ToolUIPart;
                       if (dp.type !== "tool-render_form") return null;
                       if (dp.state === "input-streaming") {
@@ -165,7 +185,7 @@ export function DiscoveryChat({ onComplete }: Props) {
                       }
 
                       const form = dp.input as RenderFormInput;
-                      console.log();
+
                       if (!form?.fields) return null;
 
                       if (submittedFormIds.has(dp.toolCallId)) {
@@ -229,7 +249,7 @@ export function DiscoveryChat({ onComplete }: Props) {
       <PromptInput
         className="border-0 bg-transparent shadow-none"
         onSubmit={({ text }) => {
-          if (text.trim()) sendMessage({ text });
+          if (text.trim()) handleSendMessage(text);
         }}
       >
         <PromptInputTextarea
@@ -254,3 +274,8 @@ export function DiscoveryChat({ onComplete }: Props) {
     </div>
   );
 }
+
+/**
+ *
+ * Gain de temps, amélioration de qualité de travail des salariés, satisfaction des nouveaux employés et baisse du turn over
+ */
