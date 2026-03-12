@@ -222,12 +222,14 @@ export class InMemoryOntoStore implements IOntoStore {
 
   private getField(projectId: string): Field {
     const field = this.fields.get(projectId);
+    console.log("GetField", projectId, field);
     if (!field) throw new Error(`No field for project: ${projectId}`);
     return field;
   }
 
   async snapshot(projectId: string): Promise<FieldSnapshot> {
     const field = this.getField(projectId);
+    console.log("GetField", projectId, field);
     const eq = this.engine.equilibrate(field);
     return fieldToSnapshot(projectId, field, eq);
   }
@@ -246,7 +248,7 @@ export class InMemoryOntoStore implements IOntoStore {
       if (existingOwner && existingOwner !== by) {
         throw new Error(
           `Agent '${by}' cannot overwrite tension '${input.id}' owned by '${existingOwner}'. ` +
-          `Use a namespaced id like '${by}_challenge_${input.id}' instead.`,
+            `Use a namespaced id like '${by}_challenge_${input.id}' instead.`,
         );
       }
 

@@ -67,6 +67,7 @@ function buildFieldTools(
         "Read the current epistemic field. Call this first to understand what previous agents have decided and what tensions remain open.",
       inputSchema: z.object({}),
       execute: async () => {
+        console.log(projectId);
         return store.snapshot(projectId);
       },
     }),
