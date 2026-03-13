@@ -6,7 +6,13 @@
       "Bash(ls /Users/julienmoulis/Documents/Sites/freed-agents/node_modules/ai/react*)",
       "Bash(python3 -c \"import sys,json; p=json.load\\(sys.stdin\\); exports=p.get\\(''''exports'''',{}\\); [print\\(k\\) for k in exports.keys\\(\\)]\")",
       "Bash(npx tsc:*)",
-      "Bash(npx next:*)"
+      "Bash(npx next:*)",
+      "Bash(grep -E \"^eslint$|^@eslint\")",
+      "Bash(npm install:*)",
+      "Bash(yarn lint:*)",
+      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\(json.dumps\\(d.get\\(''''exports'''',{}\\), indent=2\\)\\)\")",
+      "Bash(yarn test:*)",
+      "Bash(yarn vitest:*)"
     ]
   }
 }

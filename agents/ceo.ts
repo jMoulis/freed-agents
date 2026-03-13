@@ -33,9 +33,6 @@ export const ProjectMandateSchema = z.object({
   constraints: z
     .array(z.string())
     .describe("Known constraints: budget, timeline, tech, compliance"),
-  team_needs: z
-    .array(z.string())
-    .describe("Technical skills needed to build this"),
   estimated_complexity: z.enum(["low", "medium", "high", "very_high"]),
   tensions: z
     .array(
@@ -100,7 +97,6 @@ Write tensions that ADD to what Discovery captured — do not duplicate existing
 CEO tensions to produce (write only what Discovery didn't already resolve):
 - project_scope — what is IN and OUT of scope (engineering view)
 - success_criteria — measurable technical outcomes
-- team_needs — skills required to build this
 - estimated_timeline — rough estimate with rationale
 - estimated_complexity — low / medium / high / very_high with justification
 
@@ -109,8 +105,6 @@ Rules:
 - Use linkedTo to reference Discovery tensions your tensions depend on
 - Be honest: confidence 0.5 with a clear doubt is better than 0.9 with no justification
 - Your output will be read by a CTO making technical decisions — be precise`;
-
-
 
 // ═══════════════════════════════════════════════════════════════
 // CONFIG

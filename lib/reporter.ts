@@ -8,10 +8,12 @@
 import { FieldSnapshot } from "@/core/onto-store";
 import { ProjectMandate } from "@/agents/ceo";
 import { StackProposal } from "@/agents/cto";
-import { Blueprint } from "@/agents/architect";
 import { AuditReport } from "@/agents/qa-lead";
 
-type TokenUsage = { inputTokens: number | undefined; outputTokens: number | undefined };
+type TokenUsage = {
+  inputTokens: number | undefined;
+  outputTokens: number | undefined;
+};
 
 export interface ReportInput {
   projectId: string;
@@ -19,8 +21,12 @@ export interface ReportInput {
   pipeline: {
     ceo: { mandate: ProjectMandate; duration_ms: number; usage: TokenUsage };
     cto: { proposal: StackProposal; duration_ms: number; usage: TokenUsage };
-    architect: { blueprint: Blueprint; duration_ms: number; usage: TokenUsage };
     qa: { audit: AuditReport; duration_ms: number; usage: TokenUsage };
+    [key: string]: {
+      duration_ms: number;
+      usage: TokenUsage;
+      [k: string]: unknown;
+    };
   };
 }
 
@@ -34,12 +40,6 @@ function verdictLabel(verdict: "green" | "yellow" | "red"): string {
   return { green: "✓ GREEN", yellow: "◑ YELLOW", red: "✕ RED" }[verdict];
 }
 
-const SEVERITY_ORDER: Record<string, number> = {
-  blocking: 4,
-  high: 3,
-  medium: 2,
-  low: 1,
-};
 
 const BUDGET_VS_SCOPE_LABEL: Record<string, string> = {
   aligned: "The scope fits the estimated budget",
@@ -50,10 +50,7 @@ const BUDGET_VS_SCOPE_LABEL: Record<string, string> = {
 
 // ─── client report ───────────────────────────────────────────────────────────
 
-function generateClientReport({
-  snapshot,
-  pipeline,
-}: ReportInput): string {
+function generateClientReport({ pipeline }: Pick<ReportInput, "pipeline">): string {
   const { mandate } = pipeline.ceo;
   const { proposal } = pipeline.cto;
   const { audit } = pipeline.qa;
@@ -68,7 +65,11 @@ function generateClientReport({
 
   // Verdict
   const verdictEmoji = { green: "✅", yellow: "🟡", red: "🔴" }[audit.verdict];
-  const verdictText = { green: "Looking Good", yellow: "A Few Things to Clarify", red: "Needs Clarification" }[audit.verdict];
+  const verdictText = {
+    green: "Looking Good",
+    yellow: "A Few Things to Clarify",
+    red: "Needs Clarification",
+  }[audit.verdict];
   lines.push(`## ${verdictEmoji} ${verdictText}`);
   lines.push(``);
   lines.push(audit.verdict_rationale);
@@ -105,9 +106,10 @@ function generateClientReport({
     lines.push(`- Hosted on ${dm.hosting} — ${dm.approach}`);
   }
 
-  const activeVendors = proposal.decisions.vendors?.filter(
-    (v) => v.decision === "chosen" || v.decision === "shortlisted",
-  ) ?? [];
+  const activeVendors =
+    proposal.decisions.vendors?.filter(
+      (v) => v.decision === "chosen" || v.decision === "shortlisted",
+    ) ?? [];
   activeVendors.forEach((v) => {
     const label = v.decision === "chosen" ? "Using" : "Considering";
     lines.push(`- ${label} ${v.recommendation} for ${v.category}`);
@@ -147,28 +149,36 @@ export function generateReport({
   mode = "internal",
 }: ReportInput & { mode?: "client" | "internal" }): string {
   if (mode === "client") {
-    return generateClientReport({ projectId, snapshot, pipeline });
+    return generateClientReport({ pipeline });
   }
 
   const { mandate } = pipeline.ceo;
   const { proposal } = pipeline.cto;
-  const { blueprint } = pipeline.architect;
   const { audit } = pipeline.qa;
+
+  const specialistKeys = Object.keys(pipeline).filter(
+    (k) => !["ceo", "cto", "qa"].includes(k),
+  );
 
   const totalTokens =
     (pipeline.ceo.usage.inputTokens ?? 0) +
     (pipeline.ceo.usage.outputTokens ?? 0) +
     (pipeline.cto.usage.inputTokens ?? 0) +
     (pipeline.cto.usage.outputTokens ?? 0) +
-    (pipeline.architect.usage.inputTokens ?? 0) +
-    (pipeline.architect.usage.outputTokens ?? 0) +
+    specialistKeys.reduce(
+      (sum, k) =>
+        sum +
+        (pipeline[k].usage.inputTokens ?? 0) +
+        (pipeline[k].usage.outputTokens ?? 0),
+      0,
+    ) +
     (pipeline.qa.usage.inputTokens ?? 0) +
     (pipeline.qa.usage.outputTokens ?? 0);
 
   const totalMs =
     pipeline.ceo.duration_ms +
     pipeline.cto.duration_ms +
-    pipeline.architect.duration_ms +
+    specialistKeys.reduce((sum, k) => sum + pipeline[k].duration_ms, 0) +
     pipeline.qa.duration_ms;
 
   const lines: string[] = [];
@@ -210,8 +220,6 @@ export function generateReport({
     mandate.constraints.forEach((c) => lines.push(`- ${c}`));
     lines.push(``);
   }
-  lines.push(`**Team needs**`);
-  mandate.team_needs.forEach((t) => lines.push(`- ${t}`));
   lines.push(``);
 
   // ── Technical Stack ───────────────────────────────────────────
@@ -231,7 +239,9 @@ export function generateReport({
       lines.push(`| Key libs | ${ts.key_libraries.join(", ")} |`);
     }
     lines.push(``);
-    lines.push(`*Confidence: ${(ts.confidence * 100).toFixed(0)}% — ${ts.rationale}*`);
+    lines.push(
+      `*Confidence: ${(ts.confidence * 100).toFixed(0)}% — ${ts.rationale}*`,
+    );
     lines.push(``);
   }
 
@@ -241,7 +251,9 @@ export function generateReport({
     lines.push(``);
     lines.push(`**Hosting:** ${dm.hosting} · **Approach:** ${dm.approach}`);
     lines.push(``);
-    lines.push(`*Confidence: ${(dm.confidence * 100).toFixed(0)}% — ${dm.rationale}*`);
+    lines.push(
+      `*Confidence: ${(dm.confidence * 100).toFixed(0)}% — ${dm.rationale}*`,
+    );
     lines.push(``);
   }
 
@@ -267,82 +279,6 @@ export function generateReport({
     lines.push(``);
   }
 
-  // ── Architecture Blueprint ────────────────────────────────────
-  lines.push(`## Architecture`);
-  lines.push(``);
-  lines.push(blueprint.summary);
-  lines.push(``);
-
-  const confidentComponents = blueprint.components.filter((c) => c.confidence >= 0.6);
-  if (confidentComponents.length > 0) {
-    lines.push(`### Components`);
-    lines.push(``);
-    lines.push(`| Name | Type | Responsibility | Confidence |`);
-    lines.push(`|------|------|----------------|------------|`);
-    for (const c of confidentComponents) {
-      lines.push(
-        `| ${c.name} | ${c.type} | ${c.responsibility} | ${(c.confidence * 100).toFixed(0)}% |`,
-      );
-    }
-    lines.push(``);
-  }
-
-  if (blueprint.data_model.length > 0) {
-    lines.push(`### Data model`);
-    lines.push(``);
-    for (const entity of blueprint.data_model) {
-      lines.push(`**${entity.entity}** (${(entity.confidence * 100).toFixed(0)}%)`);
-      if (entity.fields.length > 0) {
-        lines.push(`Fields: \`${entity.fields.join("`, `")}\``);
-      }
-      if (entity.relations.length > 0) {
-        lines.push(`Relations: ${entity.relations.join(" · ")}`);
-      }
-      if (entity.notes) {
-        lines.push(`*${entity.notes}*`);
-      }
-      lines.push(``);
-    }
-  }
-
-  if (blueprint.api_contracts.length > 0) {
-    lines.push(`### API contracts`);
-    lines.push(``);
-    lines.push(`| Method | Endpoint | Purpose | Auth | Confidence |`);
-    lines.push(`|--------|----------|---------|------|------------|`);
-    for (const api of blueprint.api_contracts) {
-      lines.push(
-        `| \`${api.method}\` | \`${api.endpoint}\` | ${api.purpose} | ${api.auth} | ${(api.confidence * 100).toFixed(0)}% |`,
-      );
-    }
-    lines.push(``);
-  }
-
-  if (blueprint.blockers.length > 0) {
-    lines.push(`### Architecture blockers`);
-    lines.push(``);
-    blueprint.blockers.forEach((b) =>
-      lines.push(`- **${b.decision}** — blocked by \`${b.blocked_by}\``),
-    );
-    lines.push(``);
-  }
-
-  // ── Risks ─────────────────────────────────────────────────────
-  const sortedRisks = [...blueprint.risks].sort(
-    (a, b) => (SEVERITY_ORDER[b.severity] ?? 0) - (SEVERITY_ORDER[a.severity] ?? 0),
-  );
-
-  if (sortedRisks.length > 0) {
-    lines.push(`## Risks`);
-    lines.push(``);
-    lines.push(`| Severity | Area | Description | Mitigation |`);
-    lines.push(`|----------|------|-------------|------------|`);
-    for (const r of sortedRisks) {
-      lines.push(`| ${r.severity.toUpperCase()} | ${r.area} | ${r.description} | ${r.mitigation} |`);
-    }
-    lines.push(``);
-  }
-
   // ── Discovery questions ───────────────────────────────────────
   if (audit.discovery_questions.length > 0) {
     lines.push(`## Discovery Questions`);
@@ -350,9 +286,7 @@ export function generateReport({
     lines.push(`*Questions to ask the client before proceeding.*`);
     lines.push(``);
     audit.discovery_questions.forEach((q, i) => {
-      lines.push(
-        `${i + 1}. **[${q.priority.toUpperCase()}]** ${q.question}`,
-      );
+      lines.push(`${i + 1}. **[${q.priority.toUpperCase()}]** ${q.question}`);
       if (q.unblocks.length > 0) {
         lines.push(`   *Unblocks: ${q.unblocks.join(", ")}*`);
       }
@@ -400,14 +334,22 @@ export function generateReport({
   );
   lines.push(``);
 
-  const resolvedTensions = snapshot.tensions.filter((t) => t.state === "resolved");
-  const blockedTensions = snapshot.tensions.filter((t) => t.state === "blocked");
+  const resolvedTensions = snapshot.tensions.filter(
+    (t) => t.state === "resolved",
+  );
+  const blockedTensions = snapshot.tensions.filter(
+    (t) => t.state === "blocked",
+  );
 
   if (resolvedTensions.length > 0) {
-    lines.push(`<details><summary>Resolved tensions (${resolvedTensions.length})</summary>`);
+    lines.push(
+      `<details><summary>Resolved tensions (${resolvedTensions.length})</summary>`,
+    );
     lines.push(``);
     resolvedTensions.forEach((t) => {
-      lines.push(`- **\`${t.id}\`** — ${t.wants} *(${(t.confidence * 100).toFixed(0)}%)*`);
+      lines.push(
+        `- **\`${t.id}\`** — ${t.wants} *(${(t.confidence * 100).toFixed(0)}%)*`,
+      );
     });
     lines.push(``);
     lines.push(`</details>`);
@@ -415,7 +357,9 @@ export function generateReport({
   }
 
   if (blockedTensions.length > 0) {
-    lines.push(`<details><summary>Blocked tensions (${blockedTensions.length})</summary>`);
+    lines.push(
+      `<details><summary>Blocked tensions (${blockedTensions.length})</summary>`,
+    );
     lines.push(``);
     blockedTensions.forEach((t) => {
       lines.push(`- **\`${t.id}\`** — ${t.wants}`);
@@ -438,14 +382,17 @@ export function generateReport({
   lines.push(`| Agent | Duration | Input tokens | Output tokens |`);
   lines.push(`|-------|----------|-------------|---------------|`);
 
-  const agents = [
-    { name: "CEO", key: "ceo" as const },
-    { name: "CTO", key: "cto" as const },
-    { name: "Architect", key: "architect" as const },
-    { name: "QA Lead", key: "qa" as const },
+  const pipelineEntries = [
+    { name: "CEO", key: "ceo" },
+    { name: "CTO", key: "cto" },
+    ...specialistKeys.map((k) => ({
+      name: k.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()),
+      key: k,
+    })),
+    { name: "QA Lead", key: "qa" },
   ];
 
-  for (const { name, key } of agents) {
+  for (const { name, key } of pipelineEntries) {
     const p = pipeline[key];
     lines.push(
       `| ${name} | ${formatMs(p.duration_ms)} | ${(p.usage.inputTokens ?? 0).toLocaleString()} | ${(p.usage.outputTokens ?? 0).toLocaleString()} |`,

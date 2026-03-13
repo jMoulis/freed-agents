@@ -25,8 +25,8 @@ import {
   PerspectiveView,
 } from "@/lib/onto/onto-engine";
 import { getDb } from "@/lib/mongodb";
-
 import { AgentRole, TensionInput } from "@/core/types";
+import { COLLECTION_PROJECTS, DB_NAME } from "@/config/COLLECTIONS";
 
 // ═══════════════════════════════════════════════════════════════
 // FIELD SNAPSHOT — what agents read via read_field tool
@@ -143,8 +143,6 @@ function fieldToSnapshot(
   eq: Equilibrium,
 ): FieldSnapshot {
   const tensions = [...field.tensions.values()].map((t) => {
-    const isPreEquilibrated = t.state.phase === "equilibrated";
-
     const preResolution =
       t.state.phase === "equilibrated" ? t.state.result : undefined;
     const resolution = eq.resolved.get(t.id) ?? preResolution;
@@ -195,9 +193,22 @@ function fieldToSnapshot(
     .filter(Boolean)
     .join(" · ");
 
+  // Compute globalConfidence from the snapshot tensions, not eq.confidence.
+  // eq.confidence is 0 when tensions were already equilibrated in a prior call
+  // (the engine skips pre-equilibrated tensions on re-entry), causing snapshot()
+  // to return 0 even when the field is fully resolved. Deriving from snapshot
+  // state mirrors computeFieldConfidence() but is always accurate.
+  const resolvedSnapTensions = tensions.filter((t) => t.state === "resolved");
+  const globalConfidence =
+    resolvedSnapTensions.length > 0 && tensions.length > 0
+      ? (resolvedSnapTensions.reduce((sum, t) => sum + t.confidence, 0) /
+          resolvedSnapTensions.length) *
+        (resolvedSnapTensions.length / tensions.length)
+      : 0;
+
   return {
     projectId,
-    globalConfidence: Number(eq.confidence),
+    globalConfidence,
     summary: parts || "Field empty",
     tensions,
   };
@@ -235,7 +246,6 @@ export class InMemoryOntoStore implements IOntoStore {
   }
 
   async snapshot(projectId: string): Promise<FieldSnapshot> {
-    console.log("MEMORY?");
     const field = this.getField(projectId);
     const eq = this.engine.equilibrate(field);
     return fieldToSnapshot(projectId, field, eq);
@@ -266,25 +276,13 @@ export class InMemoryOntoStore implements IOntoStore {
       const tension = inputToTension(input, by);
       field.tensions.set(tension.id, tension);
     }
-    // DEBUG
-    console.log("=== EQUILIBRATION TRACE ===");
     const eq = this.engine.equilibrate(field);
-    for (const step of eq.trace) {
-      console.log(`[pass ${step.pass}] ${step.action} — ${step.note ?? ""}`);
-    }
-    console.log("=== RESOLVED ===", [...eq.resolved.keys()]);
-    console.log("=== RESISTING ===", [...eq.resisting.entries()]);
-    console.log("=== PARTIAL ===", [...eq.partial.keys()]);
-    console.log("=== CONFLICTS ===", eq.conflicts);
 
-    // console.log(renderEquilibrium(eq));
     return fieldToSnapshot(projectId, field, eq);
   }
 
   async equilibrate(projectId: string): Promise<Equilibrium> {
     const field = this.getField(projectId);
-    const equilibrium = this.engine.equilibrate(field);
-
     return this.engine.equilibrate(field);
   }
 
@@ -368,8 +366,7 @@ function deserializeField(s: SerializedField): Field {
 // MONGO IMPLEMENTATION
 // ═══════════════════════════════════════════════════════════════
 
-const DB_NAME = "freed-agents";
-const COLLECTION = "freed_agents_projects";
+const COLLECTION = COLLECTION_PROJECTS;
 
 export class MongoOntoStore implements IOntoStore {
   private engine = new OntoEngine();

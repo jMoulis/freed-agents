@@ -1,208 +1,187 @@
 {
-    "projectId": "proj-G_FhPJsj",
+    "projectId": "proj-yNJw-lC5",
     "ceo": {
         "mandate": {
-            "title": "HR Onboarding Automation Platform",
-            "description": "A digital onboarding solution for a 50-employee French company to replace manual paper-and-Excel processes. The platform will automate document generation, e-signature workflows, task tracking, and notification systems, reducing onboarding time from 2 weeks to under 3 days while ensuring GDPR compliance.",
+            "title": "HR Onboarding Automation App",
+            "description": "A lightweight web application to digitize employee onboarding for a 50-person French company. Replaces manual paper/Excel workflows with automated task assignment, document templates, e-signatures, and email notifications integrated with Google Workspace. Reduces onboarding time from 2 weeks to under 3 days.",
             "target_users": [
-                "HR manager (daily admin: workflow configuration, progress monitoring, document management)",
-                "New employees (document completion, e-signature, task completion)",
-                "Directeur RH (approval and oversight)"
+                "HR team members (pole HR)",
+                "New employees joining the company",
+                "HR Director (DRH) as decision maker"
             ],
             "core_features": [
-                "Employee onboarding workflow engine with task assignment and progress tracking",
-                "Digital document generation and upload management",
-                "E-signature integration (DocuSign/HelloSign or equivalent)",
-                "Google Workspace integration (SSO, email notifications, calendar)",
-                "Real-time dashboard for HR manager showing onboarding status",
-                "GDPR-compliant employee data capture forms",
-                "Automated email notifications and reminders",
-                "Audit trail for document changes and signatures"
+                "Digital onboarding workflow engine (task creation, assignment, status tracking)",
+                "Document template library with merge fields",
+                "E-signature capability for employment documents",
+                "Automated email notifications for tasks and milestones",
+                "Google Workspace integration (Calendar, Gmail, Drive)",
+                "GDPR-compliant employee data storage with audit trail",
+                "Simple dashboard showing onboarding pipeline status",
+                "New employee portal for completing tasks and signing documents"
             ],
             "success_criteria": [
-                "Onboarding completion time reduced from 14 days to <3 days",
-                "100% elimination of manual email sending and paper documents",
-                "E-signature capture within 24 hours of document send",
-                "HR manager can view real-time status without manual follow-up",
-                "New employee self-service task completion rate >90%",
-                "GDPR-compliant data storage with encryption and access controls",
-                "System handles 10 onboardings/year with zero manual spreadsheet tracking"
+                "Onboarding time reduced from 14 days to <3 days",
+                "Zero manual email sending for standard onboarding workflows",
+                "100% paperless document flow (no printing required)",
+                "HR team reports 70%+ time savings on onboarding administration",
+                "New employee onboarding satisfaction score >8/10"
             ],
             "constraints": [
-                "Budget: €10,000 - €25,000 (development + initial setup)",
-                "Timeline: 3-4 months to operational",
+                "Budget under €5,000 (extremely tight, ~40-50 dev hours)",
+                "Timeline 3-4 months (10-12 weeks for MVP delivery)",
                 "Must integrate with existing Google Workspace infrastructure",
-                "GDPR compliance required (France-based, employee personal data)",
-                "Small team capacity: assumes single full-stack developer + designer",
-                "E-signature SaaS costs: €1k-€3k/year not included in dev budget",
-                "EU-hosted infrastructure required: €50-€200/month ongoing"
-            ],
-            "team_needs": [
-                "Full-stack developer (React/Vue frontend + Node.js/Python backend)",
-                "Google Workspace API integration expertise",
-                "E-signature API integration experience (DocuSign, HelloSign, or similar)",
-                "GDPR-compliant data architecture and security practices",
-                "Document/PDF generation capabilities",
-                "UI/UX designer (part-time for admin dashboards and employee forms)",
-                "French language localization (content and interface)",
-                "Email notification system development"
+                "France-based, GDPR compliance mandatory for employee data",
+                "Small team (<10 daily users), low transaction volume (~1 hire/month)"
             ],
             "estimated_complexity": "medium",
             "tensions": [
                 {
                     "id": "project_scope",
-                    "wants": "Clear engineering definition of what is IN and OUT of scope",
-                    "value": "IN SCOPE: Digital onboarding workflow (task assignment, document generation/upload, e-signature integration, progress tracking dashboard), Google Workspace integration (auth, email notifications), employee data capture form, HR admin interface. OUT OF SCOPE: Full HRIS/payroll system, time tracking, performance management, benefits administration, applicant tracking/recruiting.",
-                    "confidence": 0.85,
-                    "doubts": [
-                        {
-                            "about": "Document template complexity - unclear if documents are simple forms or complex contracts requiring legal review integration",
-                            "severity": "medium",
-                            "blocksPath": [
-                                "architecture",
-                                "integration_selection"
-                            ]
-                        },
-                        {
-                            "about": "E-signature provider not specified - integration complexity varies widely (DocuSign vs simple click-to-sign)",
-                            "severity": "medium",
-                            "blocksPath": [
-                                "architecture",
-                                "cost_estimation"
-                            ]
-                        }
-                    ],
-                    "linkedTo": [
-                        "current_problem",
-                        "objective",
-                        "constraints"
-                    ]
-                },
-                {
-                    "id": "success_criteria",
-                    "wants": "Measurable technical outcomes that define success",
-                    "value": "Onboarding time reduced from 2 weeks to <3 days, 100% digital workflow (zero paper/manual emails), e-signature capture <24h, all employee data stored GDPR-compliant, HR manager can track status real-time, new hires complete onboarding tasks without HR chase-up.",
+                    "wants": "Define what is IN and OUT of scope from engineering perspective",
+                    "value": "IN: Digital onboarding workflow (task assignment, document templates, e-signatures, status tracking, email automation), Google Workspace integration, GDPR-compliant data storage. OUT: full HRIS/payroll integration, advanced analytics/reporting, mobile-native apps, multi-language support beyond French, complex role hierarchies, time tracking, performance management",
                     "confidence": 0.8,
                     "doubts": [
                         {
-                            "about": "Baseline metrics not quantified - 'everyone hates it' is subjective. No current NPS or satisfaction data mentioned.",
-                            "severity": "low"
-                        },
-                        {
-                            "about": "Turnover reduction attribution - difficult to measure causality between onboarding tool and turnover within 6 months",
+                            "about": "Client may expect payroll or performance features that are standard in commercial HRIS but out of scope for budget",
                             "severity": "medium"
-                        }
-                    ],
-                    "linkedTo": [
-                        "objective",
-                        "current_problem"
-                    ]
-                },
-                {
-                    "id": "team_needs",
-                    "wants": "Technical skills required to build this",
-                    "value": "Full-stack developer (React/Vue + Node.js/Python), Google Workspace API integration experience, document/PDF generation, e-signature API integration (DocuSign/HelloSign/etc), GDPR-compliant data storage, basic UI/UX for admin dashboards, email notification system.",
-                    "confidence": 0.85,
-                    "doubts": [
-                        {
-                            "about": "French language requirement implied but not stated - may need localization expertise",
-                            "severity": "low"
-                        }
-                    ],
-                    "linkedTo": [
-                        "project_scope",
-                        "compliance_data",
-                        "client_context"
-                    ]
-                },
-                {
-                    "id": "estimated_timeline",
-                    "wants": "Rough timeline estimate with rationale",
-                    "value": "10-14 weeks total: 2 weeks discovery/design, 6-8 weeks core development, 2 weeks testing/refinement, 1-2 weeks deployment/training. Assumes single full-stack dev + part-time designer. Fits within 3-4 month constraint.",
-                    "confidence": 0.7,
-                    "doubts": [
-                        {
-                            "about": "Google Workspace integration complexity unknown - could add 1-2 weeks if admin approval/OAuth scopes are restricted",
-                            "severity": "medium",
-                            "blocksPath": [
-                                "architecture",
-                                "timeline_planning"
-                            ]
                         },
                         {
-                            "about": "E-signature integration - pre-built library vs custom implementation could swing timeline by 2-3 weeks",
+                            "about": "E-signature requirements unclear: third-party integration (DocuSign) or basic digital signature sufficient?",
                             "severity": "medium",
                             "blocksPath": [
                                 "architecture",
                                 "vendor_selection"
                             ]
-                        },
-                        {
-                            "about": "Client availability for feedback cycles not discussed - assumes timely review within 48h per iteration",
-                            "severity": "low"
                         }
                     ],
                     "linkedTo": [
                         "constraints",
-                        "project_scope",
-                        "team_needs"
+                        "current_problem"
                     ]
                 },
                 {
-                    "id": "hidden_scope_risks",
-                    "wants": "Identify implied requirements not explicitly stated",
-                    "value": "GDPR data processing agreement required, data retention/deletion policy, user role management (HR admin vs manager vs employee views), audit trail for document changes, mobile responsiveness likely expected, existing employee data migration from spreadsheets.",
-                    "confidence": 0.65,
+                    "id": "success_criteria",
+                    "wants": "Measurable technical outcomes that define project success",
+                    "value": [
+                        "Onboarding time reduced from 2 weeks to <3 days",
+                        "Zero manual email sending for standard onboarding tasks",
+                        "100% digital document flow (no printing)",
+                        "HR team reports 70%+ time savings on onboarding admin",
+                        "New employee NPS >8/10 for onboarding experience"
+                    ],
+                    "confidence": 0.75,
                     "doubts": [
                         {
-                            "about": "No discussion of existing data migration - 50 employees may have historical records needing import",
-                            "severity": "medium",
-                            "blocksPath": [
-                                "architecture",
-                                "timeline_planning"
-                            ]
-                        },
-                        {
-                            "about": "Multi-tenant needs unclear - single HR manager vs multiple office locations or subsidiaries",
+                            "about": "Turnover reduction is a 6-12 month lagging indicator, hard to attribute to onboarding app alone",
                             "severity": "low"
                         },
                         {
-                            "about": "Document version control/history not mentioned but likely needed for compliance",
+                            "about": "Baseline metrics not captured: actual current onboarding time, current employee satisfaction scores",
+                            "severity": "medium"
+                        }
+                    ],
+                    "linkedTo": [
+                        "objective",
+                        "current_problem"
+                    ]
+                },
+                {
+                    "id": "estimated_timeline",
+                    "wants": "Rough timeline estimate with rationale",
+                    "value": "10-12 weeks (2.5-3 months) for MVP. Breakdown: 2 weeks discovery/design, 6-7 weeks dev (workflow engine, integration, UI), 1 week testing, 1 week pilot + iteration. Client wants 3-4 months, this is achievable if scope stays tight.",
+                    "confidence": 0.7,
+                    "doubts": [
+                        {
+                            "about": "Google Workspace API integration complexity unknown: OAuth, admin consent, domain verification could add 1-2 weeks",
                             "severity": "medium",
                             "blocksPath": [
-                                "architecture",
-                                "compliance"
+                                "architecture"
                             ]
+                        },
+                        {
+                            "about": "E-signature legal requirements in France may require specific provider (slow procurement)",
+                            "severity": "medium"
+                        },
+                        {
+                            "about": "Client availability for feedback/testing not confirmed, could extend timeline by 2-4 weeks",
+                            "severity": "low"
+                        }
+                    ],
+                    "pendingOn": [
+                        "architecture_decisions"
+                    ],
+                    "linkedTo": [
+                        "constraints",
+                        "project_scope"
+                    ]
+                },
+                {
+                    "id": "estimated_complexity",
+                    "wants": "Complexity assessment with justification",
+                    "value": "medium",
+                    "confidence": 0.8,
+                    "doubts": [
+                        {
+                            "about": "Could escalate to high if GDPR audit trail requirements are strict or if client expects real-time sync with external systems",
+                            "severity": "medium"
                         }
                     ],
                     "linkedTo": [
                         "project_scope",
                         "compliance_data",
-                        "current_problem"
+                        "constraints"
                     ]
                 },
                 {
-                    "id": "budget_feasibility",
-                    "wants": "Engineering assessment of budget adequacy",
-                    "value": "€10k-€25k is feasible for MVP with 1 full-stack dev (8-12 weeks) + designer + e-signature SaaS costs. Upper range allows polish and 1-2 integrations. Lower range requires prioritization and possibly template-based UI.",
-                    "confidence": 0.75,
+                    "id": "complexity_rationale",
+                    "wants": "Justify complexity assessment for CTO",
+                    "value": "MEDIUM because: (1) Standard CRUD + workflow engine, not novel tech, (2) Single third-party integration (Google Workspace), (3) GDPR compliance adds data handling rigor but scope is narrow, (4) Low transaction volume (10 hires/year = ~1/month), (5) Small user base (<10 daily users). NOT HIGH because: no real-time requirements, no complex business logic, no legacy system migration, forgiving performance requirements.",
+                    "confidence": 0.8,
+                    "doubts": [],
+                    "linkedTo": [
+                        "estimated_complexity"
+                    ]
+                },
+                {
+                    "id": "budget_risk",
+                    "wants": "Assess if budget constraint is realistic for scope",
+                    "value": "TIGHT. Under 5k€ for 10-12 weeks implies ~40-50 dev hours at market rates OR offshore/junior team OR heavily templatized solution. Scope must remain ruthlessly minimal. Any scope creep (e-signature integration, custom reporting, mobile) will break budget.",
+                    "confidence": 0.85,
                     "doubts": [
                         {
-                            "about": "E-signature SaaS annual costs not accounted - could consume €1k-€3k/year depending on volume",
-                            "severity": "low"
-                        },
-                        {
-                            "about": "Hosting/infrastructure costs - GDPR-compliant EU hosting adds €50-€200/month",
-                            "severity": "low"
-                        },
-                        {
-                            "about": "Budget includes development only or also maintenance/support? 10 hires/year suggests low ongoing support needs.",
-                            "severity": "medium"
+                            "about": "Client may not understand trade-off between budget and polish/features",
+                            "severity": "medium",
+                            "blocksPath": [
+                                "expectation_management"
+                            ]
                         }
                     ],
                     "linkedTo": [
                         "constraints",
-                        "estimated_timeline",
+                        "project_scope"
+                    ]
+                },
+                {
+                    "id": "technical_risks",
+                    "wants": "Identify technical risks beyond what Discovery captured",
+                    "value": [
+                        "Google Workspace admin consent may require IT approval outside HR",
+                        "GDPR right-to-deletion must work with document retention policies",
+                        "Email automation could trigger spam filters if not properly configured",
+                        "No staging environment mentioned in budget - testing on production data risky"
+                    ],
+                    "confidence": 0.75,
+                    "doubts": [
+                        {
+                            "about": "Unknown if client has IT/security review process that could block deployment",
+                            "severity": "medium",
+                            "blocksPath": [
+                                "deployment"
+                            ]
+                        }
+                    ],
+                    "linkedTo": [
+                        "constraints",
                         "compliance_data"
                     ]
                 }
@@ -210,32 +189,1051 @@
         },
         "tensions_written": 7,
         "usage": {
-            "inputTokens": 12597,
-            "outputTokens": 3552
+            "inputTokens": 12440,
+            "outputTokens": 3067
         },
-        "duration_ms": 60018,
+        "duration_ms": 52642,
         "reasoning_raw": null
     },
+    "cto": {
+        "proposal": {
+            "field_assessment": {
+                "accepted": [
+                    "client_context",
+                    "current_problem",
+                    "constraints",
+                    "objective",
+                    "users",
+                    "compliance_data",
+                    "estimated_complexity",
+                    "complexity_rationale",
+                    "budget_risk",
+                    "technical_risks",
+                    "project_scope",
+                    "success_criteria"
+                ],
+                "contested": [
+                    "estimated_timeline"
+                ],
+                "blocked_by": [
+                    "project_scope"
+                ]
+            },
+            "decisions": {
+                "tech_stack": {
+                    "frontend": "React with Next.js",
+                    "backend": "Node.js with Express",
+                    "database": "PostgreSQL",
+                    "key_libraries": [
+                        "Google APIs Client (OAuth, Gmail, Calendar, Drive)",
+                        "Nodemailer",
+                        "React Hook Form",
+                        "Tailwind CSS",
+                        "Prisma ORM"
+                    ],
+                    "rationale": "Stack chosen for rapid development within tight budget (5k€/10-12 weeks). Next.js provides SSR + API routes reducing deployment complexity. Node.js aligns with Google APIs Client library and enables full-stack JavaScript for small team. PostgreSQL handles relational data (workflows, employees, documents) with GDPR-compliant features (audit logs, encryption at rest). Tailwind CSS accelerates UI development. Trade-off: E-signature integration uncertainty could require Python adapters if certified provider mandates it, but can be isolated as microservice.",
+                    "confidence": 0.75
+                },
+                "deployment_model": {
+                    "hosting": "Vercel (frontend + API routes) or Railway (full-stack containerized)",
+                    "approach": "Serverless frontend on Vercel with API routes, or containerized monolith on Railway. Managed PostgreSQL (Railway/Render database). EU region required for GDPR. No staging environment in budget - local development + production with feature flags.",
+                    "rationale": "Vercel ideal for Next.js but API routes have cold start limitations. Railway offers predictable pricing and EU region support. Budget (5k€) cannot support separate staging environment - recommend feature flags and canary releases. Ongoing hosting cost 50-150€/month must be communicated to client as post-launch expense. GDPR data residency requires EU-hosted database.",
+                    "confidence": 0.7
+                },
+                "vendors": [
+                    {
+                        "category": "Email Automation",
+                        "recommendation": "Google Workspace SMTP (primary) with SendGrid fallback",
+                        "decision": "shortlisted",
+                        "rationale": "Low volume (10 hires/year = ~1 email/month) makes Google Workspace SMTP viable and zero-cost. SendGrid free tier (100 emails/day) provides fallback if spam filtering issues arise. Domain authentication (SPF, DKIM) required regardless of provider. Avoid vendor cost unless deliverability problems surface in testing.",
+                        "confidence": 0.65
+                    },
+                    {
+                        "category": "Monitoring",
+                        "recommendation": "Sentry (error tracking) + Vercel Analytics (frontend) + Railway logs (backend)",
+                        "decision": "shortlisted",
+                        "rationale": "Free tiers sufficient for low-traffic application. Sentry captures client and server errors. Vercel Analytics tracks frontend performance. Railway provides basic log aggregation. GDPR concern: Sentry may log PII in error traces - requires configuration to scrub sensitive fields (emails, employee data). Monitoring budget near-zero fits overall constraint.",
+                        "confidence": 0.7
+                    }
+                ]
+            },
+            "deferred": [
+                {
+                    "decision": "E-signature vendor selection (DocuSign, Adobe Sign, Yousign, or basic digital signature)",
+                    "blocked_by": "project_scope - CEO flagged blocking uncertainty: legal requirements in France for e-signatures unknown. If certified eIDAS signature required, vendor cost (1.5-2.5k€) consumes 30-50% of budget and procurement adds 2-4 weeks. If basic digital signature (PDF annotation + timestamp) is legally sufficient, can implement in-house with zero vendor cost. This decision blocks timeline finalization and affects tech stack (Python integration may be needed). Cannot proceed without client clarification on legal requirements."
+                },
+                {
+                    "decision": "Hosting provider final selection (Vercel vs Railway)",
+                    "blocked_by": "compliance_data - GDPR data residency requirements not fully specified. Need confirmation client accepts EU-region hosting and whether specific certifications (ISO 27001, SOC 2) are required. Railway offers EU region at predictable pricing but lacks some enterprise compliance docs Vercel provides. This does not block architecture design but blocks vendor contract."
+                },
+                {
+                    "decision": "Audit logging depth and event sourcing architecture",
+                    "blocked_by": "compliance_data - security_model tension identified conflict between GDPR right-to-deletion and document retention. Unknown whether client needs full event sourcing for legal defense or basic audit logs suffice. Full event sourcing adds 2-3 weeks development time and affects database schema. Need legal guidance before committing to architecture."
+                }
+            ]
+        },
+        "recruited": [
+            "lead_back",
+            "lead_front",
+            "data_architect"
+        ],
+        "tensions_written": 8,
+        "usage": {
+            "inputTokens": 45565,
+            "outputTokens": 4716
+        },
+        "duration_ms": 90892,
+        "reasoning_raw": null
+    },
+    "specialists": {
+        "lead_back": {
+            "blueprint": {
+                "summary": "16 resolved · 5 partial",
+                "api_contracts": [],
+                "auth_design": {
+                    "method": "Google OAuth 2.0",
+                    "provider": "Google Workspace",
+                    "flow": "Workspace SSO → authorization bearer token → session management",
+                    "notes": "Simplifies HR team onboarding, GDPR-compliant audit logging needed. Admin consent and domain verification required, may delay timeline."
+                },
+                "integrations": [
+                    {
+                        "service": "Google Workspace (Gmail, Calendar, Drive)",
+                        "purpose": "Send onboarding emails, schedule orientation, store documents",
+                        "approach": "REST API, event-driven triggers (no continuous sync)",
+                        "confidence": 0.8
+                    }
+                ],
+                "risks": [],
+                "blockers": []
+            },
+            "tensions_written": 0,
+            "usage": {
+                "inputTokens": 8888,
+                "outputTokens": 207
+            },
+            "duration_ms": 5813
+        },
+        "lead_front": {
+            "blueprint": {
+                "summary": "Building a React/Next.js digital HR onboarding system for a 50-person French company with <50 daily active users. System replaces 2-week manual process with <3-day digital workflow: new hire form entry, document assembly from templates, e-signature, and task tracking. Frontend integrates Google OAuth (Workspace SSO), uses React Context for auth state, React Hook Form for forms, and Tailwind CSS for responsive UI. Key architectural decision: e-signature component (SignaturePad) is pluggable abstraction, deferred until vendor choice is made (third-party like DocuSign vs. basic digital signature). Two critical blockers affect design: (1) vendor_esignature at confidence 0.3 (blocks SignaturePad implementation, document flow UX); (2) GDPR right-to-deletion vs. document retention policy conflict (blocks GDPRDeletionPage workflow). All other frontend layers are unblocked. Routing: 7 protected pages (dashboard, admin, onboarding detail, employee self-service, GDPR export/deletion) plus login/404. State management: minimal—Auth + SessionContext provider, server state via fetch() with optional polling for live updates.",
+                "components": [
+                    {
+                        "name": "RootLayout",
+                        "type": "layout",
+                        "responsibility": "Root wrapper providing authentication context, session sync, theme, and global error handling. All routes render within this layout. Ensures user session is validated on mount.",
+                        "depends_on": [
+                            "AuthProvider",
+                            "SessionContext",
+                            "ErrorBoundary"
+                        ],
+                        "confidence": 0.9
+                    },
+                    {
+                        "name": "AuthProvider",
+                        "type": "provider",
+                        "responsibility": "Manages Google OAuth 2.0 flow: login redirect, token exchange, session storage in httpOnly cookie, logout. Provides useAuth hook to child components with user and isAuthenticating state.",
+                        "depends_on": [],
+                        "confidence": 0.9
+                    },
+                    {
+                        "name": "SessionContext",
+                        "type": "provider",
+                        "responsibility": "Wraps authenticated user data (id, email, firstName, lastName, role: HR_ADMIN | HR_VIEWER | EMPLOYEE). Calls /api/session GET on mount; syncs role changes. Provides useSession hook.",
+                        "depends_on": [
+                            "AuthProvider"
+                        ],
+                        "confidence": 0.9
+                    },
+                    {
+                        "name": "ErrorBoundary",
+                        "type": "provider",
+                        "responsibility": "Global React error boundary. Catches render errors, displays fallback UI, logs to Sentry (sanitized, no PII). Prevents blank page on error.",
+                        "depends_on": [],
+                        "confidence": 0.85
+                    },
+                    {
+                        "name": "LoginPage",
+                        "type": "page",
+                        "responsibility": "Public pre-auth page. Displays Google OAuth sign-in button with explanation text. Redirects to /dashboard on success. Route: /login.",
+                        "depends_on": [
+                            "AuthProvider"
+                        ],
+                        "route": "/login",
+                        "confidence": 0.9
+                    },
+                    {
+                        "name": "NotFoundPage",
+                        "type": "page",
+                        "responsibility": "404 fallback for undefined routes. User-friendly error message with home link.",
+                        "depends_on": [],
+                        "route": "/404",
+                        "confidence": 0.9
+                    },
+                    {
+                        "name": "DashboardPage",
+                        "type": "page",
+                        "responsibility": "Main authenticated landing page. HR sees list of all active onboardings with status, employee name, hire date, next action. Employee sees their own onboarding card with progress. Route: /dashboard. Fetches GET /api/onboarding (filtered by role).",
+                        "depends_on": [
+                            "SessionContext",
+                            "OnboardingListCard",
+                            "StatusBadge"
+                        ],
+                        "route": "/dashboard",
+                        "confidence": 0.9
+                    },
+                    {
+                        "name": "OnboardingListCard",
+                        "type": "ui",
+                        "responsibility": "Summary card for one onboarding: employee name, role, hire date, current step badge, quick action button ('view detail' or 'sign documents'). Clickable to navigate to detail page.",
+                        "depends_on": [
+                            "StatusBadge"
+                        ],
+                        "confidence": 0.85
+                    },
+                    {
+                        "name": "StatusBadge",
+                        "type": "ui",
+                        "responsibility": "Visual badge for onboarding step status. Values: 'pending', 'intake-submitted', 'documents-prepared', 'awaiting-signature', 'signed', 'completed'. Color-coded (yellow, blue, red, green). Accessibility: aria-label with full text.",
+                        "depends_on": [],
+                        "confidence": 0.9
+                    },
+                    {
+                        "name": "OnboardingDetailPage",
+                        "type": "page",
+                        "responsibility": "Full details for one onboarding. Shows timeline of all workflow steps, task checklist (HR only), document list with signature status, and action buttons. Route: /onboarding/[id]. Fetches GET /api/onboarding/[id]. Real-time polling optional (5s refresh if OnboardingDetailPage is visible).",
+                        "depends_on": [
+                            "SessionContext",
+                            "OnboardingTimeline",
+                            "TaskChecklist",
+                            "OnboardingDocumentSection"
+                        ],
+                        "route": "/onboarding/[id]",
+                        "confidence": 0.85
+                    },
+                    {
+                        "name": "OnboardingTimeline",
+                        "type": "feature",
+                        "responsibility": "Vertical timeline component showing all workflow steps (pending → intake → docs → signature → completed). Each step expandable to show substeps and timestamps. Connects to AuditLog for audit trail display.",
+                        "depends_on": [],
+                        "confidence": 0.8
+                    },
+                    {
+                        "name": "TaskChecklist",
+                        "type": "feature",
+                        "responsibility": "Checklist of HR tasks for this onboarding (e.g., 'assign equipment', 'send HR handbook', 'schedule orientation'). HR-only visibility. Checkbox toggles task status, PATCH /api/task/[taskId] on change.",
+                        "depends_on": [],
+                        "confidence": 0.8
+                    },
+                    {
+                        "name": "OnboardingDocumentSection",
+                        "type": "feature",
+                        "responsibility": "Lists all documents required for this onboarding (contract, GDPR acknowledgement, policies). Shows status: 'pending', 'signed', 'expired'. Integrates SignaturePad component. BLOCKED on e-signature vendor decision.",
+                        "depends_on": [
+                            "SignaturePad"
+                        ],
+                        "confidence": 0.6
+                    },
+                    {
+                        "name": "SignaturePad",
+                        "type": "ui",
+                        "responsibility": "Pluggable e-signature component. Interface: onSign(signature) → POST /api/signature, onReject() → cancel, onExpire() → shows expiry. Implementation deferred: will be either (a) third-party iframe embed (DocuSign, Adobe Sign) or (b) custom canvas+pad.js basic signature. Currently renders placeholder 'Signature pending vendor choice'.",
+                        "depends_on": [],
+                        "confidence": 0.3
+                    },
+                    {
+                        "name": "AdminPage",
+                        "type": "page",
+                        "responsibility": "HR-admin-only page (role check in component). Allows creating new onboarding, viewing templates, managing task definitions, viewing high-level reports. Route: /admin. Fetches GET /api/template (list templates).",
+                        "depends_on": [
+                            "SessionContext",
+                            "OnboardingFormModal",
+                            "TemplateManager"
+                        ],
+                        "route": "/admin",
+                        "confidence": 0.75
+                    },
+                    {
+                        "name": "OnboardingFormModal",
+                        "type": "feature",
+                        "responsibility": "Modal form to create new onboarding. Fields: employee first/last name, email, role, hire date, template selection dropdown. Uses React Hook Form with validation (email format, future date). Submit: POST /api/onboarding. On success, redirects to /onboarding/[id].",
+                        "depends_on": [
+                            "TemplateManager"
+                        ],
+                        "confidence": 0.8
+                    },
+                    {
+                        "name": "TemplateManager",
+                        "type": "feature",
+                        "responsibility": "UI to view and create workflow templates. Lists all templates with edit button. Edit modal: template name, drag-drop task list, select which documents required. CRUD: GET /api/template, POST /api/template, PATCH /api/template/[id], DELETE /api/template/[id]. Deferred: document rendering/upload UI pending back-end spec.",
+                        "depends_on": [],
+                        "confidence": 0.75
+                    },
+                    {
+                        "name": "EmployeeOnboardingPage",
+                        "type": "page",
+                        "responsibility": "Employee self-service page (employee role only). Simplified read-only view of their onboarding: hire date, status, documents to sign, assigned tasks. Route: /employee/onboarding. Fetches GET /api/onboarding/me.",
+                        "depends_on": [
+                            "SessionContext",
+                            "OnboardingDocumentSection",
+                            "EmployeeTaskView"
+                        ],
+                        "route": "/employee/onboarding",
+                        "confidence": 0.8
+                    },
+                    {
+                        "name": "EmployeeTaskView",
+                        "type": "ui",
+                        "responsibility": "Displays tasks assigned to employee (read-only status). E.g., 'Complete tax form by 2024-12-15' (completed), 'Review handbook' (pending). Non-interactive; status indicator only.",
+                        "depends_on": [],
+                        "confidence": 0.8
+                    },
+                    {
+                        "name": "GDPRDataExportPage",
+                        "type": "page",
+                        "responsibility": "GDPR right-to-data-portability page. Employee can download their personal data (profile, documents, task history) as JSON. Route: /gdpr/export. Button triggers POST /api/gdpr/export, server returns signed download link. Downloads as gdpr-export-{userId}-{timestamp}.json.",
+                        "depends_on": [
+                            "SessionContext"
+                        ],
+                        "route": "/gdpr/export",
+                        "confidence": 0.75
+                    },
+                    {
+                        "name": "GDPRDeletionPage",
+                        "type": "page",
+                        "responsibility": "GDPR right-to-deletion request form. Employee submits deletion request with optional reason. Request goes to HR for approval (workflow TBD). BLOCKED: HR approval process and document retention policy not defined. Component currently disabled (shows 'Coming soon' message). Route: /gdpr/deletion.",
+                        "depends_on": [
+                            "SessionContext",
+                            "ConfirmationDialog"
+                        ],
+                        "route": "/gdpr/deletion",
+                        "confidence": 0.4
+                    },
+                    {
+                        "name": "LoadingSpinner",
+                        "type": "ui",
+                        "responsibility": "Reusable loading indicator for async operations. Variants: inline (small, within card), fullscreen (page-level). Accessible: role=status, aria-label='Loading'.",
+                        "depends_on": [],
+                        "confidence": 0.9
+                    },
+                    {
+                        "name": "FormInput",
+                        "type": "ui",
+                        "responsibility": "Reusable text/email/date input component. Integrates with React Hook Form register(). Displays validation errors. Accessible: associated label, aria-describedby for error text.",
+                        "depends_on": [],
+                        "confidence": 0.9
+                    },
+                    {
+                        "name": "ConfirmationDialog",
+                        "type": "ui",
+                        "responsibility": "Modal dialog for confirming destructive actions (delete onboarding, delete account). Title, description, confirm/cancel buttons. Returns Promise<boolean>.",
+                        "depends_on": [],
+                        "confidence": 0.85
+                    }
+                ],
+                "ux_flows": [
+                    {
+                        "name": "HR Initiates New Onboarding",
+                        "steps": [
+                            "HR logs in with Google Workspace email (OAuth redirect)",
+                            "HR sees /dashboard with existing onboardings",
+                            "HR clicks 'New Onboarding' button → OnboardingFormModal opens",
+                            "Form: enter employee name, email, role, hire date; select template (dropdown)",
+                            "Form validation: email format, hire date in future, all fields required",
+                            "HR submits form → POST /api/onboarding",
+                            "Server creates Hire record, assigns tasks from template, generates Document records from template",
+                            "Server sends email to employee (subject: 'Your onboarding started', link to /employee/onboarding login)",
+                            "HR redirected to /onboarding/[id], sees full timeline (just created, status='pending')",
+                            "HR reviews assigned tasks, can manually adjust if needed (e.g., change assignee)"
+                        ],
+                        "entry_point": "/admin",
+                        "exit_points": [
+                            "/onboarding/[id]"
+                        ],
+                        "notes": "Happy path: ~2 min. HR workflow is straightforward: form → confirm. Email is sent server-side (no client involvement). Polling not needed here (one-time creation). If email send fails, show toast warning but don't block redirect."
+                    },
+                    {
+                        "name": "New Employee Signs Documents & Completes Onboarding",
+                        "steps": [
+                            "Employee receives email from HR with link to /employee/onboarding + temp login code",
+                            "Employee clicks link, logs in (OAuth or temp code fallback if non-Workspace email)",
+                            "Employee lands on /employee/onboarding, sees status='awaiting-signature' with document list",
+                            "Employee clicks 'Sign' on first document (e.g., employment contract)",
+                            "[BLOCKED on vendor_esignature] OnboardingDocumentSection renders SignaturePad component",
+                            "If vendor=DocuSign: iframe embeds with pre-filled document, employee signs in iframe",
+                            "If vendor=basic-signature: canvas pad appears, employee signs, clicks submit",
+                            "SignaturePad.onSign() → POST /api/signature with signatureData + documentId",
+                            "Server creates Signature record, marks Document.status='signed', logs AuditLog",
+                            "Document marked signed in employee UI, next document becomes available",
+                            "Employee repeats for each document (typically 2-3: contract, GDPR, handbook acknowledgement)",
+                            "When last document signed, timeline updates to step='completed'",
+                            "System emails HR: 'Employee X completed onboarding, all documents signed'",
+                            "Employee sees green 'Onboarding Complete' badge"
+                        ],
+                        "entry_point": "/employee/onboarding",
+                        "exit_points": [
+                            "/onboarding/[id] (from HR perspective, via email or dashboard refresh)"
+                        ],
+                        "notes": "Critical path: email → login → sign → complete. High friction if SignaturePad UX is poor or vendor requires extra steps. Polling on /employee/onboarding (5s) may show task updates from HR in real-time. E-signature vendor choice is blocking this entire flow—cannot finalize UX until vendor decided."
+                    },
+                    {
+                        "name": "HR Monitors Onboarding Progress",
+                        "steps": [
+                            "HR logs in, navigates to /dashboard",
+                            "HR sees list of all active onboardings with status badges",
+                            "HR clicks on an onboarding card → navigates to /onboarding/[id]",
+                            "OnboardingDetailPage loads: timeline shows all steps, TaskChecklist shows HR's to-dos, DocumentSection shows signature status",
+                            "HR reviews timeline: 'Intake submitted 2024-12-01', 'Documents sent 2024-12-02', 'Awaiting signature since 2024-12-03'",
+                            "HR checks off completed tasks (e.g., 'assigned laptop'), PATCH /api/task/[taskId] → status='done'",
+                            "HR can manually advance workflow step if needed (e.g., move from 'documents-prepared' to 'awaiting-signature')",
+                            "OnboardingDetailPage auto-polls /api/onboarding/[id] every 5s (if in view)",
+                            "When employee signs, timeline updates: new Signature record appears, step auto-advances to 'signed'",
+                            "HR receives email notification: 'Employee X signed all documents'",
+                            "HR clicks 'Mark Complete' button (or auto-completes when all tasks done)",
+                            "Onboarding moves to archive, disappears from /dashboard active list"
+                        ],
+                        "entry_point": "/dashboard",
+                        "exit_points": [
+                            "/onboarding/[id]",
+                            "back to /dashboard"
+                        ],
+                        "notes": "Typical duration: 3 days (manual process was 2 weeks). Polling strategy: HTTP GET /api/onboarding/[id] every 5s if user is on page. No websockets (over-engineered for <10 daily users). On page blur, stop polling. On focus, resume. Network errors: retry 3x with exponential backoff, show 'Connection lost' toast if persistent."
+                    },
+                    {
+                        "name": "Employee GDPR Data Export",
+                        "steps": [
+                            "Employee logs in, navigates to menu → 'Privacy Settings'",
+                            "Employee clicks 'Download My Data' link → routes to /gdpr/export",
+                            "GDPRDataExportPage explains: 'You can request a copy of all your personal data in machine-readable format'",
+                            "Employee clicks 'Request Export'",
+                            "Frontend: POST /api/gdpr/export with userId",
+                            "Server: collects all Employee, Hire, Signature, AuditLog records for that user, exports as JSON",
+                            "Server: generates signed download link (expires in 1 hour), returns link to frontend",
+                            "Browser: downloads file gdpr-export-{userId}-{timestamp}.json",
+                            "Employee: can open JSON file, view/transfer data"
+                        ],
+                        "entry_point": "/gdpr/export",
+                        "exit_points": [
+                            "JSON file downloaded to device"
+                        ],
+                        "notes": "Straightforward flow. Low complexity. Unblocked—no vendor dependencies. Should work within 5s. Server must exclude system logs, HR-only metadata, and future hires not assigned to this employee."
+                    },
+                    {
+                        "name": "Employee GDPR Right-to-Deletion Request",
+                        "steps": [
+                            "Employee logs in, navigates to menu → 'Privacy Settings'",
+                            "Employee sees 'Request Account Deletion' option",
+                            "[BLOCKED] Flow cannot be finalized: HR approval process, document retention policy conflict",
+                            "Currently: GDPRDeletionPage shows 'Coming Soon' message",
+                            "Expected (post-decision): Employee clicks button → modal form: reason (optional), confirm checkbox ('I understand all data will be deleted')",
+                            "Employee submits → POST /api/gdpr/deletion-request",
+                            "Server creates DeletionRequest record with status='pending', emails HR for approval",
+                            "[BLOCKED] HR workflow: how does HR approve/reject? Via admin panel? Via email link?",
+                            "[BLOCKED] What happens to signed documents after deletion? Retained 7 years per French labor law, or deleted?",
+                            "Expected if approved: Server hard-deletes User, Hire, Task, Document, Signature, soft-deletes AuditLog (set deletedAt timestamp for audit)",
+                            "Employee receives confirmation: 'Account deleted. Goodbye!'"
+                        ],
+                        "entry_point": "/gdpr/deletion",
+                        "exit_points": [
+                            "confirmation screen or rejection screen"
+                        ],
+                        "notes": "CRITICAL BLOCKER: Cannot finalize UX without clarity on GDPR right-to-deletion vs. document retention policy. This is a legal/compliance question, not a technical one. Frontend design is blocked until CEO/compliance counsel decide policy. Risk: if not resolved before launch, GDPRDeletionPage must be disabled or show legal disclaimer."
+                    }
+                ],
+                "state_management": "Client state: React Context for authentication (AuthProvider + SessionContext) and session user (id, email, role). Form state: React Hook Form for OnboardingFormModal (employee input), TemplateManager (template edit), GDPRDeletionPage (if/when unblocked). No Zustand, Redux, or global client state library—scope too small (<10 daily users, single HR team). Server state (onboarding records, tasks, documents, signatures) fetched via fetch() with standard error handling. Real-time sync strategy: OnboardingDetailPage polls GET /api/onboarding/[id] every 5 seconds if page is visible (pause on blur via useEffect cleanup, resume on focus via window focus event). Polling retry: 3 attempts with exponential backoff (500ms, 1s, 2s), then show 'Connection lost' toast. No websockets (overhead not justified for low traffic). Session persistence: httpOnly cookie set by server on /api/auth/callback, validated on RootLayout mount via GET /api/session. If session expired, redirect to /login. All API requests include credentials (fetch option credentials='include').",
+                "risks": [
+                    {
+                        "area": "E-signature Component Implementation",
+                        "description": "vendor_esignature is blocking at confidence 0.3. SignaturePad component is a placeholder abstraction. Cannot build complete document signature flow until vendor is chosen. Cost impact: if DocuSign/Adobe Sign required, 30-50% of budget consumed. If basic signature sufficient, low cost but may not meet legal requirements in France.",
+                        "mitigation": "Design SignaturePad as pluggable interface now: (props: { documentId, onSign(signature), onReject(), onExpire() }). Create mock SignaturePad for dev/testing that renders fake signature canvas. Unblock vendor decision in parallel (CEO + CTO resolve French legal e-signature requirements). Once vendor chosen, implement concrete SignaturePad (iframe embed or custom). Contingency: if vendor unavailable or over-budget, fallback to basic signature (canvas + timestamp) with legal disclaimer.",
+                        "severity": "blocking"
+                    },
+                    {
+                        "area": "GDPR Right-to-Deletion Legal Conflict",
+                        "description": "Unresolved tension: GDPR requires right-to-deletion, but French labor law requires 7-year document retention. GDPRDeletionPage cannot be finalized without policy decision. If HR must keep signed documents for compliance, deletion is not possible.",
+                        "mitigation": "Escalate to CEO + compliance counsel: clarify deletion policy before MVP launch. Options: (1) Allow deletion of user profile but retain signed documents anonymized. (2) Allow deletion with IT audit trail. (3) Defer deletion feature post-MVP and show 'Coming soon' on /gdpr/deletion. Frontend: mark GDPRDeletionPage confidence 0.4, add to blockers, disable feature in UI until policy decided.",
+                        "severity": "blocking"
+                    },
+                    {
+                        "area": "Real-time Status Updates (Polling Reliability)",
+                        "description": "OnboardingDetailPage polls /api/onboarding/[id] every 5s. Network latency, transient errors, or server downtime could cause stale UI. HR may not see immediate signature updates.",
+                        "mitigation": "Polling strategy: retry 3x with backoff, show toast on persistent failure. Page visibility API: pause polling on blur, resume on focus (reduces server load). Consider SWR library (auto-retry, fallback) if polling becomes unreliable. Acceptable latency: 5-10s (not real-time, but sufficient for <10 daily users). Document polling strategy in code comments.",
+                        "severity": "medium"
+                    },
+                    {
+                        "area": "Email Deliverability & GDPR PII Logging",
+                        "description": "Sentry + Vercel Analytics may log PII in error traces (employee emails, names, document excerpts). Violates GDPR if not sanitized. Also, email sent by SendGrid/Postmark—domain authentication (SPF, DKIM, DMARC) must be configured or emails land in spam.",
+                        "mitigation": "Frontend: configure Sentry to redact sensitive fields (allowlist approach). Test with sample error containing email/name, verify redaction in Sentry dashboard. Backend: configure email provider (SendGrid/Postmark) with client domain, enable auth records. Add monitoring alert if email delivery rate drops below 95%.",
+                        "severity": "medium"
+                    },
+                    {
+                        "area": "Google Workspace OAuth Admin Consent & IT Approval",
+                        "description": "OAuth app requires domain admin consent (managed by client IT). If client IT blocks or delays approval, system cannot launch. Timeline impact: 1-2 weeks delay.",
+                        "mitigation": "In discovery, identify client IT contact and approval process. Request admin pre-approval before dev begins. Create security brief for IT: explain what data is read (directory only, no write), all encrypted, audit logging. If IT approval delayed, fallback: manual employee import (CSV upload in /admin) instead of Workspace Directory API.",
+                        "severity": "medium"
+                    },
+                    {
+                        "area": "Session Security & Refresh Token Rotation",
+                        "description": "AuthProvider + SessionContext use httpOnly cookies for session storage. If refresh token is compromised (e.g., XSS), attacker can impersonate user. Refresh token rotation not yet designed.",
+                        "mitigation": "Use short-lived access tokens (15 min) + long-lived refresh tokens (7 days). Refresh token stored in httpOnly cookie (secure, sameSite=strict). On /api/session call, rotate refresh token (issue new token, invalidate old). Monitor token rotation logs for anomalies (e.g., multiple concurrent refreshes). Test XSS prevention: Content-Security-Policy header blocks inline scripts.",
+                        "severity": "medium"
+                    },
+                    {
+                        "area": "Responsive Design on Mobile",
+                        "description": "HR team is desktop-focused (Google Workspace), but employees may sign documents on mobile. /employee/onboarding must work on phone (small screen, touch-friendly signature). OnboardingDetailPage can be desktop-only.",
+                        "mitigation": "Design mobile-first for /employee/onboarding (Tailwind responsive classes). Test on iPhone 12, Android 12. Signature pad on mobile: use touch-enabled library (e.g., SignaturePad library with touch events). Desktop admin views (/admin, /dashboard) can be slightly less optimized but must be usable on tablet (iPad).",
+                        "severity": "low"
+                    },
+                    {
+                        "area": "Accessibility (WCAG 2.1 AA Compliance)",
+                        "description": "Forms, modals, timelines, checklists must be keyboard-accessible and screen-reader friendly. No baseline accessibility audit planned. HR team may include users with disabilities.",
+                        "mitigation": "Use semantic HTML (form, fieldset, legend, label, button). Apply aria-label to custom components. Test with axe-core (npm run lint:a11y). Lighthouse CI: fail build if accessibility score <90. Keyboard nav: Tab to focus, Enter/Space to activate, Escape to close modals. Post-MVP: full WCAG audit if client requests.",
+                        "severity": "low"
+                    },
+                    {
+                        "area": "Form Validation UX",
+                        "description": "React Hook Form validates client-side, but server must validate again. Mismatch between client/server validation could confuse HR (e.g., client accepts, server rejects).",
+                        "mitigation": "Keep validation logic in sync: define schema once (e.g., Zod), use on both client (React Hook Form) and server (API validation). Show server error messages in form (e.g., 'Email already exists'). Test happy path + error paths.",
+                        "severity": "low"
+                    }
+                ],
+                "blockers": [
+                    {
+                        "decision": "SignaturePad component: final implementation (third-party vendor iframe embed vs. custom canvas signature)",
+                        "blocked_by": "vendor_esignature at confidence 0.3—third-party vs. basic signature choice, French legal requirements unknown"
+                    },
+                    {
+                        "decision": "GDPRDeletionPage complete workflow: HR approval process, document retention policy, user experience flow",
+                        "blocked_by": "GDPR right-to-deletion vs. document retention conflict. Legal policy not clarified. Cannot design HR approval UI or user deletion UX until CEO/compliance counsel decide policy."
+                    },
+                    {
+                        "decision": "Real-time sync architecture for OnboardingDetailPage: websocket vs. polling decision, refresh interval, connection resilience",
+                        "blocked_by": "Project scope has not specified real-time requirements. CTO should clarify: is 5-10s polling acceptable or required sub-second latency?"
+                    },
+                    {
+                        "decision": "Document rendering & template editing UI (TemplateManager preview, document upload)",
+                        "blocked_by": "front_gap_document_rendering—backend has not specified document format (Markdown, HTML, PDF, Google Docs). Frontend cannot preview until format decided."
+                    },
+                    {
+                        "decision": "Email notification trigger points and API contract (/api/email/send-onboarding-link)",
+                        "blocked_by": "front_gap_email_notification_ux—CTO backend contract not finalized (when emails sent, template format, domain config)"
+                    }
+                ]
+            },
+            "tensions_written": 7,
+            "usage": {
+                "inputTokens": 26253,
+                "outputTokens": 12260
+            },
+            "duration_ms": 136382
+        },
+        "data_architect": {
+            "blueprint": {
+                "summary": "PostgreSQL relational schema for digital onboarding workflow: 7 core entities (Employee, Hire, Task, Document, Signature, AuditLog, WorkflowTemplate) with GDPR audit trail and right-to-deletion support. Uniqueness constraints on email and document signatures. TTL-based retention: 7-year document/signature retention (French labor law), 1-3 year audit logs (GDPR), indefinite employee/task history. Versioned migrations (Flyway style) with production deployment to Railway-managed PostgreSQL. Critical query patterns indexed for <3-second response on hire detail, task list, and compliance export. Blocking tension: GDPR right-to-deletion conflicts with 7-year document retention — legal guidance required before full schema sign-off.",
+                "data_model": [
+                    {
+                        "entity": "Employee",
+                        "fields": [
+                            "id (UUID, PK)",
+                            "email (VARCHAR UNIQUE NOT NULL)",
+                            "firstName (VARCHAR)",
+                            "lastName (VARCHAR)",
+                            "department (VARCHAR)",
+                            "hireDate (DATE)",
+                            "googleWorkspaceId (VARCHAR UNIQUE, FK to Google Directory)",
+                            "createdAt (TIMESTAMP)",
+                            "updatedAt (TIMESTAMP)",
+                            "deletedAt (TIMESTAMP, soft delete for GDPR)"
+                        ],
+                        "relations": [
+                            "created_by User (HR admin)",
+                            "has_many Task (assignedTo)",
+                            "has_many Document (uploadedBy)",
+                            "has_many AuditLog (userId)"
+                        ],
+                        "notes": "Represents confirmed employee after hire completion. Soft deletion for GDPR right-to-deletion workflow. Google Workspace ID enables Workspace API integration for calendar/email. Department field enables future multi-department filtering without scope expansion.",
+                        "confidence": 0.85
+                    },
+                    {
+                        "entity": "Hire",
+                        "fields": [
+                            "id (UUID, PK)",
+                            "firstName (VARCHAR NOT NULL)",
+                            "lastName (VARCHAR NOT NULL)",
+                            "email (VARCHAR UNIQUE NOT NULL)",
+                            "startDate (DATE NOT NULL)",
+                            "status (ENUM: pending, in_progress, rejected, withdrawn, completed)",
+                            "documentsRequired (INTEGER, count of required documents for workflow)",
+                            "createdAt (TIMESTAMP NOT NULL)",
+                            "updatedAt (TIMESTAMP)",
+                            "completedAt (TIMESTAMP)"
+                        ],
+                        "relations": [
+                            "has_many Task (hireId)",
+                            "has_many Document (hireId)",
+                            "converts_to Employee (on completion)",
+                            "created_by User (HR admin)"
+                        ],
+                        "notes": "Represents new hire onboarding process state. Immutable core fields (name, email) ensure audit trail integrity. Status enum enforces state machine (pending -> in_progress/rejected/withdrawn -> completed). Email uniqueness prevents duplicate hire records. ExpiresAt (optional) supports right-to-deletion retention policy (auto-delete rejected hires after 1 year).",
+                        "confidence": 0.85
+                    },
+                    {
+                        "entity": "Task",
+                        "fields": [
+                            "id (UUID, PK)",
+                            "hireId (UUID, FK to Hire, NOT NULL)",
+                            "title (VARCHAR NOT NULL)",
+                            "description (TEXT)",
+                            "assignedTo (UUID, FK to Employee, nullable initially then required)",
+                            "status (ENUM: pending, in_progress, completed, blocked)",
+                            "dueDate (DATE)",
+                            "createdAt (TIMESTAMP NOT NULL)",
+                            "completedAt (TIMESTAMP)",
+                            "updatedAt (TIMESTAMP)"
+                        ],
+                        "relations": [
+                            "belongs_to Hire (hireId)",
+                            "assigned_to Employee (assignedTo)",
+                            "has_many AuditLog (entityId=id, entityType='Task')"
+                        ],
+                        "notes": "Represents individual onboarding tasks (e.g., 'Complete NDA', 'Setup email', 'IT equipment'). Part of WorkflowTemplate — tasks auto-created when hire created. Assignee can be null (auto-assigned later). Status enum enforces workflow state. No TTL — task history indefinite for onboarding performance tracking.",
+                        "confidence": 0.8
+                    },
+                    {
+                        "entity": "Document",
+                        "fields": [
+                            "id (UUID, PK)",
+                            "hireId (UUID, FK to Hire, NOT NULL)",
+                            "templateId (UUID, FK to WorkflowTemplate)",
+                            "title (VARCHAR NOT NULL)",
+                            "content (TEXT, Markdown or HTML)",
+                            "fileName (VARCHAR)",
+                            "uploadedBy (UUID, FK to Employee)",
+                            "uploadedAt (TIMESTAMP NOT NULL)",
+                            "expiresAt (TIMESTAMP, optional, for e.g. offer letters)",
+                            "mimeType (VARCHAR, e.g. 'application/pdf')",
+                            "storageUrl (VARCHAR, S3 or Drive URL)",
+                            "createdAt (TIMESTAMP NOT NULL)",
+                            "updatedAt (TIMESTAMP)"
+                        ],
+                        "relations": [
+                            "belongs_to Hire (hireId)",
+                            "has_one WorkflowTemplate (templateId)",
+                            "has_many Signature (documentId)",
+                            "created_by Employee (uploadedBy)"
+                        ],
+                        "notes": "Represents onboarding documents (contracts, NDAs, tax forms, offer letters). Immutable once created — updates create new Document record. storageUrl points to external storage (Google Drive or S3). Subject to 7-year retention per French labor law. If document is deleted, Signature records must cascade or be anonymized (GDPR vs retention conflict flagged).",
+                        "confidence": 0.8
+                    },
+                    {
+                        "entity": "Signature",
+                        "fields": [
+                            "id (UUID, PK)",
+                            "documentId (UUID, FK to Document, NOT NULL)",
+                            "signedBy (UUID, FK to Employee or Hire, NOT NULL)",
+                            "signatureType (ENUM: digital_signature, e_signature_provider, simple_acceptance)",
+                            "timestamp (TIMESTAMP NOT NULL)",
+                            "status (ENUM: pending, signed, rejected, expired)",
+                            "verificationToken (VARCHAR UNIQUE)",
+                            "externalProviderId (VARCHAR, if using DocuSign/Adobe Sign)",
+                            "externalWebhookStatus (JSON, webhook payload from provider)",
+                            "createdAt (TIMESTAMP NOT NULL)"
+                        ],
+                        "relations": [
+                            "belongs_to Document (documentId)",
+                            "signed_by Employee or Hire (signedBy)"
+                        ],
+                        "notes": "Immutable record of signature acceptance. UNIQUE(documentId, signedBy) prevents duplicate signatures. signatureType determines verification method: 'simple_acceptance' = click Accept button (low friction, MVP); 'e_signature_provider' = DocuSign/Adobe (requires vendor_esignature resolution). externalProviderId required if using third-party, enabling webhook validation and audit. 7-year retention per labor law. Schema handles both in-app and external e-signature but cannot finalize without vendor decision.",
+                        "confidence": 0.7
+                    },
+                    {
+                        "entity": "AuditLog",
+                        "fields": [
+                            "id (UUID, PK)",
+                            "entityType (VARCHAR, e.g. 'Hire', 'Document', 'Signature', 'Employee')",
+                            "entityId (UUID, the PK being modified)",
+                            "action (ENUM: create, read, update, delete, export, right_to_deletion_request)",
+                            "userId (UUID, FK to Employee, who performed action)",
+                            "timestamp (TIMESTAMP NOT NULL)",
+                            "changes (JSONB, before/after values of updated fields)",
+                            "ipAddress (VARCHAR)",
+                            "reason (VARCHAR, optional, for compliance actions)",
+                            "createdAt (TIMESTAMP NOT NULL)"
+                        ],
+                        "relations": [
+                            "references Employee (userId)",
+                            "references modified entity (entityId)"
+                        ],
+                        "notes": "Immutable compliance audit trail. GDPR right-to-deletion and data export actions logged explicitly. TTL: 1 year for standard logs, 3 years for compliance-sensitive actions (delete, export, access). Indexed on (entityId, action, timestamp) for compliance audit retrieval. Changes field is JSONB to support schema evolution without migration. No PII logged in changes; only entity IDs and action type.",
+                        "confidence": 0.8
+                    },
+                    {
+                        "entity": "WorkflowTemplate",
+                        "fields": [
+                            "id (UUID, PK)",
+                            "name (VARCHAR NOT NULL, e.g. 'Standard Hire Workflow')",
+                            "description (TEXT)",
+                            "tasks (JSONB array of task templates: title, description, sequenceOrder, dueOffsetDays)",
+                            "documents (JSONB array of document templates: title, content, required, sequenceOrder)",
+                            "createdBy (UUID, FK to Employee)",
+                            "createdAt (TIMESTAMP NOT NULL)",
+                            "updatedAt (TIMESTAMP)",
+                            "isActive (BOOLEAN, soft delete via flag)"
+                        ],
+                        "relations": [
+                            "created_by Employee (createdBy)",
+                            "referenced_by Hire (when hire.status changes)"
+                        ],
+                        "notes": "Reusable workflow definition. tasks and documents are JSONB arrays to avoid normalized sub-tables (scope is simple 1-template MVP). When Hire created, tasks and documents auto-instantiated from template. Allows future expansion to multiple workflows (e.g., 'Contractor Onboarding') without schema change. Indefinite retention — reference data, not PII.",
+                        "confidence": 0.75
+                    }
+                ],
+                "indexes": [
+                    {
+                        "entity": "Hire",
+                        "fields": [
+                            "email"
+                        ],
+                        "type": "unique",
+                        "reason": "Prevent duplicate hire records for same email address. Critical for data integrity and GDPR right-to-deletion (find all data for email)."
+                    },
+                    {
+                        "entity": "Employee",
+                        "fields": [
+                            "email"
+                        ],
+                        "type": "unique",
+                        "reason": "Prevent duplicate employee records. Email is natural key for Workspace SSO lookup."
+                    },
+                    {
+                        "entity": "Signature",
+                        "fields": [
+                            "documentId",
+                            "signedBy"
+                        ],
+                        "type": "unique",
+                        "reason": "One signature per user per document. Uniqueness prevents double-signature attempts."
+                    },
+                    {
+                        "entity": "Hire",
+                        "fields": [
+                            "status",
+                            "startDate"
+                        ],
+                        "type": "compound",
+                        "reason": "Support HR dashboard query: list pending hires sorted by upcoming start date. ~10-20 rows, but index improves join performance when filtered."
+                    },
+                    {
+                        "entity": "Task",
+                        "fields": [
+                            "hireId",
+                            "status"
+                        ],
+                        "type": "compound",
+                        "reason": "Fetch tasks for a hire filtered by status (e.g., 'show me all blocked tasks for hire 123'). Common HR workflow query."
+                    },
+                    {
+                        "entity": "Task",
+                        "fields": [
+                            "assignedTo",
+                            "dueDate"
+                        ],
+                        "type": "compound",
+                        "reason": "HR user view: 'show me tasks assigned to me, due in next 7 days'. Sorting by dueDate requires index."
+                    },
+                    {
+                        "entity": "Document",
+                        "fields": [
+                            "hireId",
+                            "uploadedAt"
+                        ],
+                        "type": "compound",
+                        "reason": "Document timeline/history for a hire. Supports GDPR right-to-access (export all docs for hire)."
+                    },
+                    {
+                        "entity": "AuditLog",
+                        "fields": [
+                            "entityId",
+                            "entityType",
+                            "timestamp"
+                        ],
+                        "type": "compound",
+                        "reason": "Compliance audit trail: 'show me all actions on hire 123, sorted by timestamp'. Critical for audit requests."
+                    },
+                    {
+                        "entity": "AuditLog",
+                        "fields": [
+                            "userId",
+                            "timestamp"
+                        ],
+                        "type": "compound",
+                        "reason": "User action history for right-to-deletion validation. Enables 'show me all actions by user X' for deletion verification."
+                    },
+                    {
+                        "entity": "AuditLog",
+                        "fields": [
+                            "timestamp"
+                        ],
+                        "type": "ttl",
+                        "reason": "Auto-delete audit logs after 1 year (standard) or 3 years (compliance-sensitive). PostgreSQL or application-level cleanup cron job. Reduces storage cost and limits data exposure for GDPR."
+                    }
+                ],
+                "migration_strategy": "Versioned migrations (Flyway or Node.js Migrate-db pattern): each schema change is a numbered SQL file (001_create_tables.sql, 002_add_audit_log_ttl.sql) committed to git with application code. Migrations run at deployment time (before server startup) on Railway-managed PostgreSQL. Rollback: keep down() migration for each up() change. For MVP: simple sequential migrations with no data transformation; performance risk is low (~100-200 rows). Long-term: if data volume grows (100k+ rows), implement blue-green database strategy (shadow copy, validate, atomic switch) to avoid downtime. GDPR right-to-deletion requires custom migration logic for cascade deletes or anonymization — standard ORM migrations insufficient. No backward-incompatible schema changes without 2-week deprecation period (e.g., rename column via dual-write, then drop old column). Staging environment not budgeted — mitigate via: (1) automated data validation post-migration, (2) application health checks, (3) rollback procedure documented and tested in dev.",
+                "retention_policies": [
+                    {
+                        "entity": "Employee",
+                        "ttl_days": null,
+                        "reason": "Indefinite retention. Active employee records are system of record; no expiration. Soft deletion (deletedAt flag) for GDPR right-to-deletion, but record remains for audit trail (foreign key references)."
+                    },
+                    {
+                        "entity": "Hire",
+                        "ttl_days": 365,
+                        "reason": "Delete rejected or withdrawn hire records 1 year after status change. Reduces PII exposure for candidates who are not hired. CONFLICT: GDPR right-to-deletion on request may require immediate deletion; automatic TTL is backstop. Legal guidance required."
+                    },
+                    {
+                        "entity": "Task",
+                        "ttl_days": null,
+                        "reason": "Indefinite retention. Onboarding task history is valuable for performance tracking and process improvement. No PII in Task table itself (PII is in Hire/Employee)."
+                    },
+                    {
+                        "entity": "Document",
+                        "ttl_days": 2555,
+                        "reason": "7-year retention (2555 days) per French labor law Article L1221-13 (employment contracts, agreements). Essential for legal disputes, tax audits. CONFLICT: GDPR right-to-deletion may require earlier purge. Legal guidance required before final implementation."
+                    },
+                    {
+                        "entity": "Signature",
+                        "ttl_days": 2555,
+                        "reason": "7-year retention per labor law (evidence of agreement acceptance). Paired with Document retention. BLOCKING TENSION: right-to-deletion vs retention conflict."
+                    },
+                    {
+                        "entity": "AuditLog",
+                        "ttl_days": 365,
+                        "reason": "1-year retention for standard logs (create, update, read). Sufficient for operational debugging and GDPR audits. Compliance-sensitive actions (delete, export, right_to_deletion_request) retained 3 years (compliance_sensitive = true flag, filtered TTL logic)."
+                    },
+                    {
+                        "entity": "WorkflowTemplate",
+                        "ttl_days": null,
+                        "reason": "Indefinite retention. Reference/system data, not PII. No expiration needed."
+                    }
+                ],
+                "risks": [
+                    {
+                        "area": "GDPR Right-to-Deletion vs Document Retention",
+                        "description": "BLOCKING: GDPR Article 17 (right-to-deletion) conflicts with French labor law Article L1221-13 (7-year contract retention). If an employee requests deletion, should signed employment contracts be purged immediately, archived separately, or retained anonymized? Current schema supports cascade delete but not selective anonymization.",
+                        "mitigation": "Obtain legal guidance from French employment law specialist before MVP sign-off. Options: (1) Retain only necessary contract metadata (signatures dates, version IDs) and hash PII, (2) Archive deleted documents to separate 'compliance vault' outside standard database, (3) Require legal hold flag before GDPR deletion. Implement chosen approach in migration logic (migration_strategy doubts).",
+                        "severity": "blocking"
+                    },
+                    {
+                        "area": "E-Signature Vendor Dependency",
+                        "description": "Signature table schema depends on vendor_esignature resolution (deferred, confidence 0.3). If third-party provider (DocuSign, Adobe Sign) required, schema must accommodate externalProviderId, webhook payloads, and provider-specific verification logic. If simple digital signature sufficient, additional complexity not needed. Vendor procurement could add 2-4 weeks to timeline (estimated_timeline doubts).",
+                        "mitigation": "Resolve vendor_esignature with legal/compliance before detailed implementation. Signature table designed to support both approaches (signatureType + externalProviderId fields), but confirm customer's French legal requirements (e-signature must meet eIDAS regulation for certain contracts). Pre-negotiate vendor contract and API documentation.",
+                        "severity": "high"
+                    },
+                    {
+                        "area": "No Staging Environment for Migration Testing",
+                        "description": "Budget constraint (deployment_model) precludes staging environment. Schema migrations tested only locally, then applied to production. Risk of data corruption, downtime, or data loss if migration fails. For MVP, row count is low (~100 rows), so impact is containable, but as data grows (100+ hires/year), risk escalates.",
+                        "mitigation": "Implement: (1) Automated data validation post-migration (count rows, check constraints), (2) Backward-compatible migrations only (no drops without deprecation), (3) Rollback procedure tested in dev environment, (4) Database backup before each deployment. Document migration SOP and train HR team on restoration process. Long-term: negotiate staging budget or use Railway's database fork feature for pre-prod validation.",
+                        "severity": "high"
+                    },
+                    {
+                        "area": "Foreign Key Cascade Deletes for GDPR Right-to-Deletion",
+                        "description": "Hire deletion must cascade through Task, Document, Signature, AuditLog to ensure no orphaned records violate relational integrity. If cascade logic fails or is incomplete, deleted hires' data could remain accessible via queries on Task or Document tables, violating GDPR.",
+                        "mitigation": "Enforce ON DELETE CASCADE on all Hire foreign keys. Application-level right-to-deletion handler must atomically delete in correct order: (1) AuditLog, (2) Signature, (3) Document, (4) Task, (5) Hire. Verify cascade with integration tests before production. Add data validation query post-deletion to confirm no orphaned records.",
+                        "severity": "high"
+                    },
+                    {
+                        "area": "Audit Log Performance at Scale",
+                        "description": "AuditLog indexed on (entityId, entityType, timestamp). If onboarding process is heavily logged (every UI action = 1 log entry) and customer scales to 100+ hires/year, AuditLog could grow to 100k+ rows. TTL policy (1 year) keeps growth bounded, but query performance could degrade without proper indexing.",
+                        "mitigation": "Use BRIN (Block Range Index) instead of B-tree for timestamp column (better for time-series data). Partition AuditLog by year (range partition on timestamp) if row count exceeds 1M. Monitor query plans and adjust indexes based on real usage. TTL policy enforces hard limit (1 year = ~50k rows at low logging rate, acceptable).",
+                        "severity": "medium"
+                    },
+                    {
+                        "area": "JSON Data in Workflow Template (Document/Task Definitions)",
+                        "description": "WorkflowTemplate.documents and WorkflowTemplate.tasks are JSONB arrays to avoid normalized sub-tables. Risk: JSON schema evolution (adding required field, renaming field) not enforced at database level. Application must validate JSON structure, or invalid templates could be created.",
+                        "mitigation": "Add application-level JSON schema validation (e.g., Zod, Joi) before INSERT/UPDATE WorkflowTemplate. Document JSON schema in code comments. If schema changes needed, add versioning field (schema_version: 1, 2, etc.) and migration logic in application. For MVP, use simple, stable schema (title, description, sequenceOrder only) to minimize future changes.",
+                        "severity": "medium"
+                    },
+                    {
+                        "area": "Google Workspace API Quota and Sync Correctness",
+                        "description": "Employee.googleWorkspaceId enables Workspace integration, but no continuous sync mechanism defined. If Workspace directory is source of truth, application data could diverge (employee deleted in Workspace but record remains in database). No reconciliation strategy specified.",
+                        "mitigation": "Application is system of record for onboarding state (integration_architecture resolved). Google Workspace is read-only for directory lookups (email verification, calendar sharing). Implement periodic reconciliation job (weekly) to validate Employee.googleWorkspaceId exists and is active in Workspace directory. Flag orphaned records for HR review. For MVP, skip sync — document as future enhancement.",
+                        "severity": "medium"
+                    },
+                    {
+                        "area": "Soft Delete (Employee.deletedAt) vs Hard Delete (Hire TTL)",
+                        "description": "Employee uses soft deletion (deletedAt flag) to preserve audit trail references. Hire uses hard deletion (TTL) after 1 year. Inconsistent deletion strategies complicate GDPR compliance logic and could leave dangling references if Hire deleted while Employee record still references it.",
+                        "mitigation": "Define clear deletion semantics: (1) Employee soft-deleted on request (GDPR), triggers cascading soft-deletes on Task/Document/Signature, hard-delete after 7 years, (2) Hire hard-deleted after 1 year of rejection/withdrawal OR on GDPR request (not affected by Employee TTL). Implement application-level deletion handler that enforces consistent order and validates no orphans. Audit migrations carefully.",
+                        "severity": "medium"
+                    },
+                    {
+                        "area": "Missing Notification/Workflow State Machine Table",
+                        "description": "Schema defines Document, Signature, Task statuses but no WorkflowExecution or Notification table to track state transitions, retries, or audit of automation failures (e.g., 'email send failed, retry needed'). This could complicate debugging onboarding delays.",
+                        "mitigation": "For MVP, accept gap and use AuditLog (action='email_sent', reason='sendgrid_webhook') for tracking. If clients report automation issues, add EventLog table (separate from AuditLog) to track internal state transitions. Not blocking for MVP.",
+                        "severity": "low"
+                    },
+                    {
+                        "area": "Database Performance Metrics Not Baselined",
+                        "description": "No baseline query performance established (0.5s? 2s? acceptable SLA?). With 10 daily users and ~100 rows, most queries will be sub-100ms, but without profiling, future optimization is reactive, not proactive.",
+                        "mitigation": "Use Railway's database monitoring (built-in) to capture query plans. Set alerts for queries >1s. Baseline critical paths (list hires, fetch hire detail with tasks/docs, export audit log) with load testing tool (k6 or Apache Jmeter) before release. Document SLA (e.g., 'hire detail fetch <500ms').",
+                        "severity": "low"
+                    }
+                ],
+                "blockers": [
+                    {
+                        "decision": "Final Signature table schema (externalProviderId, webhook status fields, verificationToken logic)",
+                        "blocked_by": "vendor_esignature (deferred, confidence 0.3). Cannot finalize Signature fields until e-signature provider is chosen (simple acceptance vs DocuSign vs Adobe Sign)."
+                    },
+                    {
+                        "decision": "Document and Hire retention policies (TTL values, cascade logic on GDPR right-to-deletion)",
+                        "blocked_by": "Legal guidance on GDPR vs French labor law conflict. Data retention policies (data_retention_compliance) flagged as BLOCKING tension — requires legal sign-off before production deployment."
+                    },
+                    {
+                        "decision": "AuditLog schema depth (what events to log, how much detail in changes JSONB)",
+                        "blocked_by": "GDPR audit trail requirements not fully specified in security_model. Basic logging is defined, but depth (schema field-level tracking vs aggregate) depends on client's compliance audit frequency and regulatory body expectations."
+                    },
+                    {
+                        "decision": "Employee.googleWorkspaceId and real-time sync strategy",
+                        "blocked_by": "Integration architecture resolved at high level, but API quota limits and sync error handling depend on client's Workspace tier (Business vs Enterprise) — not yet confirmed in deployment_model."
+                    },
+                    {
+                        "decision": "Multi-department data isolation (if client wants to reuse system across departments)",
+                        "blocked_by": "Out of scope per project_scope ('complex role hierarchies' explicitly excluded). Schema assumes single HR department. If future scope expands, requires redesign of Task.assignedTo (department-scoped users) and Hire.department filters."
+                    }
+                ]
+            },
+            "tensions_written": 5,
+            "usage": {
+                "inputTokens": 21405,
+                "outputTokens": 7778
+            },
+            "duration_ms": 82018
+        }
+    },
+    "qa": {
+        "audit": {
+            "verdict": "red",
+            "verdict_rationale": "The pipeline contains blocking inconsistencies in e-signature vendor choice and GDPR retention policies versus right-to-deletion, which fundamentally contradict timeline, budget, and architecture assumptions. These deferrals make the Field unreliable for client presentation without immediate clarification. The CTO correctly challenged timeline confidence, but unresolved blockers invalidate the overall coherence.",
+            "inconsistencies": [
+                {
+                    "between": [
+                        "vendor_esignature",
+                        "estimated_timeline",
+                        "budget_risk"
+                    ],
+                    "description": "E-signature vendor is deferred with blocking doubts, directly impacting timeline (adds 2-4 weeks) and budget (30-50% consumption), contradicting scope feasibility.",
+                    "severity": "blocking"
+                },
+                {
+                    "between": [
+                        "data_retention_compliance",
+                        "security_model",
+                        "front_ux_flows"
+                    ],
+                    "description": "Retention policy assumes 7-year hold for documents but conflicts with GDPR right-to-deletion, blocking UX flow for employee deletion requests and data schema design.",
+                    "severity": "blocking"
+                }
+            ],
+            "false_blockers": [],
+            "scope_reality_check": {
+                "assessment": "The scope is minimal and aligned with a tight 5k€ budget for core onboarding features, but becomes underestimated if e-signature requires third-party integration, which could double costs and exceed budget.",
+                "budget_vs_scope": "underestimated",
+                "confidence": 0.7
+            },
+            "discovery_questions": [
+                {
+                    "question": "What type of e-signature do you need for onboarding documents? For example, a simple digital signature that employees can add online, or a certified service like DocuSign that provides legal proof?",
+                    "unblocks": [
+                        "vendor_esignature",
+                        "qa_flag_e_signature_blocker"
+                    ],
+                    "priority": "critical"
+                },
+                {
+                    "question": "How long do you need to keep signed onboarding documents under French labor laws, and what happens if an employee requests their data be deleted under GDPR?",
+                    "unblocks": [
+                        "data_retention_compliance",
+                        "qa_flag_retention_gdpr_conflict"
+                    ],
+                    "priority": "critical"
+                },
+                {
+                    "question": "What format are your current onboarding document templates in? For example, Microsoft Word files, PDFs, or Google Docs?",
+                    "unblocks": [
+                        "front_gap_document_rendering",
+                        "qa_flag_document_rendering_gap"
+                    ],
+                    "priority": "high"
+                },
+                {
+                    "question": "Do you require HR approval before processing an employee's request to delete their personal data from the system?",
+                    "unblocks": [
+                        "front_ux_flows",
+                        "qa_flag_retention_gdpr_conflict"
+                    ],
+                    "priority": "high"
+                },
+                {
+                    "question": "Will your IT department need to review and approve the integration with Google Workspace for login and email features?",
+                    "unblocks": [
+                        "integration_architecture",
+                        "front_auth_integration"
+                    ],
+                    "priority": "medium"
+                },
+                {
+                    "question": "How quickly do you expect to see updates in the HR dashboard after an employee takes an action, like signing a document?",
+                    "unblocks": [
+                        "front_state_management",
+                        "front_ux_flows"
+                    ],
+                    "priority": "medium"
+                },
+                {
+                    "question": "Do you have a separate testing or staging environment where we can safely test the system before going live?",
+                    "unblocks": [
+                        "deployment_model",
+                        "data_migration_approach"
+                    ],
+                    "priority": "medium"
+                },
+                {
+                    "question": "Are there any specific email messages or timings you prefer for notifying new hires or HR team members during the onboarding process?",
+                    "unblocks": [
+                        "front_gap_email_notification_ux",
+                        "vendor_email"
+                    ],
+                    "priority": "medium"
+                }
+            ]
+        },
+        "tensions_written": 5,
+        "usage": {
+            "inputTokens": 23307,
+            "outputTokens": 2426
+        },
+        "duration_ms": 46783,
+        "reasoning_raw": "## Preparing for field analysis  \n- First, calling read_field to access the full field data is necessary.  \n- The function has no parameters, so the call will be a simple <xai:function_call name=\"read_field\"></xai:function_call>.  \n\n## Planning response process  \n- After the function call, the response will need processing, assumed to contain the field data.  \n- The goal is to output the function call first, followed by the final JSON format as instructed.\n\n---\n\n## Reviewing project scope  \n- The CEO defined the client context, problem, and constraints, including a budget under 5k€ and a 3-4 month timeline.  \n- The project scope includes digital onboarding with Google Workspace, excludes payroll, and must comply with GDPR in France.  \n\n## Evaluating technical decisions  \n- The CTO selected React/Next.js, Node.js, and PostgreSQL, with deployment on Vercel and Railway.  \n- Vendors like SendGrid and Postmark were chosen for email, while e-signature was deferred, and a security model was established.  \n\n## Analyzing architectural details  \n- The architect designed the data schema, indexes, and migration plans, with partial retention policies raising GDPR concerns.  \n- Frontend components, routing, and auth integration were planned, but gaps remain in document rendering and email UX, with deletion flow partially blocked.  \n\n## Identifying tensions  \n- The pipeline is mostly coherent, but deferrals on e-signature and retention policies create contradictions with the timeline and success criteria.  \n- The scope may be unrealistic given the budget, especially if e-signature adds significant cost, and there are blocking doubts on retention versus GDPR compliance.  \n\n## Assessing project verdict  \n- The project has blocking inconsistencies, including deferred e-signature with timeline assumptions and retention conflicts with security, leading to a \"red\" verdict.  \n- These fundamental contradictions make the current Field unreliable, with potential underestimation of costs for medium complexity.\n\n---\n\n## Assessing audit findings  \n- The audit report verdict is red, indicating blocking inconsistencies that require resolution.  \n- Key issues include conflicts between vendor e-signature, estimated timeline, project scope, and between data retention compliance and security model.  \n\n## Examining inconsistencies  \n- Deferred e-signature integration delays the timeline and impacts the budget, classified as a severe issue.  \n- A conflict exists between data retention compliance and security model, with retention requirements clashing with deletion needs, also severe.  \n\n## Evaluating potential blockers  \n- The CTO's challenge on timeline confidence was initially considered a false blocker, but it's valid and not blocking.  \n- No false blockers were confirmed, suggesting all identified issues need addressing.  \n\n## Analyzing scope and budget  \n- The project scope aligns with the 5k€ budget for basic features, but may be underestimated if e-signature requires paid third-party services, with 0.7 confidence.  \n- Additional costs for e-signature remain uncertain, potentially affecting budget vs. scope balance.  \n\n## Prioritizing discovery questions  \n- Critical questions include the type of e-signature needed (e.g., basic digital or certified) and document retention requirements under French law and GDPR.  \n- Other priority questions cover document formats, HR approval for data deletion, and IT approval for Google Workspace OAuth, all answerable in a 30-minute call."
+    },
     "field": {
-        "globalConfidence": 0.47692307692307695,
-        "summary": "7 resolved · 1 partial",
+        "globalConfidence": 0.6263157894736842,
+        "summary": "28 resolved · 10 partial",
         "tensions": [
             {
                 "id": "client_context",
-                "wants": "Understanding of the client's sector, team size, and current tools",
+                "wants": "Understand client sector, team size, and current tools",
                 "state": "resolved",
                 "confidence": 0.9,
-                "value": "Small company (~50 employees), uses Google Workspace, HR-focused, hires ~10 people/year",
+                "value": "HR team, ~50 employees, 10 hires/year, uses Google Workspace, small company",
                 "doubts": [],
                 "pendingOn": [],
                 "linkedTo": []
             },
             {
                 "id": "current_problem",
-                "wants": "Concrete description of what doesn't work and its measurable cost",
+                "wants": "Understand what concretely does not work and measurable cost",
                 "state": "resolved",
                 "confidence": 0.9,
-                "value": "Manual onboarding process: emails sent manually, printing documents, chasing signatures, tracking in spreadsheets. Takes ~2 weeks per hire. Process is hated by everyone involved.",
+                "value": "Manual onboarding process: paper + Excel, manual emails, printing, chasing signatures, spreadsheet tracking. Takes 2 weeks per hire. Universally disliked.",
                 "doubts": [],
                 "pendingOn": [],
                 "linkedTo": []
@@ -244,28 +1242,8 @@
                 "id": "constraints",
                 "wants": "Budget range, timeline, existing infrastructure",
                 "state": "resolved",
-                "confidence": 0.9,
-                "value": "Budget: 10 000 € - 25 000 €, Timeline: 3-4 months, Google Workspace infrastructure in place",
-                "doubts": [],
-                "pendingOn": [],
-                "linkedTo": []
-            },
-            {
-                "id": "users",
-                "wants": "Who uses daily and who decides",
-                "state": "resolved",
-                "confidence": 0.9,
-                "value": "HR manager uses daily (sends emails, tracks process), new employees receive documents. Decision maker: directeur RH",
-                "doubts": [],
-                "pendingOn": [],
-                "linkedTo": []
-            },
-            {
-                "id": "compliance_data",
-                "wants": "Sensitive data handling, location, regulations",
-                "state": "resolved",
-                "confidence": 0.9,
-                "value": "France-based, HR documents with employee personal data, GDPR applies",
+                "confidence": 1,
+                "value": "Budget under 5,000€, 3-4 month timeline, Google Workspace infrastructure",
                 "doubts": [],
                 "pendingOn": [],
                 "linkedTo": []
@@ -275,47 +1253,72 @@
                 "wants": "What success looks like in 6 months",
                 "state": "resolved",
                 "confidence": 0.9,
-                "value": "Gain de temps, amélioration de qualité de travail des salariés, satisfaction des nouveaux employés et baisse du turn over",
+                "value": "Time savings for HR, improved work quality for employees, new employee satisfaction, reduced turnover",
+                "doubts": [],
+                "pendingOn": [],
+                "linkedTo": []
+            },
+            {
+                "id": "users",
+                "wants": "Who uses daily, who decides",
+                "state": "resolved",
+                "confidence": 0.9,
+                "value": "Daily users: HR team (pole HR), new employees. Decision maker: DRH (HR Director)",
+                "doubts": [],
+                "pendingOn": [],
+                "linkedTo": []
+            },
+            {
+                "id": "compliance_data",
+                "wants": "Sensitive data, location, regulations",
+                "state": "resolved",
+                "confidence": 0.9,
+                "value": "France-based, HR/employee data, GDPR applies",
                 "doubts": [],
                 "pendingOn": [],
                 "linkedTo": []
             },
             {
                 "id": "project_scope",
-                "wants": "Clear engineering definition of what is IN and OUT of scope",
-                "state": "active",
-                "confidence": 0.1,
-                "value": null,
+                "wants": "Define what is IN and OUT of scope from engineering perspective",
+                "state": "resolved",
+                "confidence": 0.8,
+                "value": "IN: Digital onboarding workflow (task assignment, document templates, e-signatures, status tracking, email automation), Google Workspace integration, GDPR-compliant data storage. OUT: full HRIS/payroll integration, advanced analytics/reporting, mobile-native apps, multi-language support beyond French, complex role hierarchies, time tracking, performance management",
                 "doubts": [
                     {
-                        "about": "Document template complexity - unclear if documents are simple forms or complex contracts requiring legal review integration",
+                        "about": "Client may expect payroll or performance features that are standard in commercial HRIS but out of scope for budget",
                         "severity": "medium"
                     },
                     {
-                        "about": "E-signature provider not specified - integration complexity varies widely (DocuSign vs simple click-to-sign)",
+                        "about": "E-signature requirements unclear: third-party integration (DocuSign) or basic digital signature sufficient?",
                         "severity": "medium"
                     }
                 ],
                 "pendingOn": [],
                 "linkedTo": [
-                    "current_problem",
-                    "objective",
-                    "constraints"
+                    "constraints",
+                    "current_problem"
                 ]
             },
             {
                 "id": "success_criteria",
-                "wants": "Measurable technical outcomes that define success",
-                "state": "active",
-                "confidence": 0.1,
-                "value": null,
+                "wants": "Measurable technical outcomes that define project success",
+                "state": "resolved",
+                "confidence": 0.8,
+                "value": [
+                    "Onboarding time reduced from 2 weeks to <3 days",
+                    "Zero manual email sending for standard onboarding tasks",
+                    "100% digital document flow (no printing)",
+                    "HR team reports 70%+ time savings on onboarding admin",
+                    "New employee NPS >8/10 for onboarding experience"
+                ],
                 "doubts": [
                     {
-                        "about": "Baseline metrics not quantified - 'everyone hates it' is subjective. No current NPS or satisfaction data mentioned.",
+                        "about": "Turnover reduction is a 6-12 month lagging indicator, hard to attribute to onboarding app alone",
                         "severity": "low"
                     },
                     {
-                        "about": "Turnover reduction attribution - difficult to measure causality between onboarding tool and turnover within 6 months",
+                        "about": "Baseline metrics not captured: actual current onboarding time, current employee satisfaction scores",
                         "severity": "medium"
                     }
                 ],
@@ -323,25 +1326,6 @@
                 "linkedTo": [
                     "objective",
                     "current_problem"
-                ]
-            },
-            {
-                "id": "team_needs",
-                "wants": "Technical skills required to build this",
-                "state": "active",
-                "confidence": 0.1,
-                "value": null,
-                "doubts": [
-                    {
-                        "about": "French language requirement implied but not stated - may need localization expertise",
-                        "severity": "low"
-                    }
-                ],
-                "pendingOn": [],
-                "linkedTo": [
-                    "project_scope",
-                    "compliance_data",
-                    "client_context"
                 ]
             },
             {
@@ -349,64 +1333,38 @@
                 "wants": "Rough timeline estimate with rationale",
                 "state": "partial",
                 "confidence": 0.7,
-                "value": "10-14 weeks total: 2 weeks discovery/design, 6-8 weeks core development, 2 weeks testing/refinement, 1-2 weeks deployment/training. Assumes single full-stack dev + part-time designer. Fits within 3-4 month constraint.",
+                "value": "10-12 weeks (2.5-3 months) for MVP. Breakdown: 2 weeks discovery/design, 6-7 weeks dev (workflow engine, integration, UI), 1 week testing, 1 week pilot + iteration. Client wants 3-4 months, this is achievable if scope stays tight.",
                 "doubts": [
                     {
-                        "about": "Google Workspace integration complexity unknown - could add 1-2 weeks if admin approval/OAuth scopes are restricted",
+                        "about": "Google Workspace API integration complexity unknown: OAuth, admin consent, domain verification could add 1-2 weeks",
                         "severity": "medium"
                     },
                     {
-                        "about": "E-signature integration - pre-built library vs custom implementation could swing timeline by 2-3 weeks",
+                        "about": "E-signature legal requirements in France may require specific provider (slow procurement)",
                         "severity": "medium"
                     },
                     {
-                        "about": "Client availability for feedback cycles not discussed - assumes timely review within 48h per iteration",
+                        "about": "Client availability for feedback/testing not confirmed, could extend timeline by 2-4 weeks",
                         "severity": "low"
                     }
                 ],
-                "pendingOn": [],
+                "pendingOn": [
+                    "architecture_decisions"
+                ],
                 "linkedTo": [
                     "constraints",
-                    "project_scope",
-                    "team_needs"
+                    "project_scope"
                 ]
             },
             {
                 "id": "estimated_complexity",
-                "wants": "Overall complexity assessment with justification",
+                "wants": "Complexity assessment with justification",
                 "state": "resolved",
                 "confidence": 0.8,
                 "value": "medium",
                 "doubts": [
                     {
-                        "about": "Complexity could escalate to 'high' if document workflows require conditional logic or multi-stage approvals",
-                        "severity": "medium"
-                    }
-                ],
-                "pendingOn": [],
-                "linkedTo": [
-                    "project_scope",
-                    "team_needs",
-                    "compliance_data"
-                ]
-            },
-            {
-                "id": "hidden_scope_risks",
-                "wants": "Identify implied requirements not explicitly stated",
-                "state": "active",
-                "confidence": 0.1,
-                "value": null,
-                "doubts": [
-                    {
-                        "about": "No discussion of existing data migration - 50 employees may have historical records needing import",
-                        "severity": "medium"
-                    },
-                    {
-                        "about": "Multi-tenant needs unclear - single HR manager vs multiple office locations or subsidiaries",
-                        "severity": "low"
-                    },
-                    {
-                        "about": "Document version control/history not mentioned but likely needed for compliance",
+                        "about": "Could escalate to high if GDPR audit trail requirements are strict or if client expects real-time sync with external systems",
                         "severity": "medium"
                     }
                 ],
@@ -414,36 +1372,726 @@
                 "linkedTo": [
                     "project_scope",
                     "compliance_data",
-                    "current_problem"
+                    "constraints"
                 ]
             },
             {
-                "id": "budget_feasibility",
-                "wants": "Engineering assessment of budget adequacy",
-                "state": "active",
-                "confidence": 0.1,
-                "value": null,
+                "id": "complexity_rationale",
+                "wants": "Justify complexity assessment for CTO",
+                "state": "resolved",
+                "confidence": 0.8,
+                "value": "MEDIUM because: (1) Standard CRUD + workflow engine, not novel tech, (2) Single third-party integration (Google Workspace), (3) GDPR compliance adds data handling rigor but scope is narrow, (4) Low transaction volume (10 hires/year = ~1/month), (5) Small user base (<10 daily users). NOT HIGH because: no real-time requirements, no complex business logic, no legacy system migration, forgiving performance requirements.",
+                "doubts": [],
+                "pendingOn": [],
+                "linkedTo": [
+                    "estimated_complexity"
+                ]
+            },
+            {
+                "id": "budget_risk",
+                "wants": "Assess if budget constraint is realistic for scope",
+                "state": "resolved",
+                "confidence": 0.9,
+                "value": "TIGHT. Under 5k€ for 10-12 weeks implies ~40-50 dev hours at market rates OR offshore/junior team OR heavily templatized solution. Scope must remain ruthlessly minimal. Any scope creep (e-signature integration, custom reporting, mobile) will break budget.",
                 "doubts": [
                     {
-                        "about": "E-signature SaaS annual costs not accounted - could consume €1k-€3k/year depending on volume",
-                        "severity": "low"
-                    },
-                    {
-                        "about": "Hosting/infrastructure costs - GDPR-compliant EU hosting adds €50-€200/month",
-                        "severity": "low"
-                    },
-                    {
-                        "about": "Budget includes development only or also maintenance/support? 10 hires/year suggests low ongoing support needs.",
+                        "about": "Client may not understand trade-off between budget and polish/features",
                         "severity": "medium"
                     }
                 ],
                 "pendingOn": [],
                 "linkedTo": [
                     "constraints",
-                    "estimated_timeline",
+                    "project_scope"
+                ]
+            },
+            {
+                "id": "technical_risks",
+                "wants": "Identify technical risks beyond what Discovery captured",
+                "state": "resolved",
+                "confidence": 0.8,
+                "value": [
+                    "Google Workspace admin consent may require IT approval outside HR",
+                    "GDPR right-to-deletion must work with document retention policies",
+                    "Email automation could trigger spam filters if not properly configured",
+                    "No staging environment mentioned in budget - testing on production data risky"
+                ],
+                "doubts": [
+                    {
+                        "about": "Unknown if client has IT/security review process that could block deployment",
+                        "severity": "medium"
+                    }
+                ],
+                "pendingOn": [],
+                "linkedTo": [
+                    "constraints",
                     "compliance_data"
                 ]
+            },
+            {
+                "id": "tech_stack",
+                "wants": "Choose frontend, backend, database that fit budget, timeline, and complexity",
+                "state": "resolved",
+                "confidence": 0.8,
+                "value": "React/Next.js frontend, Node.js/Express backend, PostgreSQL database, Google APIs Client + Nodemailer + React Hook Form + Tailwind CSS",
+                "doubts": [
+                    {
+                        "about": "E-signature integration uncertainty (project_scope) could require Python backend if using specific providers",
+                        "severity": "medium"
+                    },
+                    {
+                        "about": "Budget constraint (5k€) may force use of more junior developers, affecting stack choice complexity",
+                        "severity": "low"
+                    }
+                ],
+                "pendingOn": [],
+                "linkedTo": [
+                    "constraints",
+                    "project_scope",
+                    "estimated_complexity"
+                ]
+            },
+            {
+                "id": "deployment_model",
+                "wants": "Define hosting, CI/CD, and deployment approach within budget",
+                "state": "partial",
+                "confidence": 0.7,
+                "value": "Vercel (frontend) + Railway or Render (backend + database), serverless frontend, containerized backend, managed PostgreSQL, estimated 50-150€/month",
+                "doubts": [
+                    {
+                        "about": "GDPR data residency requirements not specified - may need EU-region hosting which limits provider options",
+                        "severity": "medium"
+                    },
+                    {
+                        "about": "No staging environment in budget - deployment strategy assumes production-only or local testing",
+                        "severity": "medium"
+                    },
+                    {
+                        "about": "Client may not have budget visibility for ongoing hosting costs beyond initial 5k€",
+                        "severity": "low"
+                    }
+                ],
+                "pendingOn": [
+                    "compliance_data"
+                ],
+                "linkedTo": [
+                    "constraints",
+                    "compliance_data",
+                    "technical_risks"
+                ]
+            },
+            {
+                "id": "vendor_email",
+                "wants": "Choose email automation provider",
+                "state": "partial",
+                "confidence": 0.7,
+                "value": "SendGrid or Postmark",
+                "doubts": [
+                    {
+                        "about": "Google Workspace SMTP may be sufficient given low volume (10 hires/year), avoiding vendor cost entirely",
+                        "severity": "medium"
+                    },
+                    {
+                        "about": "Email deliverability and spam filter risk flagged in technical_risks - need domain authentication setup",
+                        "severity": "medium"
+                    }
+                ],
+                "pendingOn": [],
+                "linkedTo": [
+                    "technical_risks",
+                    "constraints"
+                ]
+            },
+            {
+                "id": "vendor_esignature",
+                "wants": "Choose e-signature provider or approach",
+                "state": "partial",
+                "confidence": 0.3,
+                "value": "deferred",
+                "doubts": [
+                    {
+                        "about": "CEO flagged uncertainty: third-party integration vs basic digital signature - legal requirements in France unknown",
+                        "severity": "blocking"
+                    },
+                    {
+                        "about": "If DocuSign/Adobe Sign required, cost may consume 30-50% of total budget",
+                        "severity": "blocking"
+                    },
+                    {
+                        "about": "Procurement process for certified e-signature provider could extend timeline by 2-4 weeks",
+                        "severity": "medium"
+                    }
+                ],
+                "pendingOn": [
+                    "project_scope"
+                ],
+                "linkedTo": [
+                    "project_scope",
+                    "estimated_timeline",
+                    "budget_risk"
+                ]
+            },
+            {
+                "id": "security_model",
+                "wants": "Define authentication, authorization, data encryption, and GDPR compliance approach",
+                "state": "resolved",
+                "confidence": 0.8,
+                "value": "Google OAuth 2.0 (Workspace SSO), Role-based authorization (HR admin, HR viewer, Employee self-service), TLS in transit + database encryption at rest (provider-managed), GDPR: audit logging + right-to-deletion endpoints + data export API + 30-day retention policy",
+                "doubts": [
+                    {
+                        "about": "GDPR right-to-deletion vs document retention conflict flagged in technical_risks - legal guidance needed",
+                        "severity": "medium"
+                    },
+                    {
+                        "about": "Google Workspace admin consent process may require IT approval outside HR control",
+                        "severity": "medium"
+                    },
+                    {
+                        "about": "Audit trail depth not specified - basic logging vs full event sourcing affects architecture",
+                        "severity": "low"
+                    }
+                ],
+                "pendingOn": [],
+                "linkedTo": [
+                    "compliance_data",
+                    "technical_risks",
+                    "users"
+                ]
+            },
+            {
+                "id": "integration_architecture",
+                "wants": "Define Google Workspace integration approach and data sync strategy",
+                "state": "resolved",
+                "confidence": 0.8,
+                "value": "Google Workspace API (Gmail, Calendar, Drive), event-driven workflow triggers API calls (no continuous sync), application is system of record for onboarding state",
+                "doubts": [
+                    {
+                        "about": "OAuth admin consent and domain verification complexity flagged in estimated_timeline - could add 1-2 weeks",
+                        "severity": "medium"
+                    },
+                    {
+                        "about": "Unknown if client has Google Workspace Business or Enterprise tier - API quota limits differ",
+                        "severity": "low"
+                    },
+                    {
+                        "about": "Real-time sync not required per complexity assessment, but client expectations not validated",
+                        "severity": "low"
+                    }
+                ],
+                "pendingOn": [],
+                "linkedTo": [
+                    "project_scope",
+                    "estimated_timeline",
+                    "technical_risks"
+                ]
+            },
+            {
+                "id": "cto_challenge_estimated_timeline",
+                "wants": "Challenge timeline confidence given unresolved e-signature and integration blockers",
+                "state": "resolved",
+                "confidence": 0.9,
+                "value": "Timeline of 10-12 weeks is optimistic at confidence 0.7 - should be 0.5 given blocking e-signature uncertainty and Google Workspace integration unknowns",
+                "doubts": [
+                    {
+                        "about": "CEO correctly identified medium-severity doubts but did not account for compounding risk of multiple unknowns",
+                        "severity": "medium"
+                    }
+                ],
+                "pendingOn": [],
+                "linkedTo": [
+                    "estimated_timeline",
+                    "vendor_esignature",
+                    "integration_architecture"
+                ]
+            },
+            {
+                "id": "vendor_monitoring",
+                "wants": "Choose error tracking and monitoring provider",
+                "state": "partial",
+                "confidence": 0.7,
+                "value": "Sentry (errors) + Vercel Analytics (frontend) + Railway logs (backend)",
+                "doubts": [
+                    {
+                        "about": "Free tiers may be sufficient given low traffic, but error budget in production unknown",
+                        "severity": "low"
+                    },
+                    {
+                        "about": "GDPR compliance for monitoring tools not verified - may log PII in error traces",
+                        "severity": "medium"
+                    }
+                ],
+                "pendingOn": [],
+                "linkedTo": [
+                    "constraints",
+                    "compliance_data"
+                ]
+            },
+            {
+                "id": "data_schema_design",
+                "wants": "Define entities for digital onboarding workflow (Employee, Hire, Task, Document, Signature, AuditLog) with fields, relations, and confidence",
+                "state": "resolved",
+                "confidence": 0.8,
+                "value": [
+                    "Employee (id, email, firstName, lastName, department, hireDate, createdAt, updatedAt)",
+                    "Hire (id, firstName, lastName, email, startDate, status, documentsRequired, createdAt, updatedAt)",
+                    "Task (id, hireId, title, description, assignedTo, status, dueDate, createdAt, completedAt)",
+                    "Document (id, hireId, templateId, content, fileName, uploadedBy, uploadedAt, expiresAt)",
+                    "Signature (id, documentId, signedBy, signatureType, timestamp, status, verificationToken)",
+                    "AuditLog (id, entityType, entityId, action, userId, timestamp, changes, ipAddress)",
+                    "WorkflowTemplate (id, name, tasks, documents, createdBy, createdAt, updatedAt)"
+                ],
+                "doubts": [
+                    {
+                        "about": "E-signature implementation depends on vendor_esignature decision (blocking) - if third-party, Signature table may need external provider reference ID and webhook status",
+                        "severity": "medium"
+                    },
+                    {
+                        "about": "GDPR right-to-deletion vs document retention conflict (security_model doubts) - unclear if deleted employee's documents should be purged immediately or retained per compliance window",
+                        "severity": "medium"
+                    },
+                    {
+                        "about": "Google Workspace integration scope unclear - should Email (as entity) or WorkflowTrigger track Google Calendar/Gmail interactions, or handled at API layer only?",
+                        "severity": "low"
+                    }
+                ],
+                "pendingOn": [],
+                "linkedTo": [
+                    "project_scope"
+                ]
+            },
+            {
+                "id": "data_index_strategy",
+                "wants": "Define indexes for query performance and uniqueness constraints critical to onboarding workflow",
+                "state": "resolved",
+                "confidence": 0.8,
+                "value": [
+                    "UNIQUE(Hire, email) - prevent duplicate hire records",
+                    "UNIQUE(Employee, email) - prevent duplicate employee records",
+                    "UNIQUE(Document, id) - document immutability",
+                    "UNIQUE(Signature, documentId, signedBy) - one signature per user per document",
+                    "INDEX(Hire, status, startDate) - list pending hires, upcoming start dates",
+                    "INDEX(Task, hireId, status) - fetch tasks for a hire filtered by status",
+                    "INDEX(Task, assignedTo, dueDate) - HR team view: tasks assigned to me, due soonest",
+                    "INDEX(Document, hireId, uploadedAt) - document timeline per hire",
+                    "INDEX(AuditLog, entityId, entityType, timestamp) - compliance audit trail retrieval",
+                    "INDEX(AuditLog, userId, timestamp) - user action history (for GDPR right-to-deletion validation)",
+                    "TTL(AuditLog, timestamp, 365 days) - retention policy compliance"
+                ],
+                "doubts": [
+                    {
+                        "about": "Full-text search over Task descriptions and Document content not mentioned in scope - if added, would require TEXT index on Task.description and Document.content",
+                        "severity": "low"
+                    },
+                    {
+                        "about": "Compound index on (hireId, status, dueDate) may improve Task filtering but row count is low (~10 hires/year * 5-10 tasks = 50-100 rows) - optimization premature?",
+                        "severity": "low"
+                    }
+                ],
+                "pendingOn": [],
+                "linkedTo": [
+                    "data_schema_design"
+                ]
+            },
+            {
+                "id": "data_migration_approach",
+                "wants": "Define how schema changes will be managed in production - version control strategy, rollback capability, zero-downtime migration approach",
+                "state": "partial",
+                "confidence": 0.7,
+                "value": "Versioned migrations (Flyway or Alembic style): each schema change is a numbered SQL file committed to git. No backward-incompatible changes without deprecation period. For MVP: migrations run at deployment time on Railway-managed PostgreSQL. Long-term: blue-green deployment strategy (shadow database, validate, switch) to avoid downtime if data volume grows.",
+                "doubts": [
+                    {
+                        "about": "Client has no staging environment in budget (deployment_model doubts) - zero-downtime migrations harder to validate without pre-prod replica",
+                        "severity": "medium"
+                    },
+                    {
+                        "about": "Small row count (50-100 tasks, ~10 hires/year) means migration performance risk is low now, but if client reuses system for multiple departments, scaling strategy (sharding, archival) not planned",
+                        "severity": "low"
+                    },
+                    {
+                        "about": "GDPR right-to-deletion (security_model) may require custom migration logic to cascade delete or anonymize - standard ORM migrations may not suffice",
+                        "severity": "medium"
+                    }
+                ],
+                "pendingOn": [
+                    "deployment_model"
+                ],
+                "linkedTo": [
+                    "data_schema_design"
+                ]
+            },
+            {
+                "id": "data_retention_compliance",
+                "wants": "Define TTL and retention policies per entity to satisfy GDPR (30-day audit, right-to-deletion) and business needs (document archival, task history)",
+                "state": "partial",
+                "confidence": 0.7,
+                "value": [
+                    "Employee: indefinite (active employee record)",
+                    "Hire: indefinite if converted to Employee, else delete 1 year after rejection/withdrawal",
+                    "Task: indefinite (onboarding history)",
+                    "Document: 7 years (French labor law - employment contracts, agreements)",
+                    "Signature: 7 years (evidence of acceptance)",
+                    "AuditLog: 1 year for standard logs, 3 years for compliance-sensitive actions (data access, deletion, export)",
+                    "WorkflowTemplate: indefinite (reference template)"
+                ],
+                "doubts": [
+                    {
+                        "about": "Conflict between GDPR right-to-deletion (security_model) and 7-year document retention (labor law) - unclear if deleted employee's signed documents must be purged or remain for legal proof",
+                        "severity": "blocking"
+                    },
+                    {
+                        "about": "Client jurisdiction (France) labor and tax regulations unclear - 7-year retention assumption based on EU norms but not validated with legal counsel",
+                        "severity": "medium"
+                    },
+                    {
+                        "about": "Hire entity retention policy (1 year for rejected candidates) not confirmed - may violate GDPR if candidate PII not deleted per request",
+                        "severity": "medium"
+                    }
+                ],
+                "pendingOn": [
+                    "security_model",
+                    "compliance_data"
+                ],
+                "linkedTo": [
+                    "data_schema_design"
+                ]
+            },
+            {
+                "id": "data_query_patterns",
+                "wants": "Identify critical query patterns and validate schema supports them efficiently for ~10 daily users and ~100-200 total rows",
+                "state": "resolved",
+                "confidence": 0.8,
+                "value": [
+                    "Q1: List all pending hires (status='pending') for HR view - indexed on (status, createdAt)",
+                    "Q2: Fetch hire detail with all tasks and documents - indexed on (hireId) in Task and Document",
+                    "Q3: List tasks assigned to me (HR user), due in next 7 days - indexed on (assignedTo, dueDate)",
+                    "Q4: Export all data for a hire (right-to-access) - single hireId lookup returns all related entities",
+                    "Q5: Delete all data for a hire (right-to-deletion) - cascade delete from Signature, Document, Task, AuditLog, then Hire",
+                    "Q6: Audit trail for compliance - indexed on (timestamp, entityType, action)",
+                    "Q7: Verify signature on document - (documentId, signedBy) unique constraint + timestamp verify"
+                ],
+                "doubts": [
+                    {
+                        "about": "Q4 and Q5 (GDPR data export/deletion) may require full graph traversal - schema design must ensure no orphaned references, foreign key constraints critical",
+                        "severity": "medium"
+                    },
+                    {
+                        "about": "Reporting/analytics queries (e.g., onboarding time by department, task completion rate) not in scope per project_scope but client may ask - schema design assumes they are ad-hoc, not optimized",
+                        "severity": "low"
+                    }
+                ],
+                "pendingOn": [],
+                "linkedTo": [
+                    "data_schema_design",
+                    "data_index_strategy"
+                ]
+            },
+            {
+                "id": "front_component_architecture",
+                "wants": "Define React/Next.js component structure, layouts, pages, and feature boundaries for HR onboarding UI",
+                "state": "resolved",
+                "confidence": 0.9,
+                "value": "Pages (login, dashboard, admin, onboarding/[id], employee/onboarding, gdpr/export, gdpr/deletion, 404). Layouts (RootLayout, form modals). Features (OnboardingTimeline, TaskChecklist, TemplateManager, OnboardingFormModal). UI atoms (StatusBadge, LoadingSpinner, FormInput, ConfirmationDialog, SignaturePad). Providers (AuthProvider, SessionContext, ErrorBoundary). SignaturePad is pluggable abstraction, deferred vendor impl.",
+                "doubts": [
+                    {
+                        "about": "SignaturePad abstraction: is event-based interface (onSign, onReject, onExpire) sufficient? What if vendor requires async prefill or multi-page docs?",
+                        "severity": "medium"
+                    }
+                ],
+                "pendingOn": [],
+                "linkedTo": [
+                    "tech_stack",
+                    "project_scope"
+                ]
+            },
+            {
+                "id": "front_routing_strategy",
+                "wants": "Define Next.js routing structure, protected routes, role-based access, redirect logic",
+                "state": "resolved",
+                "confidence": 0.9,
+                "value": "Public routes: /login, /404. Protected routes (require auth via middleware.ts): /dashboard, /admin, /onboarding/[id], /employee/onboarding, /gdpr/export, /gdpr/deletion. Role-based: /admin requires HR_ADMIN role (checked in component, not route); /employee/* requires EMPLOYEE role. Unauthenticated requests to protected routes redirect to /login. Logout clears httpOnly session cookie, redirects to /login.",
+                "doubts": [
+                    {
+                        "about": "Should /admin route be protected at middleware level or via component-level role check? Middleware approach is more secure but adds complexity.",
+                        "severity": "low"
+                    }
+                ],
+                "pendingOn": [],
+                "linkedTo": [
+                    "security_model",
+                    "SessionContext"
+                ]
+            },
+            {
+                "id": "front_state_management",
+                "wants": "Decide on client state library and data fetching strategy",
+                "state": "resolved",
+                "confidence": 0.8,
+                "value": "React Context (SessionContext + AuthProvider) for auth state, React Hook Form for form state in OnboardingFormModal + GDPRDeletionPage. No global Zustand/Redux needed: single HR team, low concurrency. Server state (onboarding, docs, tasks) fetched via fetch() with error handling. Consider SWR or TanStack Query if polling for real-time updates is required (blocked pending real-time requirement clarity).",
+                "doubts": [
+                    {
+                        "about": "If HR dashboard expects live updates (employee just signed, timeline auto-updates), polling query strategy needed. Is 5s refresh acceptable or required sub-second latency?",
+                        "severity": "medium"
+                    },
+                    {
+                        "about": "Form state: is React Hook Form + server validation sufficient, or required client-side real-time validation for onboarding template?",
+                        "severity": "low"
+                    }
+                ],
+                "pendingOn": [],
+                "linkedTo": [
+                    "tech_stack"
+                ]
+            },
+            {
+                "id": "front_ux_flows",
+                "wants": "Define key user journeys and interaction patterns",
+                "state": "resolved",
+                "confidence": 0.8,
+                "value": "Five main flows: (1) HR initiates onboarding (form → create). (2) Employee signs docs (email link → login → signature flow). (3) HR tracks progress (dashboard → detail → tasks). (4) Employee requests deletion (GDPR right-to-deletion form, blocked HR approval workflow). (5) Employee exports data (GDPR data portability, straightforward). All flows use consistent modal/form UI patterns.",
+                "doubts": [
+                    {
+                        "about": "Employee right-to-deletion flow blocked: HR approval process, retention policy conflict. Cannot finalize UX until policy decided.",
+                        "severity": "blocking"
+                    },
+                    {
+                        "about": "Real-time status updates: do flows expect instant reflection (websocket) or is periodic polling (5-10s) acceptable?",
+                        "severity": "medium"
+                    }
+                ],
+                "pendingOn": [],
+                "linkedTo": [
+                    "project_scope",
+                    "GDPR"
+                ]
+            },
+            {
+                "id": "front_auth_integration",
+                "wants": "Define Google OAuth flow, session management, logout, role sync with backend",
+                "state": "resolved",
+                "confidence": 0.9,
+                "value": "Google OAuth 2.0 via NextAuth.js or simple fetch to /api/auth/callback (exchange code for session). Store session in httpOnly cookie (server-side only, not exposed to JS). SessionContext syncs with /api/session on mount and refresh. User roles (HR_ADMIN, HR_VIEWER, EMPLOYEE) retrieved from server (database). Logout: DELETE /api/auth/logout clears cookie + redirects to /login. MFA: not in scope (employee is Workspace user, Workspace handles MFA).",
+                "doubts": [
+                    {
+                        "about": "Google Workspace admin consent: does client IT need to pre-approve OAuth app? If so, may block launch.",
+                        "severity": "medium"
+                    },
+                    {
+                        "about": "Fallback for non-Workspace employees: can employee login without Workspace account? LocalUser strategy needed if not.",
+                        "severity": "medium"
+                    }
+                ],
+                "pendingOn": [],
+                "linkedTo": [
+                    "security_model",
+                    "integration_architecture"
+                ]
+            },
+            {
+                "id": "front_gap_document_rendering",
+                "wants": "How are onboarding documents displayed and edited? No backend decision on template format.",
+                "state": "partial",
+                "confidence": 0.2,
+                "value": "Deferred: unknown if documents are Markdown, HTML, PDF, Google Docs, or Docusaurus templates. Frontend cannot render/preview until backend specifies format and provides document API (fetch /api/documents/[docId]).",
+                "doubts": [
+                    {
+                        "about": "If Google Docs templates, frontend must embed Google Docs viewer (iframe). If Markdown, render via react-markdown. No spec yet.",
+                        "severity": "medium"
+                    },
+                    {
+                        "about": "Can HR edit doc template in UI, or must they upload docs? No backend template CRUD spec provided.",
+                        "severity": "medium"
+                    }
+                ],
+                "pendingOn": [
+                    "architecture_decisions"
+                ],
+                "linkedTo": [
+                    "project_scope"
+                ]
+            },
+            {
+                "id": "front_gap_email_notification_ux",
+                "wants": "How should frontend handle email notification triggers? Should emails be sent client-side or server-side?",
+                "state": "partial",
+                "confidence": 0.4,
+                "value": "Deferred: CTO has chosen SendGrid/Postmark but has not defined when emails are sent (on button click, on workflow event, background job). Frontend should trigger POST /api/email/send-onboarding-link on 'Create Onboarding' button, but backend contract not defined.",
+                "doubts": [
+                    {
+                        "about": "Email template: is it defined server-side or does frontend control content? No spec.",
+                        "severity": "low"
+                    },
+                    {
+                        "about": "Email rendering for employee login link: hardcoded domain in frontend or pulled from config?",
+                        "severity": "low"
+                    }
+                ],
+                "pendingOn": [
+                    "architecture_decisions"
+                ],
+                "linkedTo": [
+                    "integration_architecture"
+                ]
+            },
+            {
+                "id": "qa_pipeline_coherence",
+                "wants": "Assess if the entire pipeline output is coherent and ready for client presentation",
+                "state": "partial",
+                "confidence": 0.7,
+                "value": "Pipeline has solid foundations in scope and tech choices but contains blocking deferrals and contradictions that make it unreliable without client clarification.",
+                "doubts": [
+                    {
+                        "about": "E-signature and retention policy uncertainties create fundamental gaps in architecture and timeline estimates.",
+                        "severity": "blocking"
+                    }
+                ],
+                "pendingOn": [],
+                "linkedTo": []
+            },
+            {
+                "id": "qa_scope_feasibility",
+                "wants": "Check if the designed scope aligns with budget signals",
+                "state": "resolved",
+                "confidence": 0.8,
+                "value": "Scope is ruthlessly minimal and feasible for 5k€ budget if e-signature is basic, but adding third-party e-signature could consume 30-50% of budget, making it overestimated.",
+                "doubts": [
+                    {
+                        "about": "Budget signals indicate tightness, and any creep will break it.",
+                        "severity": "medium"
+                    }
+                ],
+                "pendingOn": [],
+                "linkedTo": []
+            },
+            {
+                "id": "qa_flag_e_signature_blocker",
+                "wants": "Identify blocking contradiction in e-signature decision",
+                "state": "resolved",
+                "confidence": 0.9,
+                "value": "E-signature vendor is deferred with blocking severity, contradicting timeline and budget assumptions.",
+                "doubts": [
+                    {
+                        "about": "Deferred decision on third-party vs basic signature affects legal compliance, cost, and timeline by weeks.",
+                        "severity": "blocking"
+                    }
+                ],
+                "pendingOn": [],
+                "linkedTo": []
+            },
+            {
+                "id": "qa_flag_retention_gdpr_conflict",
+                "wants": "Flag contradiction between GDPR right-to-deletion and document retention",
+                "state": "resolved",
+                "confidence": 0.9,
+                "value": "Retention policy for documents (7 years) conflicts with GDPR right-to-deletion, blocking data schema and UX flows.",
+                "doubts": [
+                    {
+                        "about": "Unresolved conflict on whether deleted employee documents must be purged or retained for legal proof.",
+                        "severity": "blocking"
+                    }
+                ],
+                "pendingOn": [],
+                "linkedTo": []
+            },
+            {
+                "id": "qa_flag_document_rendering_gap",
+                "wants": "Highlight gap in document rendering specification",
+                "state": "resolved",
+                "confidence": 0.8,
+                "value": "Frontend document rendering is deferred, pending backend template format decision, creating a medium gap in architecture.",
+                "doubts": [
+                    {
+                        "about": "Unknown if documents are Markdown, HTML, PDF, or Google Docs, blocking UI development.",
+                        "severity": "medium"
+                    }
+                ],
+                "pendingOn": [],
+                "linkedTo": []
             }
         ]
-    }
+    },
+    "scores": {
+        "ceo": {
+            "score": 2.347324390183741,
+            "quality": 18.846153846153847,
+            "behavior": 1,
+            "components": {
+                "tensionsDelta": 7,
+                "ownTensionsResolved": 6,
+                "ownedUnresolved": 1,
+                "fieldCoverage": 0.9230769230769231,
+                "completionTokens": 3067,
+                "finishReason": "stop"
+            }
+        },
+        "cto": {
+            "score": 1.1258884346648947,
+            "quality": 9.523809523809524,
+            "behavior": 1,
+            "components": {
+                "tensionsDelta": 8,
+                "ownTensionsResolved": 4,
+                "ownedUnresolved": 4,
+                "fieldCoverage": 0.7619047619047619,
+                "completionTokens": 4716,
+                "finishReason": "stop"
+            }
+        },
+        "lead_back": {
+            "score": 0.2854892088928749,
+            "quality": 1.5238095238095237,
+            "behavior": 1,
+            "components": {
+                "tensionsDelta": 0,
+                "ownTensionsResolved": 0,
+                "ownedUnresolved": 0,
+                "fieldCoverage": 0.7619047619047619,
+                "completionTokens": 207,
+                "finishReason": "stop"
+            }
+        },
+        "lead_front": {
+            "score": 2.2789609134921847,
+            "quality": 21.454545454545453,
+            "behavior": 1,
+            "components": {
+                "tensionsDelta": 12,
+                "ownTensionsResolved": 8,
+                "ownedUnresolved": 4,
+                "fieldCoverage": 0.7272727272727273,
+                "completionTokens": 12260,
+                "finishReason": "stop"
+            }
+        },
+        "data_architect": {
+            "score": 2.3946988555588806,
+            "quality": 21.454545454545453,
+            "behavior": 1,
+            "components": {
+                "tensionsDelta": 12,
+                "ownTensionsResolved": 8,
+                "ownedUnresolved": 4,
+                "fieldCoverage": 0.7272727272727273,
+                "completionTokens": 7778,
+                "finishReason": "stop"
+            }
+        },
+        "qa": {
+            "score": 1.6003369441635082,
+            "quality": 12.473684210526315,
+            "behavior": 1,
+            "components": {
+                "tensionsDelta": 5,
+                "ownTensionsResolved": 4,
+                "ownedUnresolved": 1,
+                "fieldCoverage": 0.7368421052631579,
+                "completionTokens": 2426,
+                "finishReason": "stop"
+            }
+        }
+    },
+    "report": {
+        "internal": "# HR Onboarding Automation App\n\n> A lightweight web application to digitize employee onboarding for a 50-person French company. Replaces manual paper/Excel workflows with automated task assignment, document templates, e-signatures, and email notifications integrated with Google Workspace. Reduces onboarding time from 2 weeks to under 3 days.\n\n**Project ID:** `proj-yNJw-lC5` · **Pipeline:** 414.5s · **Tokens:** 168 312 · **Field confidence:** 63%\n\n---\n\n## ✕ RED\n\nThe pipeline contains blocking inconsistencies in e-signature vendor choice and GDPR retention policies versus right-to-deletion, which fundamentally contradict timeline, budget, and architecture assumptions. These deferrals make the Field unreliable for client presentation without immediate clarification. The CTO correctly challenged timeline confidence, but unresolved blockers invalidate the overall coherence.\n\n## Mandate\n\n**Complexity:** medium\n\n**Target users**\n- HR team members (pole HR)\n- New employees joining the company\n- HR Director (DRH) as decision maker\n\n**Core features**\n- Digital onboarding workflow engine (task creation, assignment, status tracking)\n- Document template library with merge fields\n- E-signature capability for employment documents\n- Automated email notifications for tasks and milestones\n- Google Workspace integration (Calendar, Gmail, Drive)\n- GDPR-compliant employee data storage with audit trail\n- Simple dashboard showing onboarding pipeline status\n- New employee portal for completing tasks and signing documents\n\n**Success criteria**\n- Onboarding time reduced from 14 days to <3 days\n- Zero manual email sending for standard onboarding workflows\n- 100% paperless document flow (no printing required)\n- HR team reports 70%+ time savings on onboarding administration\n- New employee onboarding satisfaction score >8/10\n\n**Constraints**\n- Budget under €5,000 (extremely tight, ~40-50 dev hours)\n- Timeline 3-4 months (10-12 weeks for MVP delivery)\n- Must integrate with existing Google Workspace infrastructure\n- France-based, GDPR compliance mandatory for employee data\n- Small team (<10 daily users), low transaction volume (~1 hire/month)\n\n\n## Technical Decisions\n\n### Stack\n\n| Layer | Choice |\n|-------|--------|\n| Frontend | React with Next.js |\n| Backend | Node.js with Express |\n| Database | PostgreSQL |\n| Key libs | Google APIs Client (OAuth, Gmail, Calendar, Drive), Nodemailer, React Hook Form, Tailwind CSS, Prisma ORM |\n\n*Confidence: 75% — Stack chosen for rapid development within tight budget (5k€/10-12 weeks). Next.js provides SSR + API routes reducing deployment complexity. Node.js aligns with Google APIs Client library and enables full-stack JavaScript for small team. PostgreSQL handles relational data (workflows, employees, documents) with GDPR-compliant features (audit logs, encryption at rest). Tailwind CSS accelerates UI development. Trade-off: E-signature integration uncertainty could require Python adapters if certified provider mandates it, but can be isolated as microservice.*\n\n### Deployment\n\n**Hosting:** Vercel (frontend + API routes) or Railway (full-stack containerized) · **Approach:** Serverless frontend on Vercel with API routes, or containerized monolith on Railway. Managed PostgreSQL (Railway/Render database). EU region required for GDPR. No staging environment in budget - local development + production with feature flags.\n\n*Confidence: 70% — Vercel ideal for Next.js but API routes have cold start limitations. Railway offers predictable pricing and EU region support. Budget (5k€) cannot support separate staging environment - recommend feature flags and canary releases. Ongoing hosting cost 50-150€/month must be communicated to client as post-launch expense. GDPR data residency requires EU-hosted database.*\n\n### Vendors\n\n| Category | Recommendation | Decision | Confidence |\n|----------|---------------|----------|------------|\n| Email Automation | Google Workspace SMTP (primary) with SendGrid fallback | shortlisted | 65% |\n| Monitoring | Sentry (error tracking) + Vercel Analytics (frontend) + Railway logs (backend) | shortlisted | 70% |\n\n### Deferred decisions\n\n- **E-signature vendor selection (DocuSign, Adobe Sign, Yousign, or basic digital signature)** — blocked by `project_scope - CEO flagged blocking uncertainty: legal requirements in France for e-signatures unknown. If certified eIDAS signature required, vendor cost (1.5-2.5k€) consumes 30-50% of budget and procurement adds 2-4 weeks. If basic digital signature (PDF annotation + timestamp) is legally sufficient, can implement in-house with zero vendor cost. This decision blocks timeline finalization and affects tech stack (Python integration may be needed). Cannot proceed without client clarification on legal requirements.`\n- **Hosting provider final selection (Vercel vs Railway)** — blocked by `compliance_data - GDPR data residency requirements not fully specified. Need confirmation client accepts EU-region hosting and whether specific certifications (ISO 27001, SOC 2) are required. Railway offers EU region at predictable pricing but lacks some enterprise compliance docs Vercel provides. This does not block architecture design but blocks vendor contract.`\n- **Audit logging depth and event sourcing architecture** — blocked by `compliance_data - security_model tension identified conflict between GDPR right-to-deletion and document retention. Unknown whether client needs full event sourcing for legal defense or basic audit logs suffice. Full event sourcing adds 2-3 weeks development time and affects database schema. Need legal guidance before committing to architecture.`\n\n## Discovery Questions\n\n*Questions to ask the client before proceeding.*\n\n1. **[CRITICAL]** What type of e-signature do you need for onboarding documents? For example, a simple digital signature that employees can add online, or a certified service like DocuSign that provides legal proof?\n   *Unblocks: vendor_esignature, qa_flag_e_signature_blocker*\n2. **[CRITICAL]** How long do you need to keep signed onboarding documents under French labor laws, and what happens if an employee requests their data be deleted under GDPR?\n   *Unblocks: data_retention_compliance, qa_flag_retention_gdpr_conflict*\n3. **[HIGH]** What format are your current onboarding document templates in? For example, Microsoft Word files, PDFs, or Google Docs?\n   *Unblocks: front_gap_document_rendering, qa_flag_document_rendering_gap*\n4. **[HIGH]** Do you require HR approval before processing an employee's request to delete their personal data from the system?\n   *Unblocks: front_ux_flows, qa_flag_retention_gdpr_conflict*\n5. **[MEDIUM]** Will your IT department need to review and approve the integration with Google Workspace for login and email features?\n   *Unblocks: integration_architecture, front_auth_integration*\n6. **[MEDIUM]** How quickly do you expect to see updates in the HR dashboard after an employee takes an action, like signing a document?\n   *Unblocks: front_state_management, front_ux_flows*\n7. **[MEDIUM]** Do you have a separate testing or staging environment where we can safely test the system before going live?\n   *Unblocks: deployment_model, data_migration_approach*\n8. **[MEDIUM]** Are there any specific email messages or timings you prefer for notifying new hires or HR team members during the onboarding process?\n   *Unblocks: front_gap_email_notification_ux, vendor_email*\n\n## Inconsistencies\n\n- **[BLOCKING]** E-signature vendor is deferred with blocking doubts, directly impacting timeline (adds 2-4 weeks) and budget (30-50% consumption), contradicting scope feasibility.\n  *Between: vendor_esignature ↔ estimated_timeline ↔ budget_risk*\n- **[BLOCKING]** Retention policy assumes 7-year hold for documents but conflicts with GDPR right-to-deletion, blocking UX flow for employee deletion requests and data schema design.\n  *Between: data_retention_compliance ↔ security_model ↔ front_ux_flows*\n\n## Scope Reality Check\n\n**Budget vs scope:** UNDERESTIMATED (70% confidence)\n\nThe scope is minimal and aligned with a tight 5k€ budget for core onboarding features, but becomes underestimated if e-signature requires third-party integration, which could double costs and exceed budget.\n\n## Epistemic Field\n\n**38 tensions** · 28 resolved · 10 partial · Global confidence: 63%\n\n<details><summary>Resolved tensions (28)</summary>\n\n- **`client_context`** — Understand client sector, team size, and current tools *(90%)*\n- **`current_problem`** — Understand what concretely does not work and measurable cost *(90%)*\n- **`constraints`** — Budget range, timeline, existing infrastructure *(100%)*\n- **`objective`** — What success looks like in 6 months *(90%)*\n- **`users`** — Who uses daily, who decides *(90%)*\n- **`compliance_data`** — Sensitive data, location, regulations *(90%)*\n- **`project_scope`** — Define what is IN and OUT of scope from engineering perspective *(80%)*\n- **`success_criteria`** — Measurable technical outcomes that define project success *(80%)*\n- **`estimated_complexity`** — Complexity assessment with justification *(80%)*\n- **`complexity_rationale`** — Justify complexity assessment for CTO *(80%)*\n- **`budget_risk`** — Assess if budget constraint is realistic for scope *(90%)*\n- **`technical_risks`** — Identify technical risks beyond what Discovery captured *(80%)*\n- **`tech_stack`** — Choose frontend, backend, database that fit budget, timeline, and complexity *(80%)*\n- **`security_model`** — Define authentication, authorization, data encryption, and GDPR compliance approach *(80%)*\n- **`integration_architecture`** — Define Google Workspace integration approach and data sync strategy *(80%)*\n- **`cto_challenge_estimated_timeline`** — Challenge timeline confidence given unresolved e-signature and integration blockers *(90%)*\n- **`data_schema_design`** — Define entities for digital onboarding workflow (Employee, Hire, Task, Document, Signature, AuditLog) with fields, relations, and confidence *(80%)*\n- **`data_index_strategy`** — Define indexes for query performance and uniqueness constraints critical to onboarding workflow *(80%)*\n- **`data_query_patterns`** — Identify critical query patterns and validate schema supports them efficiently for ~10 daily users and ~100-200 total rows *(80%)*\n- **`front_component_architecture`** — Define React/Next.js component structure, layouts, pages, and feature boundaries for HR onboarding UI *(90%)*\n- **`front_routing_strategy`** — Define Next.js routing structure, protected routes, role-based access, redirect logic *(90%)*\n- **`front_state_management`** — Decide on client state library and data fetching strategy *(80%)*\n- **`front_ux_flows`** — Define key user journeys and interaction patterns *(80%)*\n- **`front_auth_integration`** — Define Google OAuth flow, session management, logout, role sync with backend *(90%)*\n- **`qa_scope_feasibility`** — Check if the designed scope aligns with budget signals *(80%)*\n- **`qa_flag_e_signature_blocker`** — Identify blocking contradiction in e-signature decision *(90%)*\n- **`qa_flag_retention_gdpr_conflict`** — Flag contradiction between GDPR right-to-deletion and document retention *(90%)*\n- **`qa_flag_document_rendering_gap`** — Highlight gap in document rendering specification *(80%)*\n\n</details>\n\n---\n\n## Pipeline Stats\n\n| Agent | Duration | Input tokens | Output tokens |\n|-------|----------|-------------|---------------|\n| CEO | 52.6s | 12 440 | 3 067 |\n| CTO | 90.9s | 45 565 | 4 716 |\n| Lead Back | 5.8s | 8 888 | 207 |\n| Lead Front | 136.4s | 26 253 | 12 260 |\n| Data Architect | 82.0s | 21 405 | 7 778 |\n| QA Lead | 46.8s | 23 307 | 2 426 |\n\n*Generated by Freed Agents · 2026-03-13*",
+        "client": "# HR Onboarding Automation App\n\n> A lightweight web application to digitize employee onboarding for a 50-person French company. Replaces manual paper/Excel workflows with automated task assignment, document templates, e-signatures, and email notifications integrated with Google Workspace. Reduces onboarding time from 2 weeks to under 3 days.\n\n## 🔴 Needs Clarification\n\nThe pipeline contains blocking inconsistencies in e-signature vendor choice and GDPR retention policies versus right-to-deletion, which fundamentally contradict timeline, budget, and architecture assumptions. These deferrals make the Field unreliable for client presentation without immediate clarification. The CTO correctly challenged timeline confidence, but unresolved blockers invalidate the overall coherence.\n\n## What We Understood\n\n**Who will use this**\n- HR team members (pole HR)\n- New employees joining the company\n- HR Director (DRH) as decision maker\n\n**What we're building**\n- Digital onboarding workflow engine (task creation, assignment, status tracking)\n- Document template library with merge fields\n- E-signature capability for employment documents\n- Automated email notifications for tasks and milestones\n- Google Workspace integration (Calendar, Gmail, Drive)\n- GDPR-compliant employee data storage with audit trail\n- Simple dashboard showing onboarding pipeline status\n- New employee portal for completing tasks and signing documents\n\n**Constraints we're working within**\n- Budget under €5,000 (extremely tight, ~40-50 dev hours)\n- Timeline 3-4 months (10-12 weeks for MVP delivery)\n- Must integrate with existing Google Workspace infrastructure\n- France-based, GDPR compliance mandatory for employee data\n- Small team (<10 daily users), low transaction volume (~1 hire/month)\n\n## What We've Decided\n\n- Built with React with Next.js and Node.js with Express, using PostgreSQL as database\n- Hosted on Vercel (frontend + API routes) or Railway (full-stack containerized) — Serverless frontend on Vercel with API routes, or containerized monolith on Railway. Managed PostgreSQL (Railway/Render database). EU region required for GDPR. No staging environment in budget - local development + production with feature flags.\n- Considering Google Workspace SMTP (primary) with SendGrid fallback for Email Automation\n- Considering Sentry (error tracking) + Vercel Analytics (frontend) + Railway logs (backend) for Monitoring\n\n## Questions for Our Discovery Call\n\n1. What type of e-signature do you need for onboarding documents? For example, a simple digital signature that employees can add online, or a certified service like DocuSign that provides legal proof?\n2. How long do you need to keep signed onboarding documents under French labor laws, and what happens if an employee requests their data be deleted under GDPR?\n3. What format are your current onboarding document templates in? For example, Microsoft Word files, PDFs, or Google Docs?\n4. Do you require HR approval before processing an employee's request to delete their personal data from the system?\n5. Will your IT department need to review and approve the integration with Google Workspace for login and email features?\n6. How quickly do you expect to see updates in the HR dashboard after an employee takes an action, like signing a document?\n7. Do you have a separate testing or staging environment where we can safely test the system before going live?\n8. Are there any specific email messages or timings you prefer for notifying new hires or HR team members during the onboarding process?\n\n## Our Assessment\n\nThe scope is minimal and aligned with a tight 5k€ budget for core onboarding features, but becomes underestimated if e-signature requires third-party integration, which could double costs and exceed budget.\n\nThe estimated budget may not cover the full scope\n\n---\n*Freed Agents · 2026-03-13*"
+    },
+    "total_duration_ms": 414530
 }

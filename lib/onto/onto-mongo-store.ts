@@ -76,7 +76,6 @@ export class MongoOntoStore implements OntoStoreAdapter {
     await this.client.connect();
     this.db = this.client.db(this.db.databaseName);
     await this.ensureIndexes();
-    console.log("  ∷ MongoOntoStore connected and indexes ensured.");
   }
 
   async disconnect(): Promise<void> {
@@ -212,6 +211,7 @@ export class MongoOntoStore implements OntoStoreAdapter {
 // ═══════════════════════════════════════════════════════════════════
 
 import { InMemoryOntoStore } from "./onto-persistence";
+import { DB_NAME } from "@/config/COLLECTIONS";
 
 export async function createOntoStore(): Promise<OntoStoreAdapter> {
   const mode = "mongo";
@@ -219,8 +219,8 @@ export async function createOntoStore(): Promise<OntoStoreAdapter> {
   if (mode === "mongo") {
     const uri = process.env.MONGODB_URI;
     if (!uri) throw new Error("MONGODB_URI is required when ONTO_STORE=mongo");
-    const db = process.env.MONGODB_DB;
-    const store = new MongoOntoStore(uri, db);
+    const dbName = DB_NAME;
+    const store = new MongoOntoStore(uri, dbName);
     await store.connect();
     return store;
   }

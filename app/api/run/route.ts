@@ -5,8 +5,11 @@
  * SEUL endroit autorisé à lire process.env.
  * Crée le RunContext et le passe aux agents — zéro secret en dehors d'ici.
  *
+ * Pipeline:
+ *   Discovery → CEO → CTO → [Lead Front + Lead Back + Data Architect + AI Architect?] → QA → Report
+ *   Specialist agents are recruited by the CTO via recruit_agent tool and run in parallel.
+ *
  * Body: { brief: string, projectId?: string }
- * Response: { projectId, ceo, cto, architect, qa, field, scores, total_duration_ms }
  */
 
 import { NextRequest, NextResponse } from "next/server";
@@ -17,17 +20,53 @@ import { generateReport } from "@/lib/reporter";
 import { deriveMetrics } from "@/lib/agent-metrics";
 import { computeScore, ScoreBreakdown } from "@/lib/scoring";
 import { ceoAgentConfig, buildCeoMessage, ProjectMandate } from "@/agents/ceo";
-import { ctoAgentConfig, buildCtoMessage, StackProposal } from "@/agents/cto";
-import {
-  architectAgentConfig,
-  buildArchitectMessage,
-  Blueprint,
-} from "@/agents/architect";
+import { buildCtoConfig, buildCtoMessage, StackProposal } from "@/agents/cto";
 import {
   qaLeadAgentConfig,
   buildQaLeadMessage,
   AuditReport,
 } from "@/agents/qa-lead";
+import {
+  leadFrontAgentConfig,
+  buildLeadFrontMessage,
+} from "@/agents/lead-front";
+import { leadBackAgentConfig, buildLeadBackMessage } from "@/agents/lead-back";
+import {
+  dataArchitectAgentConfig,
+  buildDataArchitectMessage,
+} from "@/agents/data-architect";
+import {
+  aiArchitectAgentConfig,
+  buildAiArchitectMessage,
+} from "@/agents/ai-architect";
+import type { RecruitableAgentType } from "@/lib/agent-db";
+import type { AgentConfig } from "@/core/agent-runner";
+
+// ═══════════════════════════════════════════════════════════════
+// SPECIALIST REGISTRY — config + message builder per recruitable type
+// ═══════════════════════════════════════════════════════════════
+
+const SPECIALIST_CONFIGS: Record<
+  RecruitableAgentType,
+  { config: AgentConfig; buildMessage: (projectId: string) => string }
+> = {
+  lead_front: {
+    config: leadFrontAgentConfig,
+    buildMessage: buildLeadFrontMessage,
+  },
+  lead_back: {
+    config: leadBackAgentConfig,
+    buildMessage: buildLeadBackMessage,
+  },
+  data_architect: {
+    config: dataArchitectAgentConfig,
+    buildMessage: buildDataArchitectMessage,
+  },
+  ai_architect: {
+    config: aiArchitectAgentConfig,
+    buildMessage: buildAiArchitectMessage,
+  },
+};
 
 export async function POST(req: NextRequest) {
   try {
@@ -40,6 +79,7 @@ export async function POST(req: NextRequest) {
     if (!brief?.trim()) {
       return NextResponse.json({ error: "brief is required" }, { status: 400 });
     }
+
     // ── Seul endroit où process.env est lu ─────────────────────
     const ctx = createContext({
       anthropicApiKey: process.env.ANTHROPIC_API_KEY!,
@@ -54,7 +94,7 @@ export async function POST(req: NextRequest) {
       await ctx.store.create(projectId, brief.trim());
     }
 
-    // ── Lance le CEO ───────────────────────────────────────────
+    // ── Lance le CEO (agent fixe) ──────────────────────────────
     console.info("Start CEO");
     const snapshotBeforeCeo = await ctx.store.snapshot(projectId);
     const ceoResult = await runAgent<ProjectMandate>(
@@ -75,14 +115,23 @@ export async function POST(req: NextRequest) {
     );
     console.info("End CEO — score:", ceoScore.score.toFixed(3), ceoScore);
 
-    // ── Lance le CTO ───────────────────────────────────────────
+    // ── Lance le CTO (agent fixe + recruit_agent tool) ─────────
     let ctoResult: Awaited<ReturnType<typeof runAgent<StackProposal>>>;
     let ctoScoreResult: ScoreBreakdown;
+    const recruitedTypes: RecruitableAgentType[] = [];
+
     try {
       console.info("Start CTO");
+      const ctoConfig = buildCtoConfig(async (agentType, reason) => {
+        if (!recruitedTypes.includes(agentType)) {
+          recruitedTypes.push(agentType);
+        }
+        await ctx.agentDb?.assignAgent(projectId, agentType, reason);
+      });
+
       const snapshotBeforeCto = await ctx.store.snapshot(projectId);
       ctoResult = await runAgent<StackProposal>(
-        ctoAgentConfig,
+        ctoConfig,
         projectId,
         ctx,
         buildCtoMessage(projectId),
@@ -103,39 +152,98 @@ export async function POST(req: NextRequest) {
       throw new Error(`CTO agent failed: ${err.message ?? err}`);
     }
 
-    // ── Lance l'Architect ──────────────────────────────────────
-    let architectResult: Awaited<ReturnType<typeof runAgent<Blueprint>>>;
-    let architectScoreResult: ScoreBreakdown;
-    try {
-      console.info("Start Architect");
-      const snapshotBeforeArchitect = await ctx.store.snapshot(projectId);
-      architectResult = await runAgent<Blueprint>(
-        architectAgentConfig,
-        projectId,
-        ctx,
-        buildArchitectMessage(projectId),
+    // ── Détermine quels spécialistes lancer ────────────────────
+    // Si agentDb disponible, les assignments sont en DB — sinon on utilise recruitedTypes
+    // ou on tombe back sur tous les non-AI specialists par défaut
+    let specialistsToRun: RecruitableAgentType[] = recruitedTypes;
+    if (specialistsToRun.length === 0) {
+      // CTO n'a pas appelé recruit_agent (pas de DB ou outil ignoré) — fallback
+      specialistsToRun = ["lead_front", "lead_back", "data_architect"];
+      console.warn(
+        "CTO did not recruit any specialists — running default set:",
+        specialistsToRun,
       );
-      const snapshotAfterArchitect = await ctx.store.snapshot(projectId);
-      const architectScore = computeScore(
-        deriveMetrics(
-          snapshotBeforeArchitect,
-          snapshotAfterArchitect,
-          architectResult.usage.outputTokens,
-          architectResult.finish_reason,
-          architectResult.duration_ms,
-        ),
-      );
-      console.info(
-        "End Architect — score:",
-        architectScore.score.toFixed(3),
-        architectScore,
-      );
-      architectScoreResult = architectScore;
-    } catch (err: any) {
-      throw new Error(`Architect agent failed: ${err.message ?? err}`);
     }
 
-    // ── Lance le QA Lead ───────────────────────────────────────
+    // ── Lance les spécialistes en parallèle ────────────────────
+    // Single "global before" snapshot to avoid score race between parallel agents
+    const snapshotBeforeSpecialists = await ctx.store.snapshot(projectId);
+
+    type SpecialistResult = {
+      agentType: RecruitableAgentType;
+      result: Awaited<ReturnType<typeof runAgent>>;
+      score: ScoreBreakdown;
+    };
+
+    const specialistResults: SpecialistResult[] = await Promise.all(
+      specialistsToRun.map(async (agentType) => {
+        try {
+          console.info(`Start ${agentType}`);
+          const { config: baseConfig, buildMessage } =
+            SPECIALIST_CONFIGS[agentType];
+
+          // Dynamic model routing + behavioral injection for recruitable agents
+          const resolvedModel = ctx.agentDb
+            ? await ctx.agentDb.resolveModel(agentType)
+            : baseConfig.model;
+          const behaviorContext = ctx.agentDb
+            ? await ctx.agentDb.buildBehavioralContext(agentType)
+            : null;
+
+          const config: AgentConfig = {
+            ...baseConfig,
+            model: resolvedModel,
+            system: behaviorContext
+              ? baseConfig.system + "\n\n" + behaviorContext
+              : baseConfig.system,
+          };
+
+          const result = await runAgent(
+            config,
+            projectId,
+            ctx,
+            buildMessage(projectId),
+          );
+          const snapshotAfter = await ctx.store.snapshot(projectId);
+          const score = computeScore(
+            deriveMetrics(
+              snapshotBeforeSpecialists,
+              snapshotAfter,
+              result.usage.outputTokens,
+              result.finish_reason,
+              result.duration_ms,
+            ),
+          );
+
+          if (ctx.agentDb) {
+            await ctx.agentDb.updateAgentStats(
+              agentType,
+              score,
+              config.model.modelId,
+              result.usage.outputTokens,
+              result.finish_reason,
+            );
+            await ctx.agentDb.checkFiringCriteria(agentType);
+            await ctx.agentDb.releaseAgent(projectId, agentType);
+          }
+
+          console.info(
+            `End ${agentType} — score:`,
+            score.score.toFixed(3),
+            score,
+          );
+          return { agentType, result, score };
+        } catch (error: any) {
+          throw Error(`[agentType] - ${agentType}: ${error.message}`);
+        }
+      }),
+    );
+
+    const specialistScores = Object.fromEntries(
+      specialistResults.map(({ agentType, score }) => [agentType, score]),
+    );
+
+    // ── Lance le QA Lead (agent fixe) ─────────────────────────
     let qaResult: Awaited<ReturnType<typeof runAgent<AuditReport>>>;
     let qaScoreResult: ScoreBreakdown;
     try {
@@ -163,8 +271,20 @@ export async function POST(req: NextRequest) {
       throw new Error(`QA Lead agent failed: ${err.message ?? err}`);
     }
 
-    // ── Snapshot final (après tous les agents) ─────────────────
+    // ── Snapshot final ─────────────────────────────────────────
     const snapshot = await ctx.store.snapshot(projectId);
+
+    // Build report pipeline — include all specialist outputs
+    const specialistOutputs = Object.fromEntries(
+      specialistResults.map(({ agentType, result }) => [
+        agentType,
+        {
+          blueprint: result.output,
+          duration_ms: result.duration_ms,
+          usage: result.usage,
+        },
+      ]),
+    );
 
     const reportPipeline = {
       ceo: {
@@ -177,17 +297,14 @@ export async function POST(req: NextRequest) {
         duration_ms: ctoResult.duration_ms,
         usage: ctoResult.usage,
       },
-      architect: {
-        blueprint: architectResult.output,
-        duration_ms: architectResult.duration_ms,
-        usage: architectResult.usage,
-      },
+      ...specialistOutputs,
       qa: {
         audit: qaResult.output,
         duration_ms: qaResult.duration_ms,
         usage: qaResult.usage,
       },
     };
+
     const reportInternal = generateReport({
       projectId,
       snapshot,
@@ -201,6 +318,11 @@ export async function POST(req: NextRequest) {
       mode: "client",
     });
 
+    const specialistDurationMs = specialistResults.reduce(
+      (sum, { result }) => sum + result.duration_ms,
+      0,
+    );
+
     return NextResponse.json({
       projectId,
       ceo: {
@@ -212,18 +334,23 @@ export async function POST(req: NextRequest) {
       },
       cto: {
         proposal: ctoResult.output,
+        recruited: recruitedTypes,
         tensions_written: ctoResult.tensions_written.length,
         usage: ctoResult.usage,
         duration_ms: ctoResult.duration_ms,
         reasoning_raw: ctoResult.reasoning_raw,
       },
-      architect: {
-        blueprint: architectResult.output,
-        tensions_written: architectResult.tensions_written.length,
-        usage: architectResult.usage,
-        duration_ms: architectResult.duration_ms,
-        reasoning_raw: architectResult.reasoning_raw,
-      },
+      specialists: Object.fromEntries(
+        specialistResults.map(({ agentType, result }) => [
+          agentType,
+          {
+            blueprint: result.output,
+            tensions_written: result.tensions_written.length,
+            usage: result.usage,
+            duration_ms: result.duration_ms,
+          },
+        ]),
+      ),
       qa: {
         audit: qaResult.output,
         tensions_written: qaResult.tensions_written.length,
@@ -239,7 +366,7 @@ export async function POST(req: NextRequest) {
       scores: {
         ceo: ceoScore,
         cto: ctoScoreResult,
-        architect: architectScoreResult,
+        ...specialistScores,
         qa: qaScoreResult,
       },
       report: {
@@ -249,7 +376,7 @@ export async function POST(req: NextRequest) {
       total_duration_ms:
         ceoResult.duration_ms +
         ctoResult.duration_ms +
-        architectResult.duration_ms +
+        specialistDurationMs +
         qaResult.duration_ms,
     });
   } catch (error: any) {

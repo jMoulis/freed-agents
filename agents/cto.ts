@@ -13,6 +13,7 @@
 
 import { z } from "zod";
 import { AgentConfig } from "@/core/agent-runner";
+import type { RecruitableAgentType } from "@/lib/agent-db";
 
 // ═══════════════════════════════════════════════════════════════
 // OUTPUT SCHEMA
@@ -146,7 +147,16 @@ Specifically:
 Confidence on these tensions must match your output confidence.
 A tech_stack tension at 0.75 means you decided it at 0.75.
 
-**Step 3 — Produce your structured output**
+**Step 3 — Recruit specialist architects**
+Based on what you have written to the Field, call recruit_agent for each technical domain the project requires:
+- Always recruit lead_back — every project needs a backend layer
+- Recruit lead_front if the project has any user-facing interface (web app, mobile, dashboard)
+- Recruit data_architect if the project persists data (nearly always true)
+- Recruit ai_architect only if the project has AI/ML components — a CEO or CTO tension must explicitly confirm this
+
+Provide a clear reason for each recruitment (1–2 sentences). Do not recruit agents for domains that are absent from the project.
+
+**Step 4 — Produce your structured output**
 Fill the StackProposal schema honestly:
 - field_assessment reflects your read_field analysis
 - decisions contains only what you can decide with current knowledge
@@ -155,6 +165,7 @@ Fill the StackProposal schema honestly:
   reference tension ids written by previous agents — never your own
   tensions. Your own tensions go into decisions or deferred, not
   into field_assessment.
+- Call recruit_agent before producing your StackProposal — specialists need the assignment to be recorded.
 
 ### On confidence
 
@@ -225,8 +236,53 @@ Your task:
 1. Call read_field to assess what the CEO has decided and at what confidence
 2. Contest any CEO tensions you find weak or technically incorrect
 3. Write your own technical tensions (tech_stack, deployment_model, vendors, security_model, etc.)
-4. Produce your StackProposal — include only decisions you can make honestly
+4. Call recruit_agent for each specialist domain the project requires
+5. Produce your StackProposal — include only decisions you can make honestly
 
 Do not invent requirements. Do not assume budget or compliance constraints
 are resolved unless a CEO tension explicitly says so at high confidence.`;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// CONFIG FACTORY — injects recruit_agent tool at runtime
+// ═══════════════════════════════════════════════════════════════
+
+/**
+ * Returns an AgentConfig for the CTO with the recruit_agent tool wired.
+ * The callback is called each time the CTO recruits a specialist.
+ *
+ * Usage in route.ts:
+ *   const recruited: RecruitableAgentType[] = []
+ *   const config = buildCtoConfig(async (type, reason) => {
+ *     recruited.push(type)
+ *     await ctx.agentDb?.assignAgent(projectId, type, reason)
+ *   })
+ */
+export function buildCtoConfig(
+  onRecruit: (agentType: RecruitableAgentType, reason: string) => Promise<void>,
+): AgentConfig {
+  return {
+    ...ctoAgentConfig,
+    tools: {
+      recruit_agent: {
+        description:
+          "Recruit a specialized architect agent for this project. Call this after writing your tensions, once for each technical domain the project requires (lead_front, lead_back, data_architect, ai_architect).",
+        parameters: z.object({
+          agentType: z.enum([
+            "lead_front",
+            "lead_back",
+            "data_architect",
+            "ai_architect",
+          ] as const),
+          reason: z
+            .string()
+            .describe("Why this specialist is needed for this project (1–2 sentences)."),
+        }),
+        execute: async ({ agentType, reason }: { agentType: RecruitableAgentType; reason: string }) => {
+          await onRecruit(agentType, reason);
+          return { status: "recruited", agentType, reason };
+        },
+      },
+    },
+  };
 }

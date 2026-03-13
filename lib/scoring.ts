@@ -5,10 +5,18 @@
  * Computes a composite score for one agent run given its metrics.
  *
  * Formula:
- *   ownedUnresolved = tensionsDelta - tensionsResolvedByAgent
- *   quality  = tensionsResolvedByAgent * 3 - ownedUnresolved * 1 + fieldCoverage * 2
+ *   ownedUnresolved = tensionsDelta - ownTensionsResolved
+ *   quality  = ownTensionsResolved * 3 - ownedUnresolved * 1 + fieldCoverage * 2
  *   behavior = finishReason === 'length' ? 0.5 : 1.0
  *   score    = (quality * behavior) / log(completionTokens + 1)
+ *
+ * Rationale:
+ *   - ownTensionsResolved: tensions this agent wrote that the engine immediately resolved
+ *     (high confidence → success path). Rewards decisive, well-grounded output.
+ *   - ownedUnresolved: tensions this agent opened but left unresolved (partial/blocked).
+ *     A small penalty — unresolved tensions are still value, but incomplete.
+ *   - fieldCoverage: global resolved ratio, rewards agents that leave the field healthier.
+ *   - Token normalization prevents rewarding verbosity.
  */
 
 import type { RunMetrics } from "@/lib/agent-metrics";
@@ -19,7 +27,7 @@ export interface ScoreBreakdown {
   behavior: number;
   components: {
     tensionsDelta: number;
-    tensionsResolvedByAgent: number;
+    ownTensionsResolved: number;
     ownedUnresolved: number;
     fieldCoverage: number;
     completionTokens: number;
@@ -28,10 +36,10 @@ export interface ScoreBreakdown {
 }
 
 export function computeScore(metrics: RunMetrics): ScoreBreakdown {
-  const ownedUnresolved = metrics.tensionsDelta - metrics.tensionsResolvedByAgent;
+  const ownedUnresolved = metrics.tensionsDelta - metrics.ownTensionsResolved;
 
   const quality =
-    metrics.tensionsResolvedByAgent * 3 -
+    metrics.ownTensionsResolved * 3 -
     ownedUnresolved * 1 +
     metrics.fieldCoverage * 2;
 
@@ -45,7 +53,7 @@ export function computeScore(metrics: RunMetrics): ScoreBreakdown {
     behavior,
     components: {
       tensionsDelta: metrics.tensionsDelta,
-      tensionsResolvedByAgent: metrics.tensionsResolvedByAgent,
+      ownTensionsResolved: metrics.ownTensionsResolved,
       ownedUnresolved,
       fieldCoverage: metrics.fieldCoverage,
       completionTokens: metrics.completionTokens,

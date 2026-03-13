@@ -8,7 +8,9 @@
         "sessions": 0,
         "avg_efficiency": null,
         "tension_resolution_rate": null
-      }
+      },
+      "model_performance": {},
+      "recent_runs": []
     },
     {
       "id": "ceo",
@@ -18,7 +20,9 @@
         "sessions": 0,
         "avg_efficiency": null,
         "tension_resolution_rate": null
-      }
+      },
+      "model_performance": {},
+      "recent_runs": []
     },
     {
       "id": "cto",
@@ -28,7 +32,9 @@
         "sessions": 0,
         "avg_efficiency": null,
         "tension_resolution_rate": null
-      }
+      },
+      "model_performance": {},
+      "recent_runs": []
     },
     {
       "id": "architect",
@@ -38,7 +44,9 @@
         "sessions": 0,
         "avg_efficiency": null,
         "tension_resolution_rate": null
-      }
+      },
+      "model_performance": {},
+      "recent_runs": []
     },
     {
       "id": "qa_lead",
@@ -48,7 +56,9 @@
         "sessions": 0,
         "avg_efficiency": null,
         "tension_resolution_rate": null
-      }
+      },
+      "model_performance": {},
+      "recent_runs": []
     }
   ]
 }

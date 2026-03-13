@@ -241,7 +241,7 @@ export class OntoEngine {
 
     // ─── Pass 0: Activation ───────────────────────────────────────
     // Wake all dormant tensions. Inject shared knowledge into each.
-    for (const [id, tension] of field.tensions) {
+    for (const [_id, tension] of field.tensions) {
       this.activate(tension, field.sharedKnowledge, globalTrace, 0);
     }
 
@@ -360,21 +360,49 @@ export class OntoEngine {
    * Critical rule: knowledge propagation respects epistemic weight.
    * A linked tension with confidence 0.3 does not override
    * local knowledge with confidence 0.9.
+   *
+   * Four steps per pass:
+   *   1. Evict expired knowledge from the tension's local store
+   *   2. Re-inject still-valid shared knowledge (fills gaps, upgrades confidence)
+   *   3. Pull resolved knowledge from equilibrated linked tensions
+   *   4. Back-propagate discoveries to sharedKnowledge for field-wide broadcast
    */
   private propagateKnowledge(
     tension: Tension,
     allTensions: Map<TensionId, Tension>,
     sharedKnowledge: Map<KnowledgeId, SituatedKnowledge>,
   ): void {
+    // ── Step 1: Evict expired local knowledge ────────────────────────
+    // Knowledge with a validity window may expire between passes.
+    // A tension making decisions on stale data is an epistemic violation.
+    for (const [kid, knowledge] of tension.knows) {
+      if (!this.isKnowledgeValid(knowledge)) {
+        tension.knows.delete(kid);
+      }
+    }
+
+    // ── Step 2: Re-inject still-valid shared knowledge ───────────────
+    // activate() injected shared knowledge once at pass 0.
+    // On subsequent passes, new entries may have been back-propagated by
+    // other tensions (step 4), or some entries may now have higher
+    // confidence than what this tension holds locally.
+    for (const [kid, knowledge] of sharedKnowledge) {
+      if (!this.isKnowledgeValid(knowledge)) continue;
+      const existing = tension.knows.get(kid);
+      if (!existing || knowledge.confidence > existing.confidence) {
+        tension.knows.set(kid, knowledge);
+      }
+    }
+
+    // ── Step 3: Pull from equilibrated linked tensions ────────────────
     for (const linkedId of tension.linkedTo) {
       const linked = allTensions.get(linkedId);
       if (!linked) continue;
       if (linked.state.phase === "equilibrated") {
-        // Extract resolved knowledge from equilibrated tension
         for (const [kid, knowledge] of linked.knows) {
           const existing = tension.knows.get(kid);
           if (!existing || knowledge.confidence > existing.confidence) {
-            // Higher confidence knowledge wins — but we record the override
+            // Higher confidence knowledge wins — record the derivation
             tension.knows.set(kid, {
               ...knowledge,
               derivedFrom: [
@@ -384,6 +412,23 @@ export class OntoEngine {
             });
           }
         }
+      }
+    }
+
+    // ── Step 4: Back-propagate discoveries to shared knowledge ────────
+    // If this tension now holds more confident knowledge than the field's
+    // shared store, broadcast it. Discoveries from one tension reach ALL
+    // tensions on the next pass, not just directly linked ones.
+    for (const [kid, knowledge] of tension.knows) {
+      const shared = sharedKnowledge.get(kid);
+      if (shared && knowledge.confidence > shared.confidence) {
+        sharedKnowledge.set(kid, {
+          ...knowledge,
+          origin: {
+            ...knowledge.origin,
+            method: "reconciled", // mark as field-reconciled, not direct assertion
+          },
+        });
       }
     }
   }

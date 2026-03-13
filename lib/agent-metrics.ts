@@ -8,10 +8,10 @@
 import type { FieldSnapshot } from "@/core/onto-store";
 
 export interface RunMetrics {
-  tensionsDelta: number;            // new tensions added by this agent
-  tensionsResolvedByAgent: number;  // tensions active before this agent, resolved after
-  tensionsStillActive: number;      // total unresolved after the run (observability only)
-  fieldCoverage: number;            // resolved / total (0–1) after the run
+  tensionsDelta: number;        // new tensions added by this agent
+  ownTensionsResolved: number;  // of those new tensions, how many are already resolved after the run
+  tensionsStillActive: number;  // total unresolved in the field after the run (observability only)
+  fieldCoverage: number;        // resolved / total (0–1) after the run
   completionTokens: number;
   finishReason: string;
   durationMs: number;
@@ -24,20 +24,13 @@ export function deriveMetrics(
   finishReason: string,
   durationMs: number,
 ): RunMetrics {
-  const tensionsDelta = after.tensions.length - before.tensions.length;
+  const beforeIds = new Set(before.tensions.map((t) => t.id));
 
-  const beforeActiveIds = new Set(
-    before.tensions
-      .filter((t) => t.state !== "resolved")
-      .map((t) => t.id),
-  );
-  const afterResolvedIds = new Set(
-    after.tensions
-      .filter((t) => t.state === "resolved")
-      .map((t) => t.id),
-  );
-  const tensionsResolvedByAgent = [...beforeActiveIds].filter((id) =>
-    afterResolvedIds.has(id),
+  // Tensions this agent wrote = present after but not before
+  const ownTensions = after.tensions.filter((t) => !beforeIds.has(t.id));
+  const tensionsDelta = ownTensions.length;
+  const ownTensionsResolved = ownTensions.filter(
+    (t) => t.state === "resolved",
   ).length;
 
   const tensionsStillActive = after.tensions.filter(
@@ -52,7 +45,7 @@ export function deriveMetrics(
 
   return {
     tensionsDelta,
-    tensionsResolvedByAgent,
+    ownTensionsResolved,
     tensionsStillActive,
     fieldCoverage,
     completionTokens,

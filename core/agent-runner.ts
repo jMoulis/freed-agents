@@ -8,7 +8,6 @@ import { z } from "zod";
 import { RunContext, ModelRef } from "@/lib/context";
 import { AgentRole, TensionInput, AgentRunResult } from "@/core/types";
 import { AnthropicLanguageModelOptions } from "@ai-sdk/anthropic";
-import { inspect } from "node:util";
 
 // ═══════════════════════════════════════════════════════════════
 // CONFIG
@@ -122,7 +121,7 @@ export async function runAgent<T = unknown>(
       tool({
         description: def.description,
         parameters: def.parameters,
-        inputSchema: def.inputSchema ?? z.object({}),
+        inputSchema: def.inputSchema ?? def.parameters,
         execute: (args: any) => def.execute(args, ctx) as any,
       } as any),
     ]),

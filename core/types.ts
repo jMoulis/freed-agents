@@ -12,7 +12,15 @@
 // AGENT / PROJECT LAYER
 // ═══════════════════════════════════════════════════════════════
 
-export type AgentRole = "ceo" | "cto" | "architect" | "qa_lead" | "dynamic";
+export type AgentRole =
+  | "ceo"
+  | "cto"
+  | "qa_lead"
+  | "lead_front"
+  | "lead_back"
+  | "data_architect"
+  | "ai_architect"
+  | "dynamic";
 
 export type ProjectPhase =
   | "briefing"

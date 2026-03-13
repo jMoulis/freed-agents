@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport, isToolUIPart } from "ai";
-import type { DynamicToolUIPart, ToolUIPart } from "ai";
+import type { ToolUIPart } from "ai";
 import {
   Conversation,
   ConversationContent,
@@ -36,7 +36,6 @@ interface Props {
 const COMPLETION_SIGNAL = "Merci, j'ai tout ce qu'il me faut";
 
 export function DiscoveryChat({ onComplete }: Props) {
-  const projectIdRef = useRef<string | null>(null);
   const [projectId, setProjectId] = useState<string | null>(null);
   const [submittedFormIds, setSubmittedFormIds] = useState<Set<string>>(
     new Set(),
@@ -47,23 +46,13 @@ export function DiscoveryChat({ onComplete }: Props) {
     () =>
       new DefaultChatTransport({
         api: "/api/discovery",
-        // prepareSendMessagesRequest: ({ body }) => ({
-        //   body: {
-        //     ...body,
-        //     messages: [],
-        //     ...(projectIdRef.current
-        //       ? { projectId: projectIdRef.current }
-        //       : {}),
-        //   },
-        // }),
         fetch: async (input, init) => {
           const response = await globalThis.fetch(
             input as RequestInfo,
             init as RequestInit,
           );
           const pid = response.headers.get("x-project-id");
-          if (pid && !projectIdRef.current) {
-            projectIdRef.current = pid;
+          if (pid) {
             setProjectId(pid);
           }
           return response;
@@ -119,7 +108,7 @@ export function DiscoveryChat({ onComplete }: Props) {
       { text: `[${data.theme}]\n${lines.join("\n")}` },
       {
         body: {
-          ...(projectIdRef.current ? { projectId: projectIdRef.current } : {}),
+          projectId,
         },
       },
     );
@@ -132,7 +121,7 @@ export function DiscoveryChat({ onComplete }: Props) {
       },
       {
         body: {
-          ...(projectIdRef.current ? { projectId: projectIdRef.current } : {}),
+          projectId,
         },
       },
     );
@@ -144,7 +133,7 @@ export function DiscoveryChat({ onComplete }: Props) {
       },
       {
         body: {
-          ...(projectIdRef.current ? { projectId: projectIdRef.current } : {}),
+          projectId,
         },
       },
     );

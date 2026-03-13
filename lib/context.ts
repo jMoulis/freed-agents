@@ -28,6 +28,7 @@ import {
   MongoOntoStore,
   IOntoStore,
 } from "@/core/onto-store";
+import { AgentDb } from "@/lib/agent-db";
 
 // ═══════════════════════════════════════════════════════════════
 // CONFIG — ce que la route API fournit
@@ -91,6 +92,7 @@ export class ModelRegistry {
 export interface RunContext {
   models: ModelRegistry;
   store: IOntoStore;
+  agentDb?: AgentDb;
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -99,6 +101,7 @@ export interface RunContext {
 
 declare global {
   var __mongoOntoStore: MongoOntoStore | undefined;
+  var __agentDb: AgentDb | undefined;
 }
 if (!global.__mongoOntoStore) {
   global.__mongoOntoStore = new MongoOntoStore();
@@ -113,5 +116,13 @@ export function createContext(config: ContextConfig): RunContext {
       ? global.__mongoOntoStore!
       : new InMemoryOntoStore());
 
-  return { models, store };
+  let agentDb: AgentDb | undefined;
+  if (config.mongoUri) {
+    if (!global.__agentDb) {
+      global.__agentDb = new AgentDb(config.mongoUri);
+    }
+    agentDb = global.__agentDb;
+  }
+
+  return { models, store, agentDb };
 }
