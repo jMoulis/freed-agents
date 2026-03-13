@@ -3,11 +3,11 @@
  *
  * Pure synchronous function. No API calls. No async.
  * Takes pipeline data → returns a markdown string.
+ *
+ * CEO and CTO are optional — pipeline now starts with PM + specialists.
  */
 
 import { FieldSnapshot } from "@/core/onto-store";
-import { ProjectMandate } from "@/agents/ceo";
-import { StackProposal } from "@/agents/cto";
 import { AuditReport } from "@/agents/qa-lead";
 
 type TokenUsage = {
@@ -19,14 +19,12 @@ export interface ReportInput {
   projectId: string;
   snapshot: FieldSnapshot;
   pipeline: {
-    ceo: { mandate: ProjectMandate; duration_ms: number; usage: TokenUsage };
-    cto: { proposal: StackProposal; duration_ms: number; usage: TokenUsage };
     qa: { audit: AuditReport; duration_ms: number; usage: TokenUsage };
     [key: string]: {
       duration_ms: number;
       usage: TokenUsage;
       [k: string]: unknown;
-    };
+    } | undefined;
   };
 }
 
@@ -40,7 +38,6 @@ function verdictLabel(verdict: "green" | "yellow" | "red"): string {
   return { green: "✓ GREEN", yellow: "◑ YELLOW", red: "✕ RED" }[verdict];
 }
 
-
 const BUDGET_VS_SCOPE_LABEL: Record<string, string> = {
   aligned: "The scope fits the estimated budget",
   underestimated: "The estimated budget may not cover the full scope",
@@ -50,17 +47,23 @@ const BUDGET_VS_SCOPE_LABEL: Record<string, string> = {
 
 // ─── client report ───────────────────────────────────────────────────────────
 
-function generateClientReport({ pipeline }: Pick<ReportInput, "pipeline">): string {
-  const { mandate } = pipeline.ceo;
-  const { proposal } = pipeline.cto;
+function generateClientReport(
+  projectId: string,
+  { pipeline, snapshot }: Pick<ReportInput, "pipeline" | "snapshot">,
+): string {
   const { audit } = pipeline.qa;
-
   const lines: string[] = [];
   const date = new Date().toISOString().split("T")[0];
 
-  lines.push(`# ${mandate.title}`);
-  lines.push(``);
-  lines.push(`> ${mandate.description}`);
+  // Derive title from PM tensions or fallback
+  const titleTension = snapshot.tensions.find(
+    (t) => t.id === "pm_project_title" || t.id.includes("organization_context"),
+  );
+  const title = titleTension
+    ? String(titleTension.value ?? projectId)
+    : `Project ${projectId}`;
+
+  lines.push(`# ${title}`);
   lines.push(``);
 
   // Verdict
@@ -75,51 +78,27 @@ function generateClientReport({ pipeline }: Pick<ReportInput, "pipeline">): stri
   lines.push(audit.verdict_rationale);
   lines.push(``);
 
-  // What We Understood
-  lines.push(`## What We Understood`);
-  lines.push(``);
-  lines.push(`**Who will use this**`);
-  mandate.target_users.forEach((u) => lines.push(`- ${u}`));
-  lines.push(``);
-  lines.push(`**What we're building**`);
-  mandate.core_features.forEach((f) => lines.push(`- ${f}`));
-  lines.push(``);
-  if (mandate.constraints.length > 0) {
-    lines.push(`**Constraints we're working within**`);
-    mandate.constraints.forEach((c) => lines.push(`- ${c}`));
+  // What We Understood — from PM tensions
+  const pmTensions = snapshot.tensions.filter((t) => t.id.startsWith("pm_"));
+  if (pmTensions.length > 0) {
+    lines.push(`## What We Understood`);
+    lines.push(``);
+    const keyTensions = pmTensions
+      .filter((t) => t.confidence >= 0.7)
+      .slice(0, 8);
+    keyTensions.forEach((t) => {
+      const val =
+        typeof t.value === "string"
+          ? t.value
+          : JSON.stringify(t.value);
+      lines.push(`- **${t.wants}**: ${val}`);
+    });
     lines.push(``);
   }
 
-  // What We've Decided
-  lines.push(`## What We've Decided`);
-  lines.push(``);
-
-  if (proposal.decisions.tech_stack) {
-    const ts = proposal.decisions.tech_stack;
-    lines.push(
-      `- Built with ${ts.frontend} and ${ts.backend}, using ${ts.database} as database`,
-    );
-  }
-
-  if (proposal.decisions.deployment_model) {
-    const dm = proposal.decisions.deployment_model;
-    lines.push(`- Hosted on ${dm.hosting} — ${dm.approach}`);
-  }
-
-  const activeVendors =
-    proposal.decisions.vendors?.filter(
-      (v) => v.decision === "chosen" || v.decision === "shortlisted",
-    ) ?? [];
-  activeVendors.forEach((v) => {
-    const label = v.decision === "chosen" ? "Using" : "Considering";
-    lines.push(`- ${label} ${v.recommendation} for ${v.category}`);
-  });
-
-  lines.push(``);
-
   // Discovery questions
   if (audit.discovery_questions.length > 0) {
-    lines.push(`## Questions for Our Discovery Call`);
+    lines.push(`## Questions for Our Follow-up`);
     lines.push(``);
     audit.discovery_questions.forEach((q, i) => {
       lines.push(`${i + 1}. ${q.question}`);
@@ -149,44 +128,40 @@ export function generateReport({
   mode = "internal",
 }: ReportInput & { mode?: "client" | "internal" }): string {
   if (mode === "client") {
-    return generateClientReport({ pipeline });
+    return generateClientReport(projectId, { pipeline, snapshot });
   }
 
-  const { mandate } = pipeline.ceo;
-  const { proposal } = pipeline.cto;
   const { audit } = pipeline.qa;
 
   const specialistKeys = Object.keys(pipeline).filter(
-    (k) => !["ceo", "cto", "qa"].includes(k),
+    (k) => k !== "qa",
   );
 
-  const totalTokens =
-    (pipeline.ceo.usage.inputTokens ?? 0) +
-    (pipeline.ceo.usage.outputTokens ?? 0) +
-    (pipeline.cto.usage.inputTokens ?? 0) +
-    (pipeline.cto.usage.outputTokens ?? 0) +
-    specialistKeys.reduce(
-      (sum, k) =>
-        sum +
-        (pipeline[k].usage.inputTokens ?? 0) +
-        (pipeline[k].usage.outputTokens ?? 0),
-      0,
-    ) +
+  const totalTokens = specialistKeys.reduce(
+    (sum, k) =>
+      sum +
+      (pipeline[k]?.usage.inputTokens ?? 0) +
+      (pipeline[k]?.usage.outputTokens ?? 0),
+    0,
+  ) +
     (pipeline.qa.usage.inputTokens ?? 0) +
     (pipeline.qa.usage.outputTokens ?? 0);
 
   const totalMs =
-    pipeline.ceo.duration_ms +
-    pipeline.cto.duration_ms +
-    specialistKeys.reduce((sum, k) => sum + pipeline[k].duration_ms, 0) +
+    specialistKeys.reduce((sum, k) => sum + (pipeline[k]?.duration_ms ?? 0), 0) +
     pipeline.qa.duration_ms;
 
   const lines: string[] = [];
 
   // ── Header ────────────────────────────────────────────────────
-  lines.push(`# ${mandate.title}`);
-  lines.push(``);
-  lines.push(`> ${mandate.description}`);
+  const titleTension = snapshot.tensions.find(
+    (t) => t.id === "pm_project_title" || t.id.includes("organization_context"),
+  );
+  const title = titleTension
+    ? String(titleTension.value ?? projectId)
+    : `Project ${projectId}`;
+
+  lines.push(`# ${title}`);
   lines.push(``);
   lines.push(
     `**Project ID:** \`${projectId}\` · **Pipeline:** ${formatMs(totalMs)} · **Tokens:** ${totalTokens.toLocaleString()} · **Field confidence:** ${(snapshot.globalConfidence * 100).toFixed(0)}%`,
@@ -201,81 +176,19 @@ export function generateReport({
   lines.push(audit.verdict_rationale);
   lines.push(``);
 
-  // ── Mandate ───────────────────────────────────────────────────
-  lines.push(`## Mandate`);
-  lines.push(``);
-  lines.push(`**Complexity:** ${mandate.estimated_complexity}`);
-  lines.push(``);
-  lines.push(`**Target users**`);
-  mandate.target_users.forEach((u) => lines.push(`- ${u}`));
-  lines.push(``);
-  lines.push(`**Core features**`);
-  mandate.core_features.forEach((f) => lines.push(`- ${f}`));
-  lines.push(``);
-  lines.push(`**Success criteria**`);
-  mandate.success_criteria.forEach((s) => lines.push(`- ${s}`));
-  lines.push(``);
-  if (mandate.constraints.length > 0) {
-    lines.push(`**Constraints**`);
-    mandate.constraints.forEach((c) => lines.push(`- ${c}`));
+  // ── PM Field Overview ─────────────────────────────────────────
+  const pmTensions = snapshot.tensions.filter((t) => t.id.startsWith("pm_"));
+  if (pmTensions.length > 0) {
+    lines.push(`## Discovery Summary`);
     lines.push(``);
-  }
-  lines.push(``);
-
-  // ── Technical Stack ───────────────────────────────────────────
-  lines.push(`## Technical Decisions`);
-  lines.push(``);
-
-  if (proposal.decisions.tech_stack) {
-    const ts = proposal.decisions.tech_stack;
-    lines.push(`### Stack`);
+    lines.push(`*${pmTensions.length} tensions written by PM*`);
     lines.push(``);
-    lines.push(`| Layer | Choice |`);
-    lines.push(`|-------|--------|`);
-    lines.push(`| Frontend | ${ts.frontend} |`);
-    lines.push(`| Backend | ${ts.backend} |`);
-    lines.push(`| Database | ${ts.database} |`);
-    if (ts.key_libraries.length > 0) {
-      lines.push(`| Key libs | ${ts.key_libraries.join(", ")} |`);
-    }
-    lines.push(``);
-    lines.push(
-      `*Confidence: ${(ts.confidence * 100).toFixed(0)}% — ${ts.rationale}*`,
-    );
-    lines.push(``);
-  }
-
-  if (proposal.decisions.deployment_model) {
-    const dm = proposal.decisions.deployment_model;
-    lines.push(`### Deployment`);
-    lines.push(``);
-    lines.push(`**Hosting:** ${dm.hosting} · **Approach:** ${dm.approach}`);
-    lines.push(``);
-    lines.push(
-      `*Confidence: ${(dm.confidence * 100).toFixed(0)}% — ${dm.rationale}*`,
-    );
-    lines.push(``);
-  }
-
-  if (proposal.decisions.vendors && proposal.decisions.vendors.length > 0) {
-    lines.push(`### Vendors`);
-    lines.push(``);
-    lines.push(`| Category | Recommendation | Decision | Confidence |`);
-    lines.push(`|----------|---------------|----------|------------|`);
-    for (const v of proposal.decisions.vendors) {
+    const highConf = pmTensions.filter((t) => t.confidence >= 0.7);
+    highConf.slice(0, 10).forEach((t) => {
       lines.push(
-        `| ${v.category} | ${v.recommendation} | ${v.decision} | ${(v.confidence * 100).toFixed(0)}% |`,
+        `- **\`${t.id}\`** — ${t.wants} *(${(t.confidence * 100).toFixed(0)}%)*`,
       );
-    }
-    lines.push(``);
-  }
-
-  if (proposal.deferred.length > 0) {
-    lines.push(`### Deferred decisions`);
-    lines.push(``);
-    proposal.deferred.forEach((d) =>
-      lines.push(`- **${d.decision}** — blocked by \`${d.blocked_by}\``),
-    );
+    });
     lines.push(``);
   }
 
@@ -383,8 +296,6 @@ export function generateReport({
   lines.push(`|-------|----------|-------------|---------------|`);
 
   const pipelineEntries = [
-    { name: "CEO", key: "ceo" },
-    { name: "CTO", key: "cto" },
     ...specialistKeys.map((k) => ({
       name: k.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()),
       key: k,
@@ -394,6 +305,7 @@ export function generateReport({
 
   for (const { name, key } of pipelineEntries) {
     const p = pipeline[key];
+    if (!p) continue;
     lines.push(
       `| ${name} | ${formatMs(p.duration_ms)} | ${(p.usage.inputTokens ?? 0).toLocaleString()} | ${(p.usage.outputTokens ?? 0).toLocaleString()} |`,
     );

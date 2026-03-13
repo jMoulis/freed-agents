@@ -41,7 +41,8 @@ export interface ContextConfig {
   xaiApiKey?: string;
   mongoUri?: string;
   storeMode?: StoreMode;
-  store?: IOntoStore; // ← ajouter
+  store?: IOntoStore;
+  searchApiKey?: string;
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -93,6 +94,7 @@ export interface RunContext {
   models: ModelRegistry;
   store: IOntoStore;
   agentDb?: AgentDb;
+  searchApiKey?: string;
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -124,5 +126,5 @@ export function createContext(config: ContextConfig): RunContext {
     agentDb = global.__agentDb;
   }
 
-  return { models, store, agentDb };
+  return { models, store, agentDb, searchApiKey: config.searchApiKey };
 }

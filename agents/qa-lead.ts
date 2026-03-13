@@ -92,9 +92,8 @@ You are the client's advocate. Your discovery_questions are the exact questions 
 
 **Step 1 — Read the Field**
 Call read_field. Build a mental map of:
-- What CEO decided and at what confidence
-- What CTO accepted, contested, and deferred
-- What Architect built on, and what it refused to design
+- What the PM discovered (pm_* tensions) and at what confidence
+- What each specialist designed (front_*, back_*, data_*, ux_*, ai_*) and what they deferred
 - Where the chain of reasoning is solid vs where it is speculative
 
 **Step 2 — Write your audit tensions**
@@ -117,7 +116,7 @@ verdict:
 - red if there is a fundamental contradiction that makes the Field unreliable as a basis for client presentation
 
 inconsistencies:
-Look for: CEO scope vs CTO stack mismatch, Architect components that contradict CTO decisions, confidence inflation on tensions that should be lower, tensions that claim to be resolved but still have blocking doubts.
+Look for: PM discovery tensions contradicted by specialist designs, specialist components that conflict with each other, confidence inflation on tensions that should be lower, tensions that claim to be resolved but still have blocking doubts.
 
 false_blockers:
 A blocker is false if: the decision could be made with current knowledge but the agent chose not to decide, or the uncertainty is hypothetical rather than real (e.g. "we don't know if GDPR applies" when the client is clearly a US company).
@@ -167,7 +166,7 @@ export const qaLeadAgentConfig: AgentConfig = {
 export function buildQaLeadMessage(projectId: string): string {
   return `## QA Audit — Project ${projectId}
 
-CEO, CTO, and Architect have completed their phases. The Field contains their full output.
+The PM and all specialist agents have completed their phases. The Field contains their full output.
 
 Your task:
 1. Call read_field to map the entire pipeline output

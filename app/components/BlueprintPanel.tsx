@@ -1,15 +1,22 @@
 "use client";
 
-import { RunResult } from "./types";
 import { ConfidenceBar } from "./ConfidenceBar";
 import { blueprintPanel as S } from "./styles";
 
-type Blueprint = NonNullable<RunResult["architect"]>["blueprint"];
+type Blueprint = {
+  summary?: string;
+  components?: Array<{ name: string; type: string; responsibility: string; depends_on: string[]; confidence: number }>;
+  data_model?: Array<{ entity: string; fields: string[]; relations: string[]; notes: string; confidence: number }>;
+  api_contracts?: Array<{ endpoint: string; method: string; purpose: string; auth: string; confidence: number }>;
+  risks?: Array<{ area: string; description: string; mitigation: string; severity: string }>;
+  blockers?: Array<{ decision: string; blocked_by: string }>;
+  [key: string]: unknown;
+} | null | undefined;
 
-export function BlueprintPanel({ blueprint }: { blueprint: Blueprint }) {
+export function BlueprintPanel({ blueprint, label }: { blueprint: Blueprint; label?: string }) {
   return (
     <div>
-      <div style={S.sectionLabel}>ARCHITECTURE BLUEPRINT</div>
+      <div style={S.sectionLabel}>{label ?? "ARCHITECTURE BLUEPRINT"}</div>
 
       <div style={S.summary}>{blueprint?.summary}</div>
 

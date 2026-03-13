@@ -1,8 +1,8 @@
 {
   "agents": [
     {
-      "id": "discovery",
-      "model": "claude-sonnet-4-5",
+      "id": "pm",
+      "model": "claude-sonnet-4-6",
       "taskType": "discovery",
       "behavioral_history": {
         "sessions": 0,
@@ -37,7 +37,55 @@
       "recent_runs": []
     },
     {
-      "id": "architect",
+      "id": "lead_front",
+      "model": "claude-haiku-4-5-20251001",
+      "taskType": "blueprint",
+      "behavioral_history": {
+        "sessions": 0,
+        "avg_efficiency": null,
+        "tension_resolution_rate": null
+      },
+      "model_performance": {},
+      "recent_runs": []
+    },
+    {
+      "id": "lead_back",
+      "model": "claude-haiku-4-5-20251001",
+      "taskType": "blueprint",
+      "behavioral_history": {
+        "sessions": 0,
+        "avg_efficiency": null,
+        "tension_resolution_rate": null
+      },
+      "model_performance": {},
+      "recent_runs": []
+    },
+    {
+      "id": "data_architect",
+      "model": "claude-haiku-4-5-20251001",
+      "taskType": "blueprint",
+      "behavioral_history": {
+        "sessions": 0,
+        "avg_efficiency": null,
+        "tension_resolution_rate": null
+      },
+      "model_performance": {},
+      "recent_runs": []
+    },
+    {
+      "id": "ux_architect",
+      "model": "claude-haiku-4-5-20251001",
+      "taskType": "blueprint",
+      "behavioral_history": {
+        "sessions": 0,
+        "avg_efficiency": null,
+        "tension_resolution_rate": null
+      },
+      "model_performance": {},
+      "recent_runs": []
+    },
+    {
+      "id": "ai_architect",
       "model": "claude-sonnet-4-5",
       "taskType": "blueprint",
       "behavioral_history": {

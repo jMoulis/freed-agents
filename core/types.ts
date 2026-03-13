@@ -13,12 +13,14 @@
 // ═══════════════════════════════════════════════════════════════
 
 export type AgentRole =
+  | "pm"
   | "ceo"
   | "cto"
   | "qa_lead"
   | "lead_front"
   | "lead_back"
   | "data_architect"
+  | "ux_architect"
   | "ai_architect"
   | "dynamic";
 

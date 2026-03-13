@@ -79,7 +79,9 @@ export type DataBlueprint = z.infer<typeof DataBlueprintSchema>;
 
 const SYSTEM = `You are the Data Architect of Freed Agents, an AI-native software engineering firm.
 
-You receive a Field containing CEO business tensions and CTO technical decisions. Your job is to design the data layer — entities, relations, indexes, migration strategy, and retention policies — with enough precision that a developer can implement it without ambiguity.
+You receive a Field containing PM discovery tensions (pm_*) and other specialist tensions. Your job is to design the data layer — entities, relations, indexes, migration strategy, and retention policies — with enough precision that a developer can implement it without ambiguity.
+
+The fixed tech stack is: Mongo DB., hosted on Vercel. You do not choose the stack — you design within it.
 
 ### Your scope
 
@@ -90,10 +92,11 @@ If you see gaps in frontend, backend API, or AI concerns, open a tension flaggin
 ### Your process — follow this order strictly
 
 **Step 1 — Read the Field**
-Call read_field first. Identify:
-- What the CEO has defined (scope, data types, compliance requirements, retention constraints)
-- What the CTO has decided (database technology, hosting, compliance posture)
-- What remains unresolved that affects your data design
+Call read_field first. Focus on:
+- pm_users_journeys_* tensions — which entities map to user roles and their data
+- pm_business_rules_* tensions — compliance, retention, data ownership constraints
+- pm_existing_connections_* tensions — data that must be imported or synced
+- pm_priorities_* tensions — what must be in V1 vs can wait
 
 **Step 2 — Write your tensions**
 Call update_field with your architectural tensions. Use prefix data_ for all tension ids.
@@ -101,7 +104,7 @@ Call update_field with your architectural tensions. Use prefix data_ for all ten
 Produce tensions for: schema_design, index_strategy, migration_approach, retention_compliance, query_patterns.
 
 If a tension depends on an unresolved upstream item, set confidence low and add the upstream id to pendingOn.
-Never modify tensions written by CEO or CTO.
+Never modify tensions written by PM or other specialists.
 
 **Step 3 — Produce your blueprint**
 Fill the DataBlueprint schema:
@@ -137,13 +140,13 @@ export const dataArchitectAgentConfig: AgentConfig = {
   name: "data_architect",
   model: {
     provider: "anthropic",
-    modelId: "claude-haiku-4-5-20251001",
+    modelId: "claude-sonnet-4-5",
   },
   system: SYSTEM,
   method: "generateObject",
   outputSchema: DataBlueprintSchema,
   sendReasoning: false,
-  maxSteps: 6,
+  maxSteps: 10,
 };
 
 // ═══════════════════════════════════════════════════════════════
@@ -153,13 +156,14 @@ export const dataArchitectAgentConfig: AgentConfig = {
 export function buildDataArchitectMessage(projectId: string): string {
   return `## Data Architecture — Project ${projectId}
 
-The CEO and CTO have completed their phases and written tensions to the epistemic field.
+The PM has completed the client interview and written all discovery tensions to the epistemic field.
 
 Your task:
-1. Call read_field to understand what has been decided (scope, database tech, compliance requirements)
+1. Call read_field to understand the entities, business rules, compliance requirements, and data flows
 2. Write your data tensions (data_ prefix) for schema_design, index_strategy, migration_approach, retention_compliance
 3. Produce your DataBlueprint — be precise about entities, fields, relations, and critical indexes
 
+Stack: Mongo DB.
 Stay within your domain: schema, indexes, migrations, retention.
 If backend API or frontend gaps surface from the data perspective, flag them as tensions but do not resolve them.`;
 }

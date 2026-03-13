@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { RunResult } from "./components/types";
-import { MandatePanel } from "./components/MandatePanel";
 import { FieldPanel } from "./components/FieldPanel";
 import { BlueprintPanel } from "./components/BlueprintPanel";
 import { AuditPanel } from "./components/AuditPanel";
@@ -12,7 +11,14 @@ import { page as S, tokenBreakdown as T } from "./components/styles";
 
 type Phase = "discovery" | "running" | "results";
 
-const PIPELINE_ROLES = ["CEO", "CTO", "ARCHITECT", "QA LEAD"] as const;
+const PIPELINE_ROLES = [
+  "PM",
+  "LEAD FRONT",
+  "LEAD BACK",
+  "DATA ARCHITECT",
+  "UX ARCHITECT",
+  "QA LEAD",
+] as const;
 
 export default function Home() {
   const [phase, setPhase] = useState<Phase>("discovery");
@@ -40,20 +46,18 @@ export default function Home() {
     }
   }
 
-  console.log(result);
-  const completedAgents = result
-    ? (["ceo", "cto", "architect", "qa"] as const)
-        .filter((k) => result[k] != null)
-        .map((k) => k.toUpperCase())
+  const specialistKeys = result?.specialists
+    ? Object.keys(result.specialists)
     : [];
 
   const totalTokens = result
-    ? (result.ceo?.usage?.inputTokens ?? 0) +
-      (result.ceo?.usage?.outputTokens ?? 0) +
-      (result.cto?.usage?.inputTokens ?? 0) +
-      (result.cto?.usage?.outputTokens ?? 0) +
-      (result.architect?.usage?.inputTokens ?? 0) +
-      (result.architect?.usage?.outputTokens ?? 0) +
+    ? specialistKeys.reduce(
+        (sum, k) =>
+          sum +
+          (result.specialists?.[k]?.usage?.inputTokens ?? 0) +
+          (result.specialists?.[k]?.usage?.outputTokens ?? 0),
+        0,
+      ) +
       (result.qa?.usage?.inputTokens ?? 0) +
       (result.qa?.usage?.outputTokens ?? 0)
     : 0;
@@ -63,7 +67,7 @@ export default function Home() {
       <div style={S.inner}>
         {/* Header */}
         <div style={S.headerSection}>
-          <div style={S.eyebrow}>FREED AGENTS // v0.1</div>
+          <div style={S.eyebrow}>FREED AGENTS // v0.2</div>
           <h1 style={S.h1}>
             AI Software Engineering <span style={S.accent}>Firm</span>
           </h1>
@@ -82,7 +86,9 @@ export default function Home() {
                   {active && <span style={S.pipelineDot} />}
                   {role}
                 </div>
-                {i < 3 && <span style={S.pipelineArrow}>→</span>}
+                {i < PIPELINE_ROLES.length - 1 && (
+                  <span style={S.pipelineArrow}>→</span>
+                )}
               </div>
             );
           })}
@@ -92,9 +98,7 @@ export default function Home() {
         {error && <div style={S.errorBox}>✕ {error}</div>}
 
         {/* Discovery phase */}
-        {/* {phase === "discovery" && ( */}
         <DiscoveryChat onComplete={handleDiscoveryComplete} />
-        {/* )} */}
 
         {/* Running phase */}
         {phase === "running" && (
@@ -121,17 +125,20 @@ export default function Home() {
               <span>{result.field?.tensions.length} tensions written</span>
               <span style={S.metaSpacer} />
               <span style={S.metaSuccess}>
-                ✓ {completedAgents.join(" + ")} complete
+                ✓ {specialistKeys.join(" + ")} + QA complete
               </span>
             </div>
 
             {showTokens && (
               <div style={T.row}>
-                {(["ceo", "cto", "architect", "qa"] as const).map((k) => {
-                  const u = result[k]?.usage;
+                {[...specialistKeys, "qa"].map((k) => {
+                  const u =
+                    k === "qa"
+                      ? result.qa?.usage
+                      : result.specialists?.[k]?.usage;
                   return (
                     <div key={k} style={T.cell}>
-                      <div style={T.agentLabel}>{k.toUpperCase()}</div>
+                      <div style={T.agentLabel}>{k.toUpperCase().replace(/_/g, " ")}</div>
                       <div style={T.tokenRow}>
                         <span style={T.tokenLabel}>IN</span>
                         <span style={T.tokenValueHighlight}>
@@ -151,11 +158,17 @@ export default function Home() {
             )}
 
             <div style={S.grid}>
-              <MandatePanel mandate={result.ceo?.mandate} />
               <FieldPanel field={result.field} />
             </div>
 
-            <BlueprintPanel blueprint={result.architect?.blueprint} />
+            {result.specialists &&
+              Object.entries(result.specialists).map(([agentType, spec]) => (
+                <BlueprintPanel
+                  key={agentType}
+                  blueprint={spec?.blueprint as any}
+                  label={agentType.replace(/_/g, " ").toUpperCase()}
+                />
+              ))}
             <AuditPanel audit={result.qa?.audit} />
           </div>
         )}

@@ -66,6 +66,7 @@ function buildFieldTools(
         "Read the current epistemic field. Call this first to understand what previous agents have decided and what tensions remain open.",
       inputSchema: z.object({}),
       execute: async () => {
+        console.log("READ_FILE");
         return store.snapshot(projectId);
       },
     }),
@@ -77,6 +78,7 @@ function buildFieldTools(
         tensions: z.array(TensionInputSchema),
       }),
       execute: async ({ tensions }: { tensions: TensionInput[] }) => {
+          console.log("update_field");
         tensionsWritten.push(...tensions);
         const snapshot = await store.upsertTensions(projectId, tensions, role);
         return snapshot;
@@ -141,6 +143,11 @@ export async function runAgent<T = unknown>(
       );
     }
     const result = await generateText({
+      onStepFinish: ({ stepNumber }) => {
+        console.log(stepNumber)
+        console.log("Step FInis");
+
+      },
       model,
       system: [
         {

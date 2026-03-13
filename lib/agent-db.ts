@@ -21,17 +21,19 @@ import {
 // ═══════════════════════════════════════════════════════════════
 
 export type AgentType =
+  | "pm"
   | "ceo"
   | "cto"
   | "qa"
   | "lead_front"
   | "lead_back"
   | "data_architect"
+  | "ux_architect"
   | "ai_architect";
 
 export type RecruitableAgentType = Extract<
   AgentType,
-  "lead_front" | "lead_back" | "data_architect" | "ai_architect"
+  "lead_front" | "lead_back" | "data_architect" | "ux_architect" | "ai_architect"
 >;
 
 export type AgentStatus = "available" | "active" | "fired" | "retired";
@@ -79,22 +81,26 @@ export interface ProjectAssignment {
 // ═══════════════════════════════════════════════════════════════
 
 export const ALLOWED_MODELS: Record<AgentType, string[]> = {
+  pm: ["claude-sonnet-4-6", "claude-sonnet-4-5"],
   ceo: ["claude-sonnet-4-5"],
   cto: ["claude-sonnet-4-5"],
   qa: ["claude-sonnet-4-5"],
-  lead_front: ["claude-haiku-4-5-20251001", "claude-sonnet-4-5"],
-  lead_back: ["claude-haiku-4-5-20251001", "claude-sonnet-4-5"],
-  data_architect: ["claude-haiku-4-5-20251001", "claude-sonnet-4-5"],
+  lead_front: ["claude-sonnet-4-5", "claude-sonnet-4-6"],
+  lead_back: ["claude-sonnet-4-5", "claude-sonnet-4-6"],
+  data_architect: ["claude-sonnet-4-5", "claude-sonnet-4-6"],
+  ux_architect: ["claude-sonnet-4-5", "claude-sonnet-4-6"],
   ai_architect: ["claude-sonnet-4-5"],
 };
 
 export const DEFAULT_MODEL: Record<AgentType, string> = {
+  pm: "claude-sonnet-4-6",
   ceo: "claude-sonnet-4-5",
   cto: "claude-sonnet-4-5",
   qa: "claude-sonnet-4-5",
-  lead_front: "claude-haiku-4-5-20251001",
-  lead_back: "claude-haiku-4-5-20251001",
-  data_architect: "claude-haiku-4-5-20251001",
+  lead_front: "claude-sonnet-4-5",
+  lead_back: "claude-sonnet-4-5",
+  data_architect: "claude-sonnet-4-5",
+  ux_architect: "claude-sonnet-4-5",
   ai_architect: "claude-sonnet-4-5",
 };
 
@@ -102,12 +108,14 @@ const AGENT_DEFAULTS: Record<
   AgentType,
   { speciality: string; recruitable: boolean }
 > = {
+  pm: { speciality: "client_discovery", recruitable: false },
   ceo: { speciality: "mandate_synthesis", recruitable: false },
   cto: { speciality: "technical_strategy", recruitable: false },
   qa: { speciality: "quality_audit", recruitable: false },
   lead_front: { speciality: "ui_components", recruitable: true },
   lead_back: { speciality: "api_design", recruitable: true },
   data_architect: { speciality: "schema_design", recruitable: true },
+  ux_architect: { speciality: "ux_journeys", recruitable: true },
   ai_architect: { speciality: "ai_systems", recruitable: true },
 };
 
@@ -136,7 +144,8 @@ function rollingAvg(
   return (current * (sessions - 1) + next) / sessions;
 }
 
-function inferProvider(modelId: string): ModelProvider {
+function inferProvider(modelId: string | undefined): ModelProvider {
+  if (!modelId) return "anthropic";
   return modelId.startsWith("grok") ? "xai" : "anthropic";
 }
 

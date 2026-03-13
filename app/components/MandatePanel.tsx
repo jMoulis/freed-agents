@@ -1,10 +1,19 @@
 "use client";
 
-import { RunResult, COMPLEXITY_COLOR } from "./types";
+import { COMPLEXITY_COLOR } from "./types";
 import { Tags } from "./Tags";
 import { mandatePanel as S } from "./styles";
 
-type Mandate = NonNullable<RunResult["ceo"]>["mandate"];
+type Mandate = {
+  title?: string;
+  description?: string;
+  target_users?: string[];
+  core_features?: string[];
+  success_criteria?: string[];
+  constraints?: string[];
+  team_needs?: string[];
+  estimated_complexity?: string;
+} | null | undefined;
 
 export function MandatePanel({ mandate }: { mandate: Mandate }) {
   const complexityColor = mandate?.estimated_complexity
@@ -19,7 +28,7 @@ export function MandatePanel({ mandate }: { mandate: Mandate }) {
         <div style={S.titleRow}>
           <h2 style={S.title}>{mandate?.title}</h2>
           <span style={S.complexityBadge(complexityColor)}>
-            {mandate?.estimated_complexity.toUpperCase()}
+            {mandate?.estimated_complexity?.toUpperCase()}
           </span>
         </div>
         <p style={S.description}>{mandate?.description}</p>

@@ -16,66 +16,15 @@ export interface AgentUsage {
 
 export interface RunResult {
   projectId: string;
-  ceo?: {
-    mandate?: {
-      title: string;
-      description: string;
-      target_users: string[];
-      core_features: string[];
-      success_criteria: string[];
-      constraints: string[];
-      team_needs: string[];
-      estimated_complexity: string;
-    };
-    tensions_written: number;
-    usage?: AgentUsage;
-    duration_ms: number;
-  };
-  cto?: {
-    proposal: unknown;
-    tensions_written: number;
-    usage?: AgentUsage;
-    duration_ms: number;
-  };
-  architect?: {
-    blueprint?: {
-      summary: string;
-      components?: Array<{
-        name: string;
-        type: "frontend" | "backend" | "database" | "integration" | "infra";
-        responsibility: string;
-        depends_on: string[];
-        confidence: number;
-      }>;
-      data_model?: Array<{
-        entity: string;
-        fields: string[];
-        relations: string[];
-        notes: string;
-        confidence: number;
-      }>;
-      api_contracts?: Array<{
-        endpoint: string;
-        method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
-        purpose: string;
-        auth: string;
-        confidence: number;
-      }>;
-      risks?: Array<{
-        area: string;
-        description: string;
-        mitigation: string;
-        severity: "low" | "medium" | "high" | "blocking";
-      }>;
-      blockers?: Array<{
-        decision: string;
-        blocked_by: string;
-      }>;
-    };
-    tensions_written: number;
-    usage?: AgentUsage;
-    duration_ms: number;
-  };
+  specialists?: Record<
+    string,
+    {
+      blueprint?: unknown;
+      tensions_written: number;
+      usage?: AgentUsage;
+      duration_ms: number;
+    }
+  >;
   qa?: {
     audit?: {
       verdict: "green" | "yellow" | "red";
@@ -117,6 +66,7 @@ export interface RunResult {
     internal: string;
     client: string;
   };
+  scores?: Record<string, unknown>;
   total_duration_ms: number;
 }
 
@@ -141,4 +91,11 @@ export interface DynamicFormData {
   fields: Array<{ id: string; label: string; value: string | string[] }>;
 }
 
-export const EXAMPLE = `We need an app for our HR team. Right now everything is on paper and Excel. When a new employee joins, the HR manager has to send emails manually, print documents, chase signatures, and track everything in a spreadsheet. It takes about 2 weeks and everyone hates it.\n\nWe have around 50 employees and hire maybe 10 people per year. Budget is flexible but we're a small company so nothing crazy. We use Google Workspace for everything.`;
+export const EXAMPLE = `Company: AcmeCorp HR\nSector: HR software\nProject: We want to replace our paper and Excel-based employee onboarding with a web app. Right now the HR manager sends emails manually, prints documents, chases signatures, and tracks everything in a spreadsheet. It takes 2 weeks and everyone hates it.`;
+
+// Bootstrap form data shape
+export interface BootstrapFormData {
+  company: string;
+  sector: string;
+  project: string;
+}
