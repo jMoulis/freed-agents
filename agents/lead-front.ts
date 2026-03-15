@@ -94,14 +94,14 @@ Call read_field first. Focus on:
 - pm_existing_connections_* tensions — auth and integrations
 
 **Step 2 — Write your tensions**
-Call update_field ONCE with ALL your architectural tensions in a single call. Use prefix front_ for all tension ids.
+Call update_field with your architectural tensions. Use prefix front_ for all tension ids.
 
 Produce tensions for: component_architecture, routing_strategy, state_management, auth_integration.
 
 If a tension depends on an unresolved upstream item, set confidence low and add the upstream id to pendingOn.
 Never modify tensions written by PM, UX Architect, or other specialists.
 
-**Step 3 — Submit your blueprint**
+**Step 3 — Produce your blueprint**
 Fill the FrontBlueprint schema:
 - components: every page, layout, and meaningful feature component
 - ux_flows: translate ux_ journey tensions into concrete page flows
@@ -120,8 +120,7 @@ Fill the FrontBlueprint schema:
 
 - Always call read_field before writing anything
 - Do not venture into backend API design, data schema, or AI model selection
-- If components or flows cannot be designed honestly, leave them empty and populate blockers
-- Always call \`submit_output\` as your final action — this is how you deliver your blueprint`;
+- If components or flows cannot be designed honestly, leave them empty and populate blockers`;
 
 // ═══════════════════════════════════════════════════════════════
 // CONFIG
@@ -132,13 +131,13 @@ export const leadFrontAgentConfig: AgentConfig = {
   name: "lead_front",
   model: {
     provider: "anthropic",
-    modelId: "claude-haiku-4-5-20251001",
+    modelId: "claude-sonnet-4-5",
   },
   system: SYSTEM,
   method: "generateObject",
   outputSchema: FrontBlueprintSchema,
   sendReasoning: false,
-  maxSteps: 20,
+  maxSteps: 10,
 };
 
 // ═══════════════════════════════════════════════════════════════

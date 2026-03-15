@@ -23,7 +23,7 @@ export const AuditReportSchema = z.object({
   verdict: z.enum(["green", "yellow", "red"]).describe(
     "green = pipeline coherent, ready for client discovery call. " +
     "yellow = minor inconsistencies, correctable before client meeting. " +
-    "red = major contradiction — requires at least one blocking inconsistency.",
+    "red = major contradiction, pipeline needs revision before proceeding.",
   ),
 
   verdict_rationale: z
@@ -34,13 +34,11 @@ export const AuditReportSchema = z.object({
     z.object({
       between: z
         .array(z.string())
-        .describe(
-          "Identifiers of the tensions or specialist domains involved — e.g. ['pm_auth_requirements', 'lead_back_auth_design'] or ['lead_front', 'ux_architect']. Does not need to be linkedTo.",
-        ),
+        .describe("Tension ids in conflict"),
       description: z.string(),
       severity: z.enum(["low", "medium", "blocking"]),
     }),
-  ).describe("Empty array if verdict is green. At least one blocking entry if verdict is red."),
+  ),
 
   false_blockers: z.array(
     z.object({
@@ -109,8 +107,8 @@ Write tensions for:
 Keep it focused — 3 to 5 tensions maximum.
 Never modify tensions written by other agents.
 
-**Step 3 — Submit your audit report**
-Call \`submit_output\` with the AuditReport:
+**Step 3 — Produce your audit report**
+Fill the AuditReport schema:
 
 verdict:
 - green only if no blocking inconsistencies and no false blockers
@@ -137,24 +135,11 @@ These are the questions to ask the client. Rules:
 ### Hard rules
 
 - Always call read_field before writing anything
+- Never produce more than 5 qa_ tensions
 - verdict: red requires at least one blocking inconsistency
 - discovery_questions must be answerable by a non-technical client
-- Never use technical jargon in discovery_questions
-
-### Methodology audit (when reasoning traces are provided)
-
-If the user message contains specialist reasoning traces, read them as a source of meta-epistemic data. Analyze:
-- Where an agent over-committed at low confidence (confidence inflation)
-- Where an agent deferred a decision it had enough information to make (false blocker)
-- Where an agent assumed without questioning (e.g. always choosing the same auth method)
-- Where an agent's internal reasoning contradicts its written tensions
-
-Write up to 3 additional tensions with prefix \`qa_methodology_\`:
-- \`qa_methodology_<agent>_<issue>\` — e.g. \`qa_methodology_lead_back_confidence_inflation\`
-- Only flag what is clearly evidenced by the reasoning trace — no speculation
-- These tensions feed behavioral_history for adaptive routing; be precise
-
-Maximum total tensions: 8 (5 coherence + 3 methodology). Never exceed this.`;
+- field_assessment is not part of your schema — you are an auditor, not a reviewer of other agents
+- Never use technical jargon in discovery_questions`;
 
 // ═══════════════════════════════════════════════════════════════
 // CONFIG
@@ -164,39 +149,30 @@ export const qaLeadAgentConfig: AgentConfig = {
   role: "qa_lead",
   name: "qa_lead",
   model: {
-    provider: "anthropic",
-    modelId: "claude-sonnet-4-6",
+    provider: "xai",
+    modelId: "grok-code-fast-1",
   },
   system: SYSTEM,
   method: "generateObject",
   outputSchema: AuditReportSchema,
-  sendReasoning: false,
-  maxSteps: 20,
+  sendReasoning: true,
+  maxSteps: 6,
 };
 
 // ═══════════════════════════════════════════════════════════════
 // USER MESSAGE BUILDER
 // ═══════════════════════════════════════════════════════════════
 
-export function buildQaLeadMessage(
-  projectId: string,
-  reasoningTraces?: string,
-): string {
-  let message = `## QA Audit — Project ${projectId}
+export function buildQaLeadMessage(projectId: string): string {
+  return `## QA Audit — Project ${projectId}
 
 The PM and all specialist agents have completed their phases. The Field contains their full output.
 
 Your task:
 1. Call read_field to map the entire pipeline output
-2. Write your qa_ tensions (coherence + methodology if traces are provided)
-3. Call \`submit_output\` with your AuditReport — verdict, inconsistencies, false blockers, scope check, and discovery questions
+2. Write 3–5 qa_ tensions summarising your audit findings
+3. Produce your AuditReport — verdict, inconsistencies, false blockers, scope check, and discovery questions
 
 Be honest about the verdict. A yellow or red is more useful than a false green.
 Your discovery questions are what the client will be asked — make them count.`;
-
-  if (reasoningTraces) {
-    message += `\n\n---\n\n## Specialist Reasoning Traces\n\nAnalyze these as meta-epistemic data. Look for confidence inflation, false blockers, and contradictions between internal reasoning and written tensions.\n\n${reasoningTraces}`;
-  }
-
-  return message;
 }

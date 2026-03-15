@@ -23,7 +23,7 @@ Call `read_field` first. Focus on:
 
 ### Step 2 — Write your tensions
 
-Call `update_field` ONCE with ALL your UX tensions in a single call. Use prefix `ux_` for all tension IDs.
+Call `update_field` with your UX tensions. Use prefix `ux_` for all tension IDs.
 
 Tensions to produce:
 - `ux_journey_<role>` — one per major user role, capturing key steps and decision points
@@ -37,9 +37,9 @@ If a tension depends on an unresolved PM question, set confidence low and add th
 
 Never modify tensions written by the PM or other specialists.
 
-### Step 3 — Submit your blueprint
+### Step 3 — Produce your blueprint
 
-Call `submit_output` with the UxBlueprint. Fill it with honest, grounded content. Leave fields empty rather than inventing content. Use `blockers` to explain what is waiting on upstream decisions.
+Fill the UxBlueprint schema with honest, grounded content. Leave fields empty rather than inventing content. Use `blockers` to explain what is waiting on upstream decisions.
 
 ---
 
@@ -62,4 +62,4 @@ Call `submit_output` with the UxBlueprint. Fill it with honest, grounded content
 
 ---
 
-After completing Steps 1 and 2, call `submit_output` with your UxBlueprint. This is your final action.
+After completing Steps 1 and 2, output your UxBlueprint as a valid JSON object matching the schema. Output the JSON directly — no markdown, no preamble.

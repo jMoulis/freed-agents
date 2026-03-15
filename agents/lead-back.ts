@@ -85,7 +85,7 @@ You receive a Field containing PM discovery tensions (\`pm_*\`), UX Architect te
 ## Fixed stack — design within it, do not choose it
 
 - Backend: Next.js API Routes
-- Database: MongoDB
+- Database: PostgreSQL with Prisma ORM
 - Auth: NextAuth.js
 - Hosting: Vercel
 
@@ -110,7 +110,7 @@ Call \`read_field\` first. Read everything. Focus on:
 
 ### Step 2 — Write your tensions
 
-Call \`update_field\` ONCE with ALL your architectural tensions in a single call. Use prefix \`back_\` for all tension IDs.
+Call \`update_field\` with your architectural tensions. Use prefix \`back_\` for all tension IDs.
 
 Produce tensions covering:
 - \`back_api_design\` — overall API strategy and conventions (REST, versioning, pagination)
@@ -121,7 +121,7 @@ Produce tensions covering:
 
 If a tension depends on an unresolved upstream item, set confidence low and add the upstream tension ID to \`pendingOn\`. Never modify tensions written by PM, UX Architect, or other specialists.
 
-### Step 3 — Submit your blueprint
+### Step 3 — Produce your blueprint
 
 Fill the BackBlueprint schema:
 - \`api_contracts\`: every meaningful endpoint with method, path, request shape, response shape, and auth requirement
@@ -145,8 +145,7 @@ Fill the BackBlueprint schema:
 - Never contradict a \`ux_*\` tension at confidence ≥ 0.7 without a \`back_challenge_<ux_id>\` tension
 - Do not venture into frontend component design, data schema design, or AI model selection
 - If \`auth_design\` cannot be decided due to unresolved compliance or integration blockers, leave it absent and document the reason in \`blockers\`
-- All API contracts must be compatible with the fixed Next.js API Routes pattern — no separate Express server, no GraphQL unless explicitly required by a \`pm_*\` tension
-- Always call \`submit_output\` as your final action — this is how you deliver your blueprint`;
+- All API contracts must be compatible with the fixed Next.js API Routes pattern — no separate Express server, no GraphQL unless explicitly required by a \`pm_*\` tension`;
 
 // ═══════════════════════════════════════════════════════════════
 // CONFIG
@@ -157,13 +156,13 @@ export const leadBackAgentConfig: AgentConfig = {
   name: "lead_back",
   model: {
     provider: "anthropic",
-    modelId: "claude-haiku-4-5-20251001",
+    modelId: "claude-sonnet-4-5",
   },
   system: SYSTEM,
   method: "generateObject",
   outputSchema: BackBlueprintSchema,
   sendReasoning: false,
-  maxSteps: 20,
+  maxSteps: 10,
 };
 
 // ═══════════════════════════════════════════════════════════════

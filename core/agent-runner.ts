@@ -160,30 +160,12 @@ export async function runAgent<T = unknown>(
 
   if (config.method === "generateObject") {
     if (!config.outputSchema) {
-      throw new Error(
-        `Agent ${config.name}: outputSchema required for generateObject`,
-      );
+      throw new Error(`Agent ${config.name}: outputSchema required for generateObject`);
     }
-
-    // submit_output: model calls this tool to deliver the structured blueprint.
-    // Replaces Output.object which is incompatible with multi-step tool calling on haiku.
-    let submittedOutput: T | undefined;
-    const submitOutputTool = tool({
-      description:
-        "Submit your final structured blueprint. Call this as your last action, after read_field and update_field.",
-      inputSchema: config.outputSchema as any,
-      execute: async (args: any) => {
-        submittedOutput = args as T;
-        return { status: "submitted" };
-      },
-    });
-
     const result = await generateText({
       onStepFinish({ stepNumber, finishReason, usage, text, reasoning }) {
         log("step_finish", {
-          stepNumber,
-          finishReason,
-          usage,
+          stepNumber, finishReason, usage,
           text_len: text?.length ?? 0,
           text_preview: text ? text.slice(0, 300) : null,
           reasoning_blocks: reasoning?.length ?? 0,
@@ -214,29 +196,22 @@ export async function runAgent<T = unknown>(
         return { ...toolCall, input: JSON.stringify(repairedArgs) };
       },
       model,
-      system: [
-        {
-          role: "system",
-          content: config.system,
-          providerOptions: {
-            anthropic: {
-              cacheControl: { type: "ephemeral" },
-            } satisfies AnthropicLanguageModelOptions,
-          },
+      system: [{
+        role: "system",
+        content: config.system,
+        providerOptions: {
+          anthropic: { cacheControl: { type: "ephemeral" } } satisfies AnthropicLanguageModelOptions,
         },
-      ],
+      }],
       messages,
-      tools: { ...allTools, submit_output: submitOutputTool } as any,
+      tools: allTools as any,
+      output: Output.object({ schema: config.outputSchema }), // ← restauré
       stopWhen: stepCountIs(config.maxSteps ?? 10),
       providerOptions: config.sendReasoning
         ? { anthropic: { thinking: { type: "enabled", budgetTokens: config.thinkingBudget ?? 8000 } } satisfies AnthropicProviderOptions }
         : undefined,
     });
-
-    if (!submittedOutput) {
-      throw new Error(`Agent ${config.name}: submit_output was never called`);
-    }
-    output = submittedOutput;
+    output = result.output as T;  // ← restauré
     reasoning_raw = extractReasoning(result.steps ?? []);
     finish_reason = result.finishReason ?? "unknown";
     usage = {

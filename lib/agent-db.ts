@@ -433,6 +433,7 @@ export class AgentDb {
       report: { internal: string; client: string };
       clarification_needed?: unknown;
       total_duration_ms: number;
+      rounds: number;
     },
   ): Promise<void> {
     await this.connect();
