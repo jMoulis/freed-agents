@@ -4,11 +4,18 @@
  * Freed Agents specialist pipeline.
  * ONLY place authorized to read process.env.
  *
- * Pipeline:
- *   PM (via /api/discovery) → [Lead Front + Lead Back + Data Architect + UX Architect + AI Architect?] → QA → Report
+ * Pipeline (staged for epistemic accuracy):
+ *   PM (via /api/discovery)
+ *   → Stage 1: Data Architect          (schema first — others depend on it)
+ *   → Stage 2: Lead Back + UX Architect (parallel — independent domains)
+ *   → Stage 3: Lead Front               (needs API contracts + UX journeys)
+ *   → Stage 4: AI Architect?            (if recruited)
+ *   → QA Lead
  *
- *   Specialist agents were recruited by the PM via recruit_agent tool.
- *   Their assignments are read from DB (or fallback to defaults).
+ *   Scores use per-stage snapshots so each agent's delta is accurate.
+ *
+ *   After QA: if verdict is red or has critical questions → clarification_needed
+ *   returned in the response. Frontend re-opens PM chat for targeted follow-up.
  *
  * Body: { projectId: string, brief?: string }
  */
@@ -20,6 +27,7 @@ import { runAgent } from "@/core/agent-runner";
 import { generateReport } from "@/lib/reporter";
 import { deriveMetrics } from "@/lib/agent-metrics";
 import { computeScore, ScoreBreakdown } from "@/lib/scoring";
+import type { FieldSnapshot } from "@/core/onto-store";
 import {
   qaLeadAgentConfig,
   buildQaLeadMessage,
@@ -44,6 +52,8 @@ import {
 } from "@/agents/ux-architect";
 import type { RecruitableAgentType } from "@/lib/agent-db";
 import type { AgentConfig } from "@/core/agent-runner";
+import { NoObjectGeneratedError } from "ai";
+import { writeRunLog } from "@/lib/run-logger";
 
 // ═══════════════════════════════════════════════════════════════
 // SPECIALIST REGISTRY
@@ -82,12 +92,95 @@ const DEFAULT_SPECIALISTS: RecruitableAgentType[] = [
   "ux_architect",
 ];
 
+// Execution order: data first, back+ux in parallel, front last, ai if present
+const STAGE_ORDER: RecruitableAgentType[][] = [
+  ["data_architect"],
+  ["lead_back", "ux_architect"],
+  ["lead_front"],
+  ["ai_architect"],
+];
+
+// ═══════════════════════════════════════════════════════════════
+// TYPES
+// ═══════════════════════════════════════════════════════════════
+
+type SpecialistResult = {
+  agentType: RecruitableAgentType;
+  result: Awaited<ReturnType<typeof runAgent>>;
+  score: ScoreBreakdown;
+};
+
+// ═══════════════════════════════════════════════════════════════
+// SPECIALIST RUNNER
+// ═══════════════════════════════════════════════════════════════
+
+async function runSpecialist(
+  agentType: RecruitableAgentType,
+  snapshotBefore: FieldSnapshot,
+  ctx: ReturnType<typeof createContext>,
+  projectId: string,
+): Promise<SpecialistResult> {
+  const { config: baseConfig, buildMessage } = SPECIALIST_CONFIGS[agentType];
+
+  const resolvedModel = ctx.agentDb
+    ? await ctx.agentDb.resolveModel(agentType)
+    : baseConfig.model;
+  const behaviorContext = ctx.agentDb
+    ? await ctx.agentDb.buildBehavioralContext(agentType)
+    : null;
+
+  const config: AgentConfig = {
+    ...baseConfig,
+    model: resolvedModel,
+    system: behaviorContext
+      ? baseConfig.system + "\n\n" + behaviorContext
+      : baseConfig.system,
+  };
+
+  const result = await runAgent(
+    config,
+    projectId,
+    ctx,
+    buildMessage(projectId),
+  );
+  const snapshotAfter = await ctx.store.snapshot(projectId);
+  const score = computeScore(
+    deriveMetrics(
+      snapshotBefore,
+      snapshotAfter,
+      result.usage.outputTokens,
+      result.finish_reason,
+      result.duration_ms,
+    ),
+  );
+
+  if (ctx.agentDb) {
+    await ctx.agentDb.updateAgentStats(
+      agentType,
+      score,
+      config.model.modelId,
+      result.usage.outputTokens,
+      result.finish_reason,
+    );
+    await ctx.agentDb.checkFiringCriteria(agentType);
+    await ctx.agentDb.releaseAgent(projectId, agentType);
+  }
+
+  console.info(`End ${agentType} — score:`, score.score.toFixed(3));
+  return { agentType, result, score };
+}
+
+// ═══════════════════════════════════════════════════════════════
+// ROUTE
+// ═══════════════════════════════════════════════════════════════
+
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { brief, projectId: existingId } = body as {
+    const { brief, projectId: existingId, sandbox } = body as {
       brief?: string;
       projectId?: string;
+      sandbox?: boolean;
     };
 
     // ── Read process.env — only here ───────────────────────────
@@ -112,19 +205,16 @@ export async function POST(req: NextRequest) {
     }
 
     // ── Determine which specialists to run ─────────────────────
-    // PM wrote assignments to DB via recruit_agent — read them back
     let specialistsToRun: RecruitableAgentType[] = [];
 
     if (ctx.agentDb) {
-      console.log("LOAD PREVIOUS")
       const assignments = await ctx.agentDb.getProjectAssignments(projectId);
-      console.log(assignments)
       specialistsToRun = assignments.map(
         (a) => a.agentType,
       ) as RecruitableAgentType[];
     }
 
-    if (specialistsToRun.length === 0) {
+    if (specialistsToRun.length === 0 && !sandbox) {
       specialistsToRun = DEFAULT_SPECIALISTS;
       console.warn(
         "[/api/run] No DB assignments found — running default specialist set:",
@@ -132,98 +222,82 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Filter to known specialists only
     specialistsToRun = specialistsToRun.filter((t) => t in SPECIALIST_CONFIGS);
 
-    // ── Run specialists in parallel ────────────────────────────
-    // Single "global before" snapshot to avoid score race
-    const snapshotBeforeSpecialists = await ctx.store.snapshot(projectId);
+    // ── Build ordered stages ───────────────────────────────────
+    const staged = new Set(STAGE_ORDER.flat());
+    const unordered = specialistsToRun.filter((t) => !staged.has(t));
 
-    type SpecialistResult = {
-      agentType: RecruitableAgentType;
-      result: Awaited<ReturnType<typeof runAgent>>;
-      score: ScoreBreakdown;
-    };
+    const orderedStages: RecruitableAgentType[][] = [
+      ...(unordered.length > 0 ? [unordered] : []),
+      ...STAGE_ORDER.map((s) =>
+        s.filter((t) => specialistsToRun.includes(t)),
+      ).filter((s) => s.length > 0),
+    ];
 
-    const specialistResults: SpecialistResult[] = await Promise.all(
-      specialistsToRun.map(async (agentType) => {
-        try {
-          console.info(`Start ${agentType}`);
-          const { config: baseConfig, buildMessage } =
-            SPECIALIST_CONFIGS[agentType];
+    // ── Run stages sequentially, agents within a stage in parallel ─
+    const allSpecialistResults: SpecialistResult[] = [];
 
-          const resolvedModel = ctx.agentDb
-            ? await ctx.agentDb.resolveModel(agentType)
-            : baseConfig.model;
-          const behaviorContext = ctx.agentDb
-            ? await ctx.agentDb.buildBehavioralContext(agentType)
-            : null;
+    for (const stage of orderedStages) {
+      const snapshotBefore = await ctx.store.snapshot(projectId);
+      console.info(`Stage [${stage.join(" + ")}] — start`);
 
-          const config: AgentConfig = {
-            ...baseConfig,
-            model: resolvedModel,
-            system: behaviorContext
-              ? baseConfig.system + "\n\n" + behaviorContext
-              : baseConfig.system,
-          };
-
-          const result = await runAgent(
-            config,
-            projectId,
-            ctx,
-            buildMessage(projectId),
-          );
-          const snapshotAfter = await ctx.store.snapshot(projectId);
-          const score = computeScore(
-            deriveMetrics(
-              snapshotBeforeSpecialists,
-              snapshotAfter,
-              result.usage.outputTokens,
-              result.finish_reason,
-              result.duration_ms,
-            ),
-          );
-
-          if (ctx.agentDb) {
-            await ctx.agentDb.updateAgentStats(
-              agentType,
-              score,
-              config.model.modelId,
-              result.usage.outputTokens,
-              result.finish_reason,
-            );
-            await ctx.agentDb.checkFiringCriteria(agentType);
-            await ctx.agentDb.releaseAgent(projectId, agentType);
+      const stageResults = await Promise.all(
+        stage.map(async (agentType) => {
+          try {
+            console.info(`Start ${agentType}`);
+            return await runSpecialist(agentType, snapshotBefore, ctx, projectId);
+          } catch (error: any) {
+            writeRunLog(agentType, projectId, "agent_error", {
+              message: error.message,
+              ...(NoObjectGeneratedError.isInstance(error) && {
+                text: error.text,
+                finishReason: error.finishReason,
+                cause: String(error.cause),
+                usage: error.usage,
+                response: error.response
+              }),
+            });
+            throw new Error(`[${agentType}]: ${error.message}`);
           }
+        }),
+      );
 
-          console.info(
-            `End ${agentType} — score:`,
-            score.score.toFixed(3),
-            score,
-          );
-          return { agentType, result, score };
-        } catch (error: any) {
-          console.error(`[${agentType}] full error:`, error);
-          throw new Error(`[${agentType}]: ${error.message}`);
-        }
-      }),
-    );
+      allSpecialistResults.push(...stageResults);
+      console.info(`Stage [${stage.join(" + ")}] — done`);
+    }
 
     const specialistScores = Object.fromEntries(
-      specialistResults.map(({ agentType, score }) => [agentType, score]),
+      allSpecialistResults.map(({ agentType, score }) => [agentType, score]),
     );
 
     // ── QA Lead ────────────────────────────────────────────────
+    // Collect specialist reasoning traces for methodology audit.
+    // Truncated to 1500 chars per agent — raw thinking can be 10k+ tokens each,
+    // bloating QA context and exhausting step budget before JSON generation.
+    const TRACE_MAX_CHARS = 1500;
+    const reasoningTraces = allSpecialistResults
+      .filter((r) => r.result.reasoning_raw)
+      .map((r) => {
+        const raw = r.result.reasoning_raw!;
+        const truncated =
+          raw.length > TRACE_MAX_CHARS
+            ? raw.slice(0, TRACE_MAX_CHARS) + "\n… [truncated]"
+            : raw;
+        return `### ${r.agentType}\n${truncated}`;
+      })
+      .join("\n\n---\n\n");
+
     let qaResult: Awaited<ReturnType<typeof runAgent<AuditReport>>>;
     let qaScoreResult: ScoreBreakdown;
     try {
-      console.info("Start QA Lead");
       const snapshotBeforeQa = await ctx.store.snapshot(projectId);
+      console.log("Start QA");
       qaResult = await runAgent<AuditReport>(
         qaLeadAgentConfig,
         projectId,
         ctx,
-        buildQaLeadMessage(projectId),
+        buildQaLeadMessage(projectId, reasoningTraces || undefined),
       );
       const snapshotAfterQa = await ctx.store.snapshot(projectId);
       const qaScore = computeScore(
@@ -235,17 +309,46 @@ export async function POST(req: NextRequest) {
           qaResult.duration_ms,
         ),
       );
-      console.info("End QA Lead — score:", qaScore.score.toFixed(3), qaScore);
+      console.info("End QA Lead — score:", qaScore.score.toFixed(3));
       qaScoreResult = qaScore;
     } catch (err: any) {
+      writeRunLog("qa_lead", projectId, "agent_error", {
+        message: err.message,
+        ...(NoObjectGeneratedError.isInstance(err) && {
+          text: err.text,
+          finishReason: err.finishReason,
+          cause: String(err.cause),
+          usage: err.usage,
+        }),
+      });
       throw new Error(`QA Lead agent failed: ${err.message ?? err}`);
+    }
+
+    // ── Clarification check ────────────────────────────────────
+    // If QA finds blocking issues agents can't resolve internally,
+    // signal the frontend to re-open the PM for targeted client follow-up.
+    const qaOutput = qaResult.output as AuditReport | null;
+    const criticalQuestions =
+      qaOutput?.discovery_questions?.filter((q) => q.priority === "critical") ?? [];
+
+    const clarificationNeeded =
+      qaOutput &&
+        (qaOutput.verdict === "red" ||
+          (qaOutput.verdict === "yellow" && criticalQuestions.length > 0))
+        ? { verdict: qaOutput.verdict, questions: criticalQuestions }
+        : null;
+
+    if (clarificationNeeded) {
+      console.info(
+        `[/api/run] QA: ${clarificationNeeded.verdict} — ${criticalQuestions.length} critical → clarification_needed`,
+      );
     }
 
     // ── Final snapshot + report ────────────────────────────────
     const snapshot = await ctx.store.snapshot(projectId);
 
     const specialistOutputs = Object.fromEntries(
-      specialistResults.map(({ agentType, result }) => [
+      allSpecialistResults.map(({ agentType, result }) => [
         agentType,
         {
           blueprint: result.output,
@@ -277,15 +380,34 @@ export async function POST(req: NextRequest) {
       mode: "client",
     });
 
-    const specialistDurationMs = specialistResults.reduce(
+    const specialistDurationMs = allSpecialistResults.reduce(
       (sum, { result }) => sum + result.duration_ms,
       0,
     );
 
+    // ── Persist run result ─────────────────────────────────────
+    if (ctx.agentDb) {
+      await ctx.agentDb
+        .saveRunResult(projectId, {
+          specialists: Object.fromEntries(
+            allSpecialistResults.map(({ agentType, result }) => [
+              agentType,
+              { blueprint: result.output, tensions_written: result.tensions_written.length, usage: result.usage, duration_ms: result.duration_ms },
+            ]),
+          ),
+          qa: { audit: qaResult.output, tensions_written: qaResult.tensions_written.length, usage: qaResult.usage, duration_ms: qaResult.duration_ms },
+          scores: { ...specialistScores, qa: qaScoreResult },
+          report: { internal: reportInternal, client: reportClient },
+          ...(clarificationNeeded && { clarification_needed: clarificationNeeded }),
+          total_duration_ms: specialistDurationMs + qaResult.duration_ms,
+        })
+        .catch((err) => console.warn("[/api/run] saveRunResult failed:", err));
+    }
+
     return NextResponse.json({
       projectId,
       specialists: Object.fromEntries(
-        specialistResults.map(({ agentType, result }) => [
+        allSpecialistResults.map(({ agentType, result }) => [
           agentType,
           {
             blueprint: result.output,
@@ -315,10 +437,12 @@ export async function POST(req: NextRequest) {
         internal: reportInternal,
         client: reportClient,
       },
+      ...(clarificationNeeded && { clarification_needed: clarificationNeeded }),
       total_duration_ms: specialistDurationMs + qaResult.duration_ms,
     });
   } catch (error: any) {
     console.error("[/api/run]", error);
+    writeRunLog("pipeline", "unknown", "pipeline_error", { message: error.message });
     return NextResponse.json(
       { error: error.message ?? "Internal server error" },
       { status: 500 },

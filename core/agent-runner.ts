@@ -3,11 +3,12 @@
  * Server-only. Reçoit un RunContext injecté — zéro accès à process.env.
  */
 
-import { generateText, tool, Output, stepCountIs, StepResult } from "ai";
+import { generateText, tool, Output, stepCountIs, StepResult, NoSuchToolError } from "ai";
 import { z } from "zod";
 import { RunContext, ModelRef } from "@/lib/context";
 import { AgentRole, TensionInput, AgentRunResult } from "@/core/types";
-import { AnthropicLanguageModelOptions } from "@ai-sdk/anthropic";
+import { anthropic, AnthropicLanguageModelOptions, AnthropicProviderOptions } from "@ai-sdk/anthropic";
+import { makeLogger } from "@/lib/run-logger";
 
 // ═══════════════════════════════════════════════════════════════
 // CONFIG
@@ -25,6 +26,7 @@ export interface AgentConfig {
   tools?: Record<string, AgentToolDef>;
   maxSteps?: number;
   sendReasoning?: boolean;
+  thinkingBudget?: number;
 }
 
 export interface AgentToolDef {
@@ -54,6 +56,14 @@ const TensionInputSchema = z.object({
   linkedTo: z.array(z.string()).optional(),
 });
 
+const KnowledgeEntrySchema = z.object({
+  id: z.string().describe(
+    "Unique cross-cutting fact id — e.g. 'stack_database', 'auth_method', 'gdpr_applicable', 'primary_language'. Snake_case.",
+  ),
+  value: z.union([z.string(), z.number(), z.boolean(), z.array(z.string())]),
+  confidence: z.number().describe("0.1–1.0 epistemic weight. Higher confidence overwrites lower."),
+});
+
 function buildFieldTools(
   store: RunContext["store"],
   projectId: string,
@@ -73,13 +83,23 @@ function buildFieldTools(
 
     update_field: tool({
       description:
-        "Write your decisions and doubts into the shared epistemic field. Be honest about confidence and doubts — other agents will build on this.",
+        "Write your decisions and doubts into the shared epistemic field. `tensions` are your reasoning units — be honest about confidence. `knowledge` (optional) is for cross-cutting facts other agents need immediately: chosen stack, auth method, GDPR scope, etc. Higher-confidence knowledge overwrites lower.",
       inputSchema: z.object({
         tensions: z.array(TensionInputSchema),
+        knowledge: z.array(KnowledgeEntrySchema).optional(),
       }),
-      execute: async ({ tensions }: { tensions: TensionInput[] }) => {
-          console.log("update_field");
+      execute: async ({
+        tensions,
+        knowledge,
+      }: {
+        tensions: TensionInput[];
+        knowledge?: Array<{ id: string; value: unknown; confidence: number }>;
+      }) => {
+        console.log("update_field");
         tensionsWritten.push(...tensions);
+        if (knowledge?.length) {
+          await store.upsertKnowledge(projectId, knowledge, role);
+        }
         const snapshot = await store.upsertTensions(projectId, tensions, role);
         return snapshot;
       },
@@ -109,8 +129,10 @@ export async function runAgent<T = unknown>(
 ): Promise<AgentRunResult<T>> {
   const startedAt = Date.now();
   const tensionsWritten: TensionInput[] = [];
+  const log = makeLogger(config.name, projectId);
 
   const model = ctx.models.resolve(config.model);
+  log("agent_start", { model: config.model, method: config.method });
   const fieldTools = buildFieldTools(
     ctx.store,
     projectId,
@@ -142,11 +164,54 @@ export async function runAgent<T = unknown>(
         `Agent ${config.name}: outputSchema required for generateObject`,
       );
     }
-    const result = await generateText({
-      onStepFinish: ({ stepNumber }) => {
-        console.log(stepNumber)
-        console.log("Step FInis");
 
+    // submit_output: model calls this tool to deliver the structured blueprint.
+    // Replaces Output.object which is incompatible with multi-step tool calling on haiku.
+    let submittedOutput: T | undefined;
+    const submitOutputTool = tool({
+      description:
+        "Submit your final structured blueprint. Call this as your last action, after read_field and update_field.",
+      inputSchema: config.outputSchema as any,
+      execute: async (args: any) => {
+        submittedOutput = args as T;
+        return { status: "submitted" };
+      },
+    });
+
+    const result = await generateText({
+      onStepFinish({ stepNumber, finishReason, usage, text, reasoning }) {
+        log("step_finish", {
+          stepNumber,
+          finishReason,
+          usage,
+          text_len: text?.length ?? 0,
+          text_preview: text ? text.slice(0, 300) : null,
+          reasoning_blocks: reasoning?.length ?? 0,
+        });
+      },
+      experimental_repairToolCall: async ({ toolCall, inputSchema, error }) => {
+        if (NoSuchToolError.isInstance(error)) {
+          log("tool_repair_skip", { toolName: toolCall.toolName, reason: "no_such_tool" });
+          return null;
+        }
+        log("tool_repair_attempt", { toolName: toolCall.toolName, error });
+        const schema = await inputSchema(toolCall);
+        const repairStart = Date.now();
+        const { output: repairedArgs } = await generateText({
+          model: anthropic("claude-haiku-4-5-20251001"),
+          output: Output.object({ schema: schema as any }),
+          prompt: [
+            `The model tried to call the tool "${toolCall.toolName}" with the following inputs:`,
+            JSON.stringify(toolCall.input),
+            `The tool accepts the following schema:`,
+            JSON.stringify(schema),
+            "Error found:",
+            error.message,
+            "Please fix the inputs.",
+          ].join("\n"),
+        });
+        log("tool_repair_done", { toolName: toolCall.toolName, duration_ms: Date.now() - repairStart, repairedArgs });
+        return { ...toolCall, input: JSON.stringify(repairedArgs) };
       },
       model,
       system: [
@@ -161,11 +226,17 @@ export async function runAgent<T = unknown>(
         },
       ],
       messages,
-      tools: allTools as any,
-      output: Output.object({ schema: config.outputSchema }),
+      tools: { ...allTools, submit_output: submitOutputTool } as any,
       stopWhen: stepCountIs(config.maxSteps ?? 10),
+      providerOptions: config.sendReasoning
+        ? { anthropic: { thinking: { type: "enabled", budgetTokens: config.thinkingBudget ?? 8000 } } satisfies AnthropicProviderOptions }
+        : undefined,
     });
-    output = result.output as T;
+
+    if (!submittedOutput) {
+      throw new Error(`Agent ${config.name}: submit_output was never called`);
+    }
+    output = submittedOutput;
     reasoning_raw = extractReasoning(result.steps ?? []);
     finish_reason = result.finishReason ?? "unknown";
     usage = {
@@ -174,10 +245,44 @@ export async function runAgent<T = unknown>(
     };
   } else {
     const providerOptions = config.sendReasoning
-      ? { anthropic: { thinking: { type: "enabled", budgetTokens: 8000 } } }
+      ? { anthropic: { thinking: { type: "enabled", budgetTokens: config.thinkingBudget ?? 8000 } } }
       : {};
 
     const result = await generateText({
+      onStepFinish({ stepNumber, finishReason, usage, text, reasoning }) {
+        log("step_finish", {
+          stepNumber,
+          finishReason,
+          usage,
+          text_len: text?.length ?? 0,
+          text_preview: text ? text.slice(0, 300) : null,
+          reasoning_blocks: reasoning?.length ?? 0,
+        });
+      },
+      experimental_repairToolCall: async ({ toolCall, inputSchema, error }) => {
+        if (NoSuchToolError.isInstance(error)) {
+          log("tool_repair_skip", { toolName: toolCall.toolName, reason: "no_such_tool" });
+          return null;
+        }
+        log("tool_repair_attempt", { toolName: toolCall.toolName, error: error.message });
+        const schema = await inputSchema(toolCall);
+        const repairStart = Date.now();
+        const { output: repairedArgs } = await generateText({
+          model: anthropic("claude-haiku-4-5-20251001"),
+          output: Output.object({ schema: config.outputSchema as any }),
+          prompt: [
+            `The model tried to call the tool "${toolCall.toolName}" with the following inputs:`,
+            JSON.stringify(toolCall.input),
+            `The tool accepts the following schema:`,
+            JSON.stringify(schema),
+            "Error found:",
+            error.message,
+            "Please fix the inputs.",
+          ].join("\n"),
+        });
+        log("tool_repair_done", { toolName: toolCall.toolName, duration_ms: Date.now() - repairStart, repairedArgs });
+        return { ...toolCall, input: JSON.stringify(repairedArgs) };
+      },
       model,
       system: config.system,
       messages,
@@ -194,6 +299,9 @@ export async function runAgent<T = unknown>(
     };
   }
 
+  const duration_ms = Date.now() - startedAt;
+  log("agent_end", { finish_reason, duration_ms, usage, tensions_written: tensionsWritten.length });
+
   return {
     role: config.role,
     name: config.name,
@@ -201,7 +309,7 @@ export async function runAgent<T = unknown>(
     reasoning_raw,
     tensions_written: tensionsWritten,
     usage,
-    duration_ms: Date.now() - startedAt,
+    duration_ms,
     finish_reason,
   };
 }

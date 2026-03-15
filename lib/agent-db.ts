@@ -13,6 +13,8 @@ import type { ModelRef, ModelProvider } from "@/lib/context";
 import {
   COLLECTION_AGENTS,
   COLLECTION_PROJECT_ASSIGNEMENTS,
+  COLLECTION_PROJECT_RUNS,
+  COLLECTION_DISCOVERY_CONVERSATIONS,
   DB_NAME,
 } from "@/config/COLLECTIONS";
 
@@ -85,10 +87,10 @@ export const ALLOWED_MODELS: Record<AgentType, string[]> = {
   ceo: ["claude-sonnet-4-5"],
   cto: ["claude-sonnet-4-5"],
   qa: ["claude-sonnet-4-5"],
-  lead_front: ["claude-sonnet-4-5", "claude-sonnet-4-6"],
-  lead_back: ["claude-sonnet-4-5", "claude-sonnet-4-6"],
-  data_architect: ["claude-sonnet-4-5", "claude-sonnet-4-6"],
-  ux_architect: ["claude-sonnet-4-5", "claude-sonnet-4-6"],
+  lead_front: ["claude-haiku-4-5-20251001", "claude-sonnet-4-5"],
+  lead_back: ["claude-haiku-4-5-20251001", "claude-sonnet-4-5"],
+  data_architect: ["claude-haiku-4-5-20251001", "claude-sonnet-4-5"],
+  ux_architect: ["claude-haiku-4-5-20251001", "claude-sonnet-4-5"],
   ai_architect: ["claude-sonnet-4-5"],
 };
 
@@ -97,10 +99,10 @@ export const DEFAULT_MODEL: Record<AgentType, string> = {
   ceo: "claude-sonnet-4-5",
   cto: "claude-sonnet-4-5",
   qa: "claude-sonnet-4-5",
-  lead_front: "claude-sonnet-4-5",
-  lead_back: "claude-sonnet-4-5",
-  data_architect: "claude-sonnet-4-5",
-  ux_architect: "claude-sonnet-4-5",
+  lead_front: "claude-haiku-4-5-20251001",
+  lead_back: "claude-haiku-4-5-20251001",
+  data_architect: "claude-haiku-4-5-20251001",
+  ux_architect: "claude-haiku-4-5-20251001",
   ai_architect: "claude-sonnet-4-5",
 };
 
@@ -208,14 +210,17 @@ export class AgentDb {
     role: string,
   ): Promise<ProjectAssignment> {
     await this.connect();
-    const assignment: ProjectAssignment = {
-      projectId,
-      agentType,
-      role,
-      recruited_at: new Date(),
-    };
-    await this.assignmentsColl!.insertOne(assignment as any);
-    return assignment;
+    const now = new Date();
+    // Upsert on (projectId, agentType) — re-activates a released agent instead of duplicating.
+    await this.assignmentsColl!.updateOne(
+      { projectId, agentType },
+      {
+        $set: { role, recruited_at: now },
+        $unset: { released_at: "" },
+      },
+      { upsert: true },
+    );
+    return { projectId, agentType, role, recruited_at: now };
   }
 
   async releaseAgent(
@@ -252,7 +257,7 @@ export class AgentDb {
       const resolutionRate =
         score.components.tensionsDelta > 0
           ? score.components.ownTensionsResolved /
-            score.components.tensionsDelta
+          score.components.tensionsDelta
           : null;
 
       const newBH = {
@@ -265,10 +270,10 @@ export class AgentDb {
         tension_resolution_rate:
           resolutionRate !== null
             ? rollingAvg(
-                agent.behavioral_history.tension_resolution_rate,
-                resolutionRate,
-                sessions,
-              )
+              agent.behavioral_history.tension_resolution_rate,
+              resolutionRate,
+              sessions,
+            )
             : agent.behavioral_history.tension_resolution_rate,
       };
 
@@ -419,6 +424,31 @@ export class AgentDb {
    * Criteria checked: score_threshold, length_repeat.
    * budget_exhausted: TODO.
    */
+  async saveRunResult(
+    projectId: string,
+    data: {
+      specialists: Record<string, unknown>;
+      qa: unknown;
+      scores: Record<string, unknown>;
+      report: { internal: string; client: string };
+      clarification_needed?: unknown;
+      total_duration_ms: number;
+    },
+  ): Promise<void> {
+    await this.connect();
+    const col = this.db!.collection(COLLECTION_PROJECT_RUNS);
+    await col.insertOne({ projectId, createdAt: new Date(), ...data });
+  }
+
+  async getLastRunResult(projectId: string): Promise<Record<string, unknown> | null> {
+    await this.connect();
+    const col = this.db!.collection(COLLECTION_PROJECT_RUNS);
+    return col.findOne(
+      { projectId },
+      { sort: { createdAt: -1 }, projection: { _id: 0 } },
+    ) as Promise<Record<string, unknown> | null>;
+  }
+
   async checkFiringCriteria(agentType: AgentType): Promise<void> {
     try {
       await this.connect();
@@ -441,5 +471,42 @@ export class AgentDb {
     } catch (err) {
       console.warn("[agent-db] checkFiringCriteria failed:", err);
     }
+  }
+
+  // ── Discovery conversations ──────────────────────────────────
+
+  /**
+   * Persists the full conversation state after each PM turn.
+   * Uses replaceOne — always reflects the latest state of the conversation.
+   * `messages` is the UIMessage[] array sent by the client (full history).
+   * `assistantText` is the PM's last response text from onFinish.
+   */
+  async saveDiscoveryConversation(
+    projectId: string,
+    data: {
+      messages: unknown[];
+      assistantText: string;
+      usage: { inputTokens: number; outputTokens: number };
+      finishReason: string;
+    },
+  ): Promise<void> {
+    await this.connect();
+    const col = this.db!.collection(COLLECTION_DISCOVERY_CONVERSATIONS);
+    await col.replaceOne(
+      { projectId },
+      { projectId, ...data, updatedAt: new Date() },
+      { upsert: true },
+    );
+  }
+
+  async getDiscoveryConversation(
+    projectId: string,
+  ): Promise<Record<string, unknown> | null> {
+    await this.connect();
+    const col = this.db!.collection(COLLECTION_DISCOVERY_CONVERSATIONS);
+    return col.findOne(
+      { projectId },
+      { projection: { _id: 0 } },
+    ) as Promise<Record<string, unknown> | null>;
   }
 }

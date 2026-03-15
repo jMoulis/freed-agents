@@ -14,8 +14,20 @@ export interface AgentUsage {
   outputTokens: number | undefined;
 }
 
+export interface ClarificationQuestion {
+  question: string;
+  unblocks: string[];
+  priority: "critical";
+}
+
+export interface ClarificationNeeded {
+  verdict: "yellow" | "red";
+  questions: ClarificationQuestion[];
+}
+
 export interface RunResult {
   projectId: string;
+  clarification_needed?: ClarificationNeeded;
   specialists?: Record<
     string,
     {

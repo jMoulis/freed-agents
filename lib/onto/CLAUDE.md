@@ -12,6 +12,22 @@ The core insight: knowledge is not binary. Every fact in Onto carries its full e
 
 ---
 
+## File map
+
+```
+lib/onto/
+  onto-engine.ts     ← canonical source of all types + OntoEngine + OntoBuilder
+  onto-types.ts      ← OntoTypeChecker + ConfidenceAlgebra + epistemic violation types
+                       imports from onto-engine.ts
+core/
+  onto-store.ts      ← IOntoStore interface + InMemoryOntoStore + MongoOntoStore
+                       imports from onto-engine.ts and onto-types.ts
+```
+
+> ⚠️ `onto.ts` has been deleted. Do not recreate it. All types live in `onto-engine.ts`.
+
+---
+
 ## The type hierarchy (onto-engine.ts)
 
 ```typescript
@@ -47,7 +63,6 @@ ResolutionPath =
 Field {
   tensions:        Map<TensionId, Tension>
   sharedKnowledge: Map<KnowledgeId, SituatedKnowledge>
-  perspectives:    Map<string, PerspectiveView>
 }
 
 // The result
@@ -151,36 +166,53 @@ if (!result.valid) {
 
 ---
 
-## Persistence (onto-persistence.ts)
+## The Store (core/onto-store.ts)
 
-Hybrid strategy validated by R&D:
-- Small fields (< 31 tensions, < 48KB) → single atomic MongoDB document
-- Large fields → tensions in separate collection, metadata + sharedKnowledge inline
+`IOntoStore` is the read/write surface exposed to agents. Two implementations:
 
-Collections: `onto_fields`, `onto_tensions`, `onto_equilibria`, `onto_agents`
+- `InMemoryOntoStore` — Phase 1, single-process, no persistence
+- `MongoOntoStore` — Phase 2, persists Field + ownership to MongoDB
 
-The `OntoFieldDocument` interface is the MongoDB schema. Field IDs follow the pattern `onto:{domain}:{date}:{shortId}`.
+**Every method that touches the engine goes through `assertFieldValid` first.**
+This is enforced on all public entry points: `snapshot`, `upsertTensions`, `upsertKnowledge`, `equilibrate`.
+
+```typescript
+// assertFieldValid — shared guard used by all store methods
+function assertFieldValid(field: Field): void {
+  const checker = new OntoTypeChecker()
+  const result = checker.check(field)
+  if (!result.valid) throw new Error(`Field epistemically invalid: ...`)
+}
+```
+
+`equilibrate` accepts an optional `{ strict?: boolean }` opt-out for diagnostic contexts:
+
+```typescript
+// Normal — throws on violations
+await store.equilibrate(projectId)
+
+// Diagnostic — logs warnings, skips type check, equilibrates anyway
+await store.equilibrate(projectId, { strict: false })
+```
+
+**Ownership:** each tension is owned by the `AgentRole` that first writes it.
+A different agent cannot overwrite it — it must use a namespaced id like `lead_front_challenge_ui_consistency`.
 
 ---
 
-## What the current `core/field-store.ts` is
+## Persistence (MongoDB)
 
-It is a **simplified stub** written before the full Onto engine was integrated. It has:
-- Simplified `Tension` without `ResolutionSpace`, `knows`, proper `doubts`
-- No `SituatedKnowledge` (just flat `value` + `confidence`)
-- No equilibration engine — just confidence averaging
-- No type checker
-- No `ConfidenceAlgebra`
+Collections used by `MongoOntoStore`: `COLLECTION_PROJECTS` (defined in `@/config/COLLECTIONS`).
 
-**This stub must be replaced.** New work on the Field layer should use the types from `onto-engine.ts` directly, not extend the stub.
+The full Field (tensions + sharedKnowledge + perspectives + ownership) is serialized to a single document per projectId. Maps are serialized as entry arrays for MongoDB compatibility.
+
+Equilibrium results are **not** persisted — they are recomputed on each `snapshot()` or `equilibrate()` call. This is intentional: the Field is the source of truth, not the equilibrium.
 
 ---
 
-## Migration path
+## What the type checker does NOT yet cover
 
-1. Replace `core/types.ts` Tension/Field/Knowledge with the real Onto types from `onto-engine.ts`
-2. Replace `core/field-store.ts` with an adapter that wraps `OntoEngine` + `OntoFieldDocument`
-3. The `read_field` / `update_field` agent tools then expose the real Field to agents
-4. Wire `onto-persistence.ts` for MongoDB (Phase 2)
+- Partial paths without a `missing` array produce a `confidence_inflation` warning (repurposed type — a dedicated `opaque_uncertainty` violation type is planned)
+- No cross-agent conflict detection at the store level (ownership prevents overwrites, but linked tensions from different agents are not cross-checked before insertion)
 
-The AgentRunner interface (`runAgent`, `AgentConfig`) does not need to change — only the Field layer underneath it.
+These are known gaps, not bugs.

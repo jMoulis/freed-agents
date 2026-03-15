@@ -99,15 +99,15 @@ Call read_field first. Focus on:
 - pm_priorities_* tensions — what must be in V1 vs can wait
 
 **Step 2 — Write your tensions**
-Call update_field with your architectural tensions. Use prefix data_ for all tension ids.
+Call update_field ONCE with ALL your architectural tensions in a single call. Use prefix data_ for all tension ids.
 
 Produce tensions for: schema_design, index_strategy, migration_approach, retention_compliance, query_patterns.
 
 If a tension depends on an unresolved upstream item, set confidence low and add the upstream id to pendingOn.
 Never modify tensions written by PM or other specialists.
 
-**Step 3 — Produce your blueprint**
-Fill the DataBlueprint schema:
+**Step 3 — Submit your blueprint**
+Call \`submit_output\` with the DataBlueprint:
 - data_model: every meaningful entity with fields and relations
 - indexes: critical indexes for uniqueness and performance
 - migration_strategy: how schema changes are managed
@@ -129,7 +129,8 @@ Fill the DataBlueprint schema:
 - If you disagree with a CTO data decision, write a tension data_challenge_[cto_id] and note it in risks
 - Do not venture into frontend component design, backend API contracts, or AI model selection — that is not your domain
 - Compliance-sensitive entities (PII, financial, audit trails) must appear in retention_policies
-- If data_model cannot be designed honestly, leave it empty and populate blockers`;
+- If data_model cannot be designed honestly, leave it empty and populate blockers
+- Always call \`submit_output\` as your final action — this is how you deliver your blueprint`;
 
 // ═══════════════════════════════════════════════════════════════
 // CONFIG
@@ -140,13 +141,13 @@ export const dataArchitectAgentConfig: AgentConfig = {
   name: "data_architect",
   model: {
     provider: "anthropic",
-    modelId: "claude-sonnet-4-5",
+    modelId: "claude-haiku-4-5-20251001",
   },
   system: SYSTEM,
   method: "generateObject",
   outputSchema: DataBlueprintSchema,
   sendReasoning: false,
-  maxSteps: 10,
+  maxSteps: 20,
 };
 
 // ═══════════════════════════════════════════════════════════════

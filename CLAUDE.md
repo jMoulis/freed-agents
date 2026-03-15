@@ -28,12 +28,19 @@ Tone: peer-to-peer, occasionally blunt, never condescending, never sycophantic.
 
 ## Onto — the epistemic engine
 
-The `onto/` directory contains the real Onto engine. It is the intellectual core of this project.
+The `lib/onto/` directory contains the real Onto engine. It is the intellectual core of this project.
 
-**Before touching anything in `core/` or writing any Field-related logic, read `onto/CLAUDE.md`.**
+**Before touching anything in `core/` or writing any Field-related logic, read `lib/onto/CLAUDE.md`.**
 
-The `core/field-store.ts` that currently exists is a simplified stub. It does not represent the true Onto model. Any new work on the Field layer must align with the real Onto types and engine in `onto/`.
+Key facts:
+- All types + `OntoEngine` + `OntoBuilder` live in `lib/onto/onto-engine.ts`
+- `OntoTypeChecker` + `ConfidenceAlgebra` live in `lib/onto/onto-types.ts`
+- The store layer is `core/onto-store.ts` — `IOntoStore`, `InMemoryOntoStore`, `MongoOntoStore`
+- `onto.ts` has been deleted. Do not recreate it.
+- `core/field-store.ts` has been replaced by `core/onto-store.ts`. Do not reference the old stub.
 
+Every store method that calls the engine passes through `assertFieldValid` first.
+The TypeChecker is not optional — it is the gate before every equilibration.
 ---
 
 ## Stack

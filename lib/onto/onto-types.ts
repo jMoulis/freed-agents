@@ -22,7 +22,7 @@
  * It is "dishonest reasoning".
  */
 
-import { Confidence, KnowledgeId, TensionId, SituatedKnowledge, Tension, Field, ValidityWindow } from './onto'
+import { Confidence, KnowledgeId, TensionId, SituatedKnowledge, Tension, Field, ValidityWindow } from './onto-engine'
 
 // ═══════════════════════════════════════════════════════════════════
 // EPISTEMIC TYPES — The type language of knowledge
@@ -649,58 +649,4 @@ export interface TypeCheckSummary {
   errors: number
   warnings: number
   status: 'clean' | 'warnings' | 'invalid'
-}
-
-// ═══════════════════════════════════════════════════════════════════
-// RENDERER — Make type errors legible
-// ═══════════════════════════════════════════════════════════════════
-
-export function renderTypeCheckResult(result: TypeCheckResult): string {
-  const lines: string[] = []
-
-  const statusIcon = result.summary.status === 'clean' ? '✓'
-    : result.summary.status === 'warnings' ? '⚠'
-      : '✕'
-  const statusLabel = result.summary.status === 'clean' ? 'EPISTEMICALLY VALID'
-    : result.summary.status === 'warnings' ? 'VALID WITH WARNINGS'
-      : 'EPISTEMIC VIOLATIONS DETECTED'
-
-  lines.push('╔════════════════════════════════════════╗')
-  lines.push(`║  ONTO TYPE CHECK  ${statusIcon} ${statusLabel.padEnd(20)}║`)
-  lines.push('╚════════════════════════════════════════╝')
-  lines.push('')
-  lines.push(`  Tensions          : ${result.summary.tensions}`)
-  lines.push(`  Knowledge entries : ${result.summary.knowledgeEntries}`)
-  lines.push(`  Epistemic health  : ${(result.confidence * 100).toFixed(1)}%`)
-  lines.push(`  Errors            : ${result.summary.errors}`)
-  lines.push(`  Warnings          : ${result.summary.warnings}`)
-  lines.push('')
-
-  if (result.errors.length > 0) {
-    lines.push('  ✕ ERRORS — field is epistemically invalid')
-    for (const v of result.errors) {
-      lines.push('')
-      lines.push(`    [${v.kind}]`)
-      lines.push(`    ${v.message}`)
-    }
-    lines.push('')
-  }
-
-  if (result.warnings.length > 0) {
-    lines.push('  ⚠ WARNINGS — field may produce unreliable equilibria')
-    for (const v of result.warnings) {
-      lines.push('')
-      lines.push(`    [${v.kind}]`)
-      lines.push(`    ${v.message}`)
-    }
-    lines.push('')
-  }
-
-  if (result.violations.length === 0) {
-    lines.push('  The field is epistemically honest.')
-    lines.push('  Every fact is situated. Every confidence is earned.')
-    lines.push('  Every derivation is traceable.')
-  }
-
-  return lines.join('\n')
 }

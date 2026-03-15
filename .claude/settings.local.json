@@ -12,7 +12,16 @@
       "Bash(yarn lint:*)",
       "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\(json.dumps\\(d.get\\(''''exports'''',{}\\), indent=2\\)\\)\")",
       "Bash(yarn test:*)",
-      "Bash(yarn vitest:*)"
+      "Bash(yarn vitest:*)",
+      "Bash(node:*)",
+      "mcp__ide__getDiagnostics",
+      "Bash(python3:*)",
+      "WebFetch(domain:sdk.vercel.ai)",
+      "WebSearch",
+      "WebFetch(domain:ai-sdk.dev)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:vercel.com)",
+      "Bash(awk NR==last{print}END{print}:*)"
     ]
   }
 }

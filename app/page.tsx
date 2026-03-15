@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { RunResult } from "./components/types";
+import { RunResult, ClarificationNeeded } from "./components/types";
 import { FieldPanel } from "./components/FieldPanel";
 import { BlueprintPanel } from "./components/BlueprintPanel";
 import { AuditPanel } from "./components/AuditPanel";
@@ -9,7 +9,7 @@ import { ReportPanel } from "./components/ReportPanel";
 import { DiscoveryChat } from "./components/DiscoveryChat";
 import { page as S, tokenBreakdown as T } from "./components/styles";
 
-type Phase = "discovery" | "running" | "results";
+type Phase = "discovery" | "running" | "results" | "clarification";
 
 const PIPELINE_ROLES = [
   "PM",
@@ -25,21 +25,27 @@ export default function Home() {
   const [result, setResult] = useState<RunResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [showTokens, setShowTokens] = useState(false);
+  const [clarification, setClarification] = useState<ClarificationNeeded | null>(null);
+  const [activeProjectId, setActiveProjectId] = useState<string | null>(null);
 
-  async function handleDiscoveryComplete(projectId: string, brief: string) {
+  async function handleDiscoveryComplete(projectId: string, brief: string, sandbox?:boolean) {
     setPhase("running");
     setError(null);
-    setResult(null);
+    setActiveProjectId(projectId);
     try {
       const res = await fetch("/api/run", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ brief, projectId }),
+        body: JSON.stringify({ brief, projectId, sandbox }),
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error ?? "Request failed");
+      const data: RunResult = await res.json();
+      if (!res.ok) throw new Error((data as any).error ?? "Request failed");
       setResult(data);
       setPhase("results");
+      // If QA found critical blockers, prepare clarification context
+      if (data.clarification_needed) {
+        setClarification(data.clarification_needed);
+      }
     } catch (e: any) {
       setError(e.message);
       setPhase("discovery");
@@ -97,12 +103,65 @@ export default function Home() {
         {/* Error */}
         {error && <div style={S.errorBox}>✕ {error}</div>}
 
-        {/* Discovery phase */}
-        <DiscoveryChat onComplete={handleDiscoveryComplete} />
+        {/* Discovery / clarification phase */}
+        {(phase === "discovery" || phase === "clarification") && (
+          <DiscoveryChat
+            onComplete={handleDiscoveryComplete}
+            initialProjectId={phase === "clarification" ? (activeProjectId ?? undefined) : undefined}
+            clarificationContext={phase === "clarification" ? (clarification ?? undefined) : undefined}
+          />
+        )}
 
         {/* Running phase */}
         {phase === "running" && (
           <div style={S.awaiting}>Analyse en cours...</div>
+        )}
+
+        {/* Clarification banner — shown in results phase when QA found critical blockers */}
+        {phase === "results" && result?.clarification_needed && (
+          <div style={{
+            margin: "0 0 16px",
+            padding: "16px 20px",
+            background: "#1a0a0a",
+            border: "1px solid #7f1d1d",
+            borderRadius: "10px",
+            display: "flex",
+            flexDirection: "column" as const,
+            gap: "12px",
+          }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+              <span style={{ color: "#f87171", fontWeight: 700, fontSize: "13px", letterSpacing: "0.05em" }}>
+                ✕ QA — {result.clarification_needed.verdict.toUpperCase()}
+              </span>
+              <span style={{ color: "#5a2020", fontSize: "11px" }}>
+                {result.clarification_needed.questions.length} blocking question{result.clarification_needed.questions.length > 1 ? "s" : ""} require client input
+              </span>
+            </div>
+            <ol style={{ margin: 0, padding: "0 0 0 18px", display: "flex", flexDirection: "column" as const, gap: "6px" }}>
+              {result.clarification_needed.questions.map((q, i) => (
+                <li key={i} style={{ color: "#c0c0d8", fontSize: "13px", lineHeight: 1.5 }}>
+                  {q.question}
+                </li>
+              ))}
+            </ol>
+            <button
+              onClick={() => setPhase("clarification")}
+              style={{
+                alignSelf: "flex-start",
+                padding: "8px 16px",
+                background: "#7f1d1d",
+                color: "#fca5a5",
+                border: "none",
+                borderRadius: "6px",
+                fontSize: "12px",
+                fontWeight: 600,
+                cursor: "pointer",
+                letterSpacing: "0.05em",
+              }}
+            >
+              RE-ENGAGE CLIENT →
+            </button>
+          </div>
         )}
 
         {/* Results */}

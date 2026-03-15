@@ -118,13 +118,13 @@ export const uxArchitectAgentConfig: AgentConfig = {
   name: "ux_architect",
   model: {
     provider: "anthropic",
-    modelId: "claude-sonnet-4-5",
+    modelId: "claude-haiku-4-5-20251001",
   },
   system: SYSTEM,
   method: "generateObject",
   outputSchema: UxBlueprintSchema,
   sendReasoning: false,
-  maxSteps: 10,
+  maxSteps: 20,
 };
 
 // ═══════════════════════════════════════════════════════════════

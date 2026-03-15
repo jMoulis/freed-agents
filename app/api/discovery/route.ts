@@ -293,6 +293,23 @@ export async function POST(req: NextRequest) {
       recruit_agent: recruitAgentTool,
     },
     stopWhen: stepCountIs(pmAgentConfig.maxSteps ?? 20),
+    onFinish: async ({ text, finishReason, usage }) => {
+      if (ctx.agentDb) {
+        ctx.agentDb
+          .saveDiscoveryConversation(projectId, {
+            messages,
+            assistantText: text,
+            usage: {
+              inputTokens: usage?.inputTokens ?? 0,
+              outputTokens: usage?.outputTokens ?? 0,
+            },
+            finishReason,
+          })
+          .catch((err) =>
+            console.warn("[/api/discovery] saveConversation failed:", err),
+          );
+      }
+    },
   });
 
   return result.toUIMessageStreamResponse({

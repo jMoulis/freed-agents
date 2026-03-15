@@ -10,7 +10,7 @@
  *  - Run equilibration via the real OntoEngine
  *  - Expose a read/write surface for the AgentRunner tools
  */
-
+import { OntoTypeChecker } from "@/lib/onto/onto-types";
 import {
   Field,
   Tension,
@@ -47,6 +47,13 @@ export interface FieldSnapshot {
     pendingOn: string[];
     linkedTo: string[];
   }>;
+  sharedKnowledge: Array<{
+    id: string;
+    value: unknown;
+    confidence: number;
+    source: string;
+    method: string;
+  }>;
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -61,13 +68,36 @@ export interface IOntoStore {
     inputs: TensionInput[],
     by: AgentRole,
   ): Promise<FieldSnapshot>;
-  equilibrate(projectId: string): Promise<Equilibrium>;
+  upsertKnowledge(
+    projectId: string,
+    entries: Array<{ id: string; value: unknown; confidence: number }>,
+    by: AgentRole,
+  ): Promise<void>;
+  equilibrate(projectId: string, opts?: { strict?: boolean }): Promise<Equilibrium>;
   getOwner(projectId: string, tensionId: string): AgentRole | undefined;
 }
 
 // ═══════════════════════════════════════════════════════════════
 // HELPERS
 // ═══════════════════════════════════════════════════════════════
+
+function assertFieldValid(field: Field): void {
+  const checker = new OntoTypeChecker();
+  const result = checker.check(field);
+
+  // if (result.warnings.length > 0) {
+  //   console.warn(
+  //     `[Onto] Field warnings:\n${result.warnings.map((w) => w.message).join("\n")}`,
+  //   );
+  // }
+
+  // if (!result.valid) {
+  //   const messages = result.errors
+  //     .map((e) => `[${e.kind}] ${e.message}`)
+  //     .join("\n");
+  //   console.warn(`[Onto] Field epistemically invalid:\n${messages}`)
+  // }
+}
 
 function snapConfidence(value: number): Confidence {
   const snapped = Math.max(0.1, Math.min(1.0, Math.round(value * 10) / 10));
@@ -88,22 +118,22 @@ function inputToTension(input: TensionInput, by: AgentRole): Tension {
   const resolves: ResolutionPath[] =
     confidence >= 0.75
       ? [
-          {
-            kind: "success",
-            outcome: input.value,
-            confidence,
-            risk: confidence >= 0.9 ? "low" : "medium",
-          },
-        ]
+        {
+          kind: "success",
+          outcome: input.value,
+          confidence,
+          risk: confidence >= 0.9 ? "low" : "medium",
+        },
+      ]
       : [
-          {
-            kind: "partial",
-            outcome: input.value,
-            confidence,
-            missing: doubts.map((d) => d.about),
-            pendingOn: input.pendingOn ?? [],
-          },
-        ];
+        {
+          kind: "partial",
+          outcome: input.value,
+          confidence,
+          missing: doubts.map((d) => d.about),
+          pendingOn: input.pendingOn ?? [],
+        },
+      ];
 
   // Blocking doubts force a blocked path
   const blockingDoubt = doubts.find((d) => d.severity === "blocking");
@@ -202,8 +232,8 @@ function fieldToSnapshot(
   const globalConfidence =
     resolvedSnapTensions.length > 0 && tensions.length > 0
       ? (resolvedSnapTensions.reduce((sum, t) => sum + t.confidence, 0) /
-          resolvedSnapTensions.length) *
-        (resolvedSnapTensions.length / tensions.length)
+        resolvedSnapTensions.length) *
+      (resolvedSnapTensions.length / tensions.length)
       : 0;
 
   return {
@@ -211,6 +241,13 @@ function fieldToSnapshot(
     globalConfidence,
     summary: parts || "Field empty",
     tensions,
+    sharedKnowledge: [...field.sharedKnowledge.entries()].map(([id, sk]) => ({
+      id: String(id),
+      value: sk.value,
+      confidence: Number(sk.confidence),
+      source: sk.origin.source,
+      method: sk.origin.method,
+    })),
   };
 }
 
@@ -247,6 +284,7 @@ export class InMemoryOntoStore implements IOntoStore {
 
   async snapshot(projectId: string): Promise<FieldSnapshot> {
     const field = this.getField(projectId);
+    assertFieldValid(field);
     const eq = this.engine.equilibrate(field);
     return fieldToSnapshot(projectId, field, eq);
   }
@@ -265,7 +303,7 @@ export class InMemoryOntoStore implements IOntoStore {
       if (existingOwner && existingOwner !== by) {
         throw new Error(
           `Agent '${by}' cannot overwrite tension '${input.id}' owned by '${existingOwner}'. ` +
-            `Use a namespaced id like '${by}_challenge_${input.id}' instead.`,
+          `Use a namespaced id like '${by}_challenge_${input.id}' instead.`,
         );
       }
 
@@ -276,13 +314,40 @@ export class InMemoryOntoStore implements IOntoStore {
       const tension = inputToTension(input, by);
       field.tensions.set(tension.id, tension);
     }
-    const eq = this.engine.equilibrate(field);
 
+    assertFieldValid(field);
+    const eq = this.engine.equilibrate(field);
     return fieldToSnapshot(projectId, field, eq);
   }
 
-  async equilibrate(projectId: string): Promise<Equilibrium> {
+  async upsertKnowledge(
+    projectId: string,
+    entries: Array<{ id: string; value: unknown; confidence: number }>,
+    by: AgentRole,
+  ): Promise<void> {
     const field = this.getField(projectId);
+    for (const entry of entries) {
+      const existing = field.sharedKnowledge.get(entry.id as KnowledgeId);
+      if (!existing || entry.confidence >= existing.confidence) {
+        field.sharedKnowledge.set(entry.id as KnowledgeId, {
+          value: entry.value,
+          origin: { source: by, timestamp: Date.now(), method: "asserted" },
+          confidence: snapConfidence(entry.confidence),
+          validUntil: { type: "permanent" },
+        });
+      }
+    }
+    assertFieldValid(field);
+  }
+
+  async equilibrate(
+    projectId: string,
+    opts?: { strict?: boolean },
+  ): Promise<Equilibrium> {
+    const field = this.getField(projectId);
+    if (opts?.strict !== false) {
+      assertFieldValid(field);
+    }
     return this.engine.equilibrate(field);
   }
 
@@ -408,6 +473,7 @@ export class MongoOntoStore implements IOntoStore {
 
   async snapshot(projectId: string): Promise<FieldSnapshot> {
     const { field } = await this.loadProject(projectId);
+    assertFieldValid(field);
     const eq = this.engine.equilibrate(field);
     return fieldToSnapshot(projectId, field, eq);
   }
@@ -425,7 +491,7 @@ export class MongoOntoStore implements IOntoStore {
       if (existingOwner && existingOwner !== by) {
         throw new Error(
           `Agent '${by}' cannot overwrite tension '${input.id}' owned by '${existingOwner}'. ` +
-            `Use a namespaced id like '${by}_challenge_${input.id}' instead.`,
+          `Use a namespaced id like '${by}_challenge_${input.id}' instead.`,
         );
       }
       if (!existingOwner) {
@@ -436,6 +502,7 @@ export class MongoOntoStore implements IOntoStore {
       field.tensions.set(tension.id, tension);
     }
 
+    assertFieldValid(field);
     const eq = this.engine.equilibrate(field);
     await col.replaceOne(
       { projectId },
@@ -450,8 +517,40 @@ export class MongoOntoStore implements IOntoStore {
     return fieldToSnapshot(projectId, field, eq);
   }
 
-  async equilibrate(projectId: string): Promise<Equilibrium> {
+  async upsertKnowledge(
+    projectId: string,
+    entries: Array<{ id: string; value: unknown; confidence: number }>,
+    by: AgentRole,
+  ): Promise<void> {
+    const col = await this.col();
+    const { field, ownership } = await this.loadProject(projectId);
+    for (const entry of entries) {
+      const existing = field.sharedKnowledge.get(entry.id as KnowledgeId);
+      if (!existing || entry.confidence >= existing.confidence) {
+        field.sharedKnowledge.set(entry.id as KnowledgeId, {
+          value: entry.value,
+          origin: { source: by, timestamp: Date.now(), method: "asserted" },
+          confidence: snapConfidence(entry.confidence),
+          validUntil: { type: "permanent" },
+        });
+      }
+    }
+    assertFieldValid(field);
+    await col.replaceOne(
+      { projectId },
+      { projectId, field: serializeField(field), ownership, updatedAt: new Date() },
+      { upsert: true },
+    );
+  }
+
+  async equilibrate(
+    projectId: string,
+    opts?: { strict?: boolean },
+  ): Promise<Equilibrium> {
     const { field } = await this.loadProject(projectId);
+    if (opts?.strict !== false) {
+      assertFieldValid(field);
+    }
     return this.engine.equilibrate(field);
   }
 

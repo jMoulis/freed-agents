@@ -8,6 +8,7 @@ function snapshot(tensions: FieldSnapshot['tensions'] = []): FieldSnapshot {
     globalConfidence: 0.5,
     summary: 'test',
     tensions,
+    sharedKnowledge: [],
   }
 }
 
